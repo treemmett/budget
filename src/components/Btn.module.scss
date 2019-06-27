@@ -1,0 +1,28 @@
+@import '../globals';
+
+.button {
+  display: block;
+  width: 100%;
+  border: none;
+  background-color: $blue;
+  margin-top: 1em;
+  padding: 1em 2em;
+  font-size: 16px;
+  cursor: pointer;
+  color: #fff;
+  border-radius: 100vh;
+  box-shadow: 0 8px 20px rgba($blue, 0.4);
+  font-weight: 500;
+  border: 1px solid $blue;
+  transition: all 0.2s ease;
+  outline: none;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(1px);
+    background-color: darken($blue, 2%);
+  }
+}
