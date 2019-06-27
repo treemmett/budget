@@ -1,8 +1,9 @@
 import React from 'react';
+import { RouteComponentProps } from '@reach/router';
 import logo from './logo.svg';
 import './App.css';
 
-const App: React.FC = () => {
+const App: React.FC<RouteComponentProps> = () => {
   return (
     <div className="App">
       <header className="App-header">
