@@ -3,11 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { Router } from '@reach/router';
 import App from './views/App';
+import Login from './views/Login';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <Router>
     <App path="/foo" />
+    <Login path="/login" />
   </Router>,
   document.getElementById('root')
 );

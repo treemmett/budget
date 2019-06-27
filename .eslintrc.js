@@ -20,6 +20,7 @@ module.exports = {
     'no-param-reassign': 0,
     'prettier/prettier': [2, { singleQuote: true }],
     'react/jsx-filename-extension': [2, { extensions: ['.tsx', '.jsx'] }],
+    'react/require-default-props': 0,
     '@typescript-eslint/explicit-function-return-type': [
       2,
       { allowExpressions: true, allowTypedFunctionExpressions: true }
