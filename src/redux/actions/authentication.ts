@@ -16,13 +16,17 @@ export const login = (
     }
   });
 
+  const payload = {
+    accessToken: data.accessToken,
+    expiresAt: new Date(Date.now() + data.expiresIn * 1000),
+    refreshToken: data.refreshToken
+  };
+
+  localStorage.setItem('session', JSON.stringify(payload));
+
   dispatch({
     type: LOGIN,
-    payload: {
-      accessToken: data.accessToken,
-      expiresAt: new Date(Date.now() + data.expiresIn * 1000),
-      refreshToken: data.refreshToken
-    }
+    payload
   });
 };
 

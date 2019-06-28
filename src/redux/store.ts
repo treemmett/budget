@@ -5,11 +5,13 @@ import {
   createStore
 } from 'redux';
 import authentication from './reducers/authentication';
+import budget from './reducers/budget';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
 
 const reducers = combineReducers({
-  authentication
+  authentication,
+  budget
 });
 
 const middlewaresToAdd: Middleware[] = [thunk];

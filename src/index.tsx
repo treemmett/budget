@@ -1,6 +1,6 @@
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import App from './views/App';
+import Budget from './views/Budget';
 import Login from './views/Login';
 import { Provider } from 'react-redux';
 import React from 'react';
@@ -11,7 +11,7 @@ import store from './redux/store';
 ReactDOM.render(
   <Provider store={store}>
     <Router>
-      <App path="/foo" />
+      <Budget path="/" />
       <Login path="/login" />
     </Router>
   </Provider>,
