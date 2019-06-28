@@ -1,12 +1,15 @@
 import React from 'react';
 import { RouteComponentProps, Link } from '@reach/router';
+import { useDispatch } from 'react-redux';
 import TextField from '../components/TextField';
 import styles from './Login.module.scss';
 import Btn from '../components/Btn';
-import axios from '../utils/axios';
+import { login } from '../redux/actions/authentication';
 
 const Login: React.FC<RouteComponentProps> = () => {
-  async function login(e: React.FormEvent): Promise<void> {
+  const dispatch = useDispatch();
+
+  async function submitForm(e: React.FormEvent): Promise<void> {
     e.preventDefault();
 
     const form = e.currentTarget as HTMLFormElement;
@@ -15,34 +18,12 @@ const Login: React.FC<RouteComponentProps> = () => {
       [input: string]: HTMLInputElement;
     };
 
-    try {
-      const { data } = await axios({
-        method: 'POST',
-        url: '/auth',
-        data: {
-          email: email.value.toString(),
-          password: password.value.trim()
-        }
-      });
-
-      const session = {
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
-        expiresIn: new Date(Date.now() + data.expiresIn * 1000)
-      };
-
-      localStorage.setItem('session', JSON.stringify(session));
-
-      alert('Login succssful');
-    } catch (er) {
-      console.error(er);
-      alert('Login failed.');
-    }
+    dispatch(login(email.value, password.value));
   }
 
   return (
     <div className={styles.login}>
-      <form onSubmit={login}>
+      <form onSubmit={submitForm}>
         <TextField defaultValue="foo" label="Email" name="email" />
         <TextField label="Password" name="password" type="password" />
         <Btn label="Login" type="submit" />

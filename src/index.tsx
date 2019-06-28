@@ -2,15 +2,19 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import { Router } from '@reach/router';
+import { Provider } from 'react-redux';
 import App from './views/App';
 import Login from './views/Login';
 import * as serviceWorker from './serviceWorker';
+import store from './redux/store';
 
 ReactDOM.render(
-  <Router>
-    <App path="/foo" />
-    <Login path="/login" />
-  </Router>,
+  <Provider store={store}>
+    <Router>
+      <App path="/foo" />
+      <Login path="/login" />
+    </Router>
+  </Provider>,
   document.getElementById('root')
 );
 
