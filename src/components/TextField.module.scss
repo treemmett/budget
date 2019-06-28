@@ -3,7 +3,6 @@
 .input {
   display: block;
   position: relative;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.03);
 
   &:first-of-type input {
     border-top-left-radius: 4px;
@@ -24,7 +23,7 @@
     width: 100%;
     outline: none;
     font-size: 16px;
-    border: 1px solid #ccc;
+    border: 1px solid #e7e7ea;
     box-sizing: border-box;
   }
 
