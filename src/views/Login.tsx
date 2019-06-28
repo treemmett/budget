@@ -1,10 +1,10 @@
-import React from 'react';
-import { RouteComponentProps, Link } from '@reach/router';
-import { useDispatch } from 'react-redux';
-import TextField from '../components/TextField';
-import styles from './Login.module.scss';
+import { Link, RouteComponentProps } from '@reach/router';
 import Btn from '../components/Btn';
+import React from 'react';
+import TextField from '../components/TextField';
 import { login } from '../redux/actions/authentication';
+import styles from './Login.module.scss';
+import { useDispatch } from 'react-redux';
 
 const Login: React.FC<RouteComponentProps> = () => {
   const dispatch = useDispatch();

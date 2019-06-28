@@ -1,6 +1,6 @@
-import { ThunkAction } from 'redux-thunk';
+import { LOGIN, LOGOUT, Login, Logout } from '../types/authentication';
 import { State } from '../store';
-import { Login, Logout, LOGIN, LOGOUT } from '../types/authentication';
+import { ThunkAction } from 'redux-thunk';
 import axios from '../../utils/axios';
 
 export const login = (

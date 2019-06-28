@@ -1,12 +1,12 @@
 import {
   Middleware,
+  applyMiddleware,
   combineReducers,
-  createStore,
-  applyMiddleware
+  createStore
 } from 'redux';
+import authentication from './reducers/authentication';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
-import authentication from './reducers/authentication';
 
 const reducers = combineReducers({
   authentication

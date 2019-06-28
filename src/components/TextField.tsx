@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PT from 'prop-types';
 import cx from 'classnames';
 import styles from './TextField.module.scss';

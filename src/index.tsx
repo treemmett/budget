@@ -1,11 +1,11 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
 import './index.css';
-import { Router } from '@reach/router';
-import { Provider } from 'react-redux';
+import * as serviceWorker from './serviceWorker';
 import App from './views/App';
 import Login from './views/Login';
-import * as serviceWorker from './serviceWorker';
+import { Provider } from 'react-redux';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Router } from '@reach/router';
 import store from './redux/store';
 
 ReactDOM.render(

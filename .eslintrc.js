@@ -17,11 +17,13 @@ module.exports = {
     es6: true
   },
   rules: {
+    'import/order': 0,
     'no-param-reassign': 0,
     'prettier/prettier': [2, { singleQuote: true }],
     'react/button-has-type': 0,
     'react/jsx-filename-extension': [2, { extensions: ['.tsx', '.jsx'] }],
     'react/require-default-props': 0,
+    'sort-imports': 2,
     '@typescript-eslint/explicit-function-return-type': [
       2,
       { allowExpressions: true, allowTypedFunctionExpressions: true }
