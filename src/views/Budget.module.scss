@@ -2,20 +2,30 @@
   padding: 2em;
 }
 
-.budget {
+.group {
+  position: relative;
   background-color: #fff;
-  padding: 0.5em 1em;
-  border: 1px solid #ddd;
-  border-bottom: none;
+  box-shadow: 0 5px 20px rgba(#000, 0.1);
+  margin-bottom: 1.5em;
+  border-radius: 5px;
+}
 
-  &:first-child {
-    border-top-right-radius: 4px;
-    border-top-left-radius: 4px;
-  }
+.head {
+  padding: 1.25em 2em;
+}
 
-  &:last-child {
-    border-bottom-right-radius: 4px;
-    border-bottom-left-radius: 4px;
-    border: 1px solid #ddd;
-  }
+.border {
+  margin: 0 2em;
+  height: 1px;
+  box-sizing: border-box;
+  background-color: #ddd;
+}
+
+.group-name {
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.category {
+  padding: 1em 2em;
 }

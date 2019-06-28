@@ -7,7 +7,9 @@ import styles from './Budget.module.scss';
 
 const Budget: React.FC<RouteComponentProps> = () => {
   const dispatch = useDispatch();
-  const budgets = useSelector((state: State) => state.budget.budgets);
+  const budgetId = useSelector((state: State) => state.budget.selectedBudget);
+  const groups = useSelector((state: State) => state.budget.groups);
+  const categories = useSelector((state: State) => state.budget.categories);
 
   useEffect(() => {
     dispatch(getBudgets());
@@ -15,11 +17,25 @@ const Budget: React.FC<RouteComponentProps> = () => {
 
   return (
     <div className={styles['budget-list']}>
-      {budgets.map(b => (
-        <div key={b.id} className={styles.budget}>
-          {b.name}
-        </div>
-      ))}
+      {groups
+        .filter(g => g.budgetId === budgetId)
+        .map(g => (
+          <div key={g.id} className={styles.group}>
+            <div className={styles.head}>
+              <div className={styles['group-name']}>{g.name}</div>
+            </div>
+            <div className={styles.border} />
+            <div className={styles['category-list']}>
+              {categories
+                .filter(c => c.groupId === g.id)
+                .map(c => (
+                  <div key={c.id} className={styles.category}>
+                    <div className={styles['category-name']}>{c.name}</div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        ))}
     </div>
   );
 };

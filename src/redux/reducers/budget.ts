@@ -1,8 +1,17 @@
-import { Budget, BudgetActions, GET_BUDGETS } from '../types/budget';
+import {
+  Budget,
+  BudgetActions,
+  Category,
+  GET_BUDGETS,
+  GET_CATEGORIES,
+  Group
+} from '../types/budget';
 
 export const defaultState = {
   selectedBudget: '',
-  budgets: [] as Budget[]
+  budgets: [] as Budget[],
+  categories: [] as Category[],
+  groups: [] as Group[]
 };
 
 export default function authentication(
@@ -15,6 +24,13 @@ export default function authentication(
         ...state,
         selectedBudget: action.payload.selectedBudget,
         budgets: action.payload.budgets
+      };
+
+    case GET_CATEGORIES:
+      return {
+        ...state,
+        categories: action.payload.categories,
+        groups: action.payload.groups
       };
 
     default:
