@@ -27,5 +27,16 @@
 }
 
 .category {
+  display: grid;
+  grid-template-columns: 1fr 5em;
+  grid-template-rows: 1fr;
   padding: 1em 2em;
+}
+
+.category-name {
+  display: inline-block;
+}
+
+.category-amount {
+  text-align: right;
 }

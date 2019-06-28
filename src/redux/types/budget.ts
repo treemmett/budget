@@ -12,6 +12,13 @@ export interface Category {
   groupId: string;
 }
 
+export interface CategoryAllocation {
+  amount: string;
+  categoryId: string;
+  month: number;
+  year: number;
+}
+
 export interface Group {
   id: string;
   name: string;
@@ -30,6 +37,7 @@ export interface GetCategories {
   type: typeof GET_CATEGORIES;
   payload: {
     categories: Category[];
+    categoryAllocations: CategoryAllocation[];
     groups: Group[];
   };
 }

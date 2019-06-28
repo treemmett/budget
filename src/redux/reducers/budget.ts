@@ -2,6 +2,7 @@ import {
   Budget,
   BudgetActions,
   Category,
+  CategoryAllocation,
   GET_BUDGETS,
   GET_CATEGORIES,
   Group
@@ -11,6 +12,7 @@ export const defaultState = {
   selectedBudget: '',
   budgets: [] as Budget[],
   categories: [] as Category[],
+  categoryAllocation: [] as CategoryAllocation[],
   groups: [] as Group[]
 };
 
@@ -29,6 +31,7 @@ export default function authentication(
     case GET_CATEGORIES:
       return {
         ...state,
+        categoryAllocation: action.payload.categoryAllocations,
         categories: action.payload.categories,
         groups: action.payload.groups
       };

@@ -10,10 +10,15 @@ const Budget: React.FC<RouteComponentProps> = () => {
   const budgetId = useSelector((state: State) => state.budget.selectedBudget);
   const groups = useSelector((state: State) => state.budget.groups);
   const categories = useSelector((state: State) => state.budget.categories);
+  const categoryAllocations = useSelector(
+    (state: State) => state.budget.categoryAllocation
+  );
 
   useEffect(() => {
     dispatch(getBudgets());
   }, [dispatch]);
+
+  const date = new Date();
 
   return (
     <div className={styles['budget-list']}>
@@ -28,11 +33,23 @@ const Budget: React.FC<RouteComponentProps> = () => {
             <div className={styles['category-list']}>
               {categories
                 .filter(c => c.groupId === g.id)
-                .map(c => (
-                  <div key={c.id} className={styles.category}>
-                    <div className={styles['category-name']}>{c.name}</div>
-                  </div>
-                ))}
+                .map(c => {
+                  const allocated = categoryAllocations.find(
+                    a =>
+                      a.categoryId === c.id &&
+                      a.month === date.getMonth() &&
+                      a.year === date.getFullYear()
+                  );
+
+                  return (
+                    <div key={c.id} className={styles.category}>
+                      <div className={styles['category-name']}>{c.name}</div>
+                      <div className={styles['category-amount']}>
+                        ${allocated ? allocated.amount : '0.00'}
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         ))}

@@ -1,6 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import {
   Category,
+  CategoryAllocation,
   GET_BUDGETS,
   GET_CATEGORIES,
   GetBudgets,
@@ -26,6 +27,7 @@ export const getCategories = (
       name: string;
       budgetId?: string;
       categories: {
+        amount: string;
         id: string;
         name: string;
         groupId?: string;
@@ -33,25 +35,37 @@ export const getCategories = (
     }[];
   };
 
-  const [groups, categories] = budgetData.groups.reduce(
+  const date = new Date();
+
+  const [groups, categories, categoryAllocations] = budgetData.groups.reduce(
     (acc, group) => {
-      const cs = group.categories.map(c => ({
-        ...c,
-        groupId: group.id
-      }));
+      const cs = group.categories.map(({ amount, ...c }) => {
+        acc[2].push({
+          categoryId: c.id,
+          amount,
+          month: date.getMonth(),
+          year: date.getFullYear()
+        });
+
+        return {
+          ...c,
+          groupId: group.id
+        };
+      });
 
       acc[0].push({ budgetId, id: group.id, name: group.name });
       acc[1].push(...cs);
 
       return acc;
     },
-    [[] as Group[], [] as Category[]]
+    [[] as Group[], [] as Category[], [] as CategoryAllocation[]]
   );
 
   dispatch({
     type: GET_CATEGORIES,
     payload: {
       categories,
+      categoryAllocations,
       groups
     }
   });
