@@ -7,10 +7,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Register from './views/Register';
 import { Router } from '@reach/router';
+import Toaster from './components/Toaster';
 import store from './redux/store';
 
 ReactDOM.render(
   <Provider store={store}>
+    <Toaster />
     <Router>
       <Budget path="/" />
       <Login path="/login" />
