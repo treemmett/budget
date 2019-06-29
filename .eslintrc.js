@@ -27,7 +27,8 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': [
       2,
       { allowExpressions: true, allowTypedFunctionExpressions: true }
-    ]
+    ],
+    '@typescript-eslint/no-explicit-any': 0
   },
   settings: {
     'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],

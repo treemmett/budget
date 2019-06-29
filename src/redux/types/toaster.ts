@@ -3,7 +3,6 @@ export const SEND_TOAST = 'SEND_TOAST';
 
 export interface ToastActionDetails {
   label: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   action: (...args: any) => any;
 }
 
