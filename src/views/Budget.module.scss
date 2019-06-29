@@ -1,3 +1,5 @@
+@import '../globals';
+
 .budget-list {
   padding: 2em;
 }
@@ -10,8 +12,29 @@
   border-radius: 5px;
 }
 
+.head,
+.category {
+  display: grid;
+  grid-template-columns: 1fr 6em;
+  grid-template-rows: 1fr;
+  grid-template-areas: 'name allocation';
+}
+
 .head {
   padding: 1.25em 2em;
+  font-weight: 500;
+  color: #666;
+
+  .group-name {
+    grid-area: name;
+    font-size: 20px;
+  }
+
+  .allocation {
+    text-align: right;
+    grid-area: allocation;
+    color: inherit;
+  }
 }
 
 .border {
@@ -21,22 +44,35 @@
   background-color: #ddd;
 }
 
-.group-name {
-  font-weight: 500;
-  font-size: 20px;
-}
-
 .category {
-  display: grid;
-  grid-template-columns: 1fr 5em;
-  grid-template-rows: 1fr;
   padding: 1em 2em;
+
+  &:hover input {
+    border-color: #e7e7ea;
+  }
+
+  input {
+    padding: 0.25em 0.25em;
+    font-size: 16px;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    outline: none;
+
+    &:active,
+    &:focus {
+      border-color: $blue;
+    }
+  }
 }
 
 .category-name {
   display: inline-block;
+  grid-area: name;
 }
 
-.category-amount {
+.category-allocation {
+  width: 6em;
   text-align: right;
+  grid-area: allocation;
 }

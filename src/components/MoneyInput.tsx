@@ -1,10 +1,12 @@
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import formatCurrency from '../utils/formatCurrency';
 
-const MoneyInput: React.FC<{
-  value?: string;
-  onChange?: (...args: any) => void;
-}> = ({
+const MoneyInput: React.FC<
+  {
+    value?: string;
+    onChange?: (...args: any) => void;
+  } & React.HTMLAttributes<HTMLDivElement>
+> = ({
   value,
   onChange,
   ...props

@@ -1,5 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import {
+  ALLOCATE_FUNDS,
+  AllocateFunds,
   Category,
   CategoryAllocation,
   GET_BUDGETS,
@@ -11,6 +13,55 @@ import {
 import { State } from '../store';
 import { ThunkAction } from 'redux-thunk';
 import axios from '../../utils/axios';
+
+export const allocateFunds = (
+  budgetId: string,
+  categoryId: string,
+  amount: string,
+  month: number,
+  year: number
+): ThunkAction<Promise<void>, State, null, AllocateFunds> => async (
+  dispatch,
+  getState
+) => {
+  const str = amount.replace(/\D/gi, '');
+  const num = Number(str) / 100;
+  await axios({
+    method: 'PUT',
+    url: `/budgets/${budgetId}/categories/${categoryId}/${year}/${month}`,
+    data: {
+      amount: num.toString()
+    }
+  });
+
+  const payload: {
+    categoryId: string;
+    month: number;
+    year: number;
+    amount: string;
+    index?: number;
+  } = {
+    categoryId,
+    month,
+    year,
+    amount
+  };
+
+  // check if we can update an existing member of state
+  const { budget } = getState();
+  const index = budget.categoryAllocation.findIndex(
+    a => a.categoryId === categoryId && a.month === month && a.year === year
+  );
+
+  if (index > -1) {
+    payload.index = index;
+  }
+
+  dispatch({
+    type: ALLOCATE_FUNDS,
+    payload
+  });
+};
 
 export const getCategories = (
   budgetId: string

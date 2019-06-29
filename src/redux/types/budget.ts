@@ -1,3 +1,4 @@
+export const ALLOCATE_FUNDS = 'ALLOCATE_FUNDS';
 export const GET_BUDGETS = 'GET_BUDGETS';
 export const GET_CATEGORIES = 'GET_CATEGORIES';
 
@@ -25,6 +26,17 @@ export interface Group {
   budgetId: string;
 }
 
+export interface AllocateFunds {
+  type: typeof ALLOCATE_FUNDS;
+  payload: {
+    amount: string;
+    categoryId: string;
+    month: number;
+    year: number;
+    index?: number;
+  };
+}
+
 export interface GetBudgets {
   type: typeof GET_BUDGETS;
   payload: {
@@ -42,4 +54,4 @@ export interface GetCategories {
   };
 }
 
-export type BudgetActions = GetBudgets | GetCategories;
+export type BudgetActions = AllocateFunds | GetBudgets | GetCategories;

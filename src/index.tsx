@@ -1,4 +1,4 @@
-import './index.css';
+import './index.scss';
 import * as serviceWorker from './serviceWorker';
 import Budget from './views/Budget';
 import Login from './views/Login';
