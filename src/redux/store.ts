@@ -8,10 +8,12 @@ import authentication from './reducers/authentication';
 import budget from './reducers/budget';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
+import toaster from './reducers/toaster';
 
 const reducers = combineReducers({
   authentication,
-  budget
+  budget,
+  toasts: toaster
 });
 
 const middlewaresToAdd: Middleware[] = [thunk];
