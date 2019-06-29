@@ -21,7 +21,8 @@
     transform: translateY(-1px);
   }
 
-  &:active {
+  &:active,
+  &:focus {
     transform: translateY(1px);
     background-color: darken($blue, 2%);
   }

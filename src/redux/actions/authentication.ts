@@ -45,3 +45,23 @@ export const logout = (): ThunkAction<
     type: LOGOUT
   });
 };
+
+export const register = (
+  username: string,
+  password: string,
+  firstName: string,
+  lastName: string
+): ThunkAction<Promise<void>, State, null, Login> => async dispatch => {
+  await axios({
+    method: 'POST',
+    url: '/user',
+    data: {
+      email: username,
+      password,
+      firstName,
+      lastName
+    }
+  });
+
+  dispatch(login(username, password));
+};

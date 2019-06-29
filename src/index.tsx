@@ -5,6 +5,7 @@ import Login from './views/Login';
 import { Provider } from 'react-redux';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Register from './views/Register';
 import { Router } from '@reach/router';
 import store from './redux/store';
 
@@ -13,6 +14,7 @@ ReactDOM.render(
     <Router>
       <Budget path="/" />
       <Login path="/login" />
+      <Register path="/register" />
     </Router>
   </Provider>,
   document.getElementById('root')

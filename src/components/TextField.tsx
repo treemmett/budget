@@ -23,9 +23,19 @@ const TextField: React.FC<{
   id?: string;
   label?: string;
   name?: string;
+  required?: boolean;
   type?: Type;
   value?: string;
-}> = ({ className, defaultValue, id, label, name, type = 'text', value }) => {
+}> = ({
+  className,
+  defaultValue,
+  id,
+  label,
+  name,
+  required,
+  type = 'text',
+  value
+}) => {
   const [realId, setId] = useState(id);
   const [focus, setFocus] = useState(!!(value || defaultValue));
 
@@ -62,14 +72,15 @@ const TextField: React.FC<{
       htmlFor={realId}
     >
       <input
+        className={styles.input}
         defaultValue={defaultValue}
         id={realId}
         name={name}
-        onFocus={onFocus}
         onBlur={onBlur}
-        value={value}
+        onFocus={onFocus}
+        required={required}
         type={type}
-        className={styles.input}
+        value={value}
       />
       <div className={styles.label}>{label}</div>
       <div className={styles.border} />
@@ -83,6 +94,7 @@ TextField.propTypes = {
   id: PT.string,
   label: PT.string,
   name: PT.string,
+  required: PT.bool,
   type: PT.oneOf([
     'date',
     'datetime-local',
