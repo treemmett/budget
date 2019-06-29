@@ -18,19 +18,25 @@ type Type =
   | 'week';
 
 const TextField: React.FC<{
+  className?: string;
   defaultValue?: string;
   id?: string;
   label?: string;
   name?: string;
   type?: Type;
   value?: string;
-}> = ({ defaultValue, id, label, name, type = 'text', value }) => {
+}> = ({ className, defaultValue, id, label, name, type = 'text', value }) => {
   const [realId, setId] = useState(id);
   const [focus, setFocus] = useState(!!(value || defaultValue));
 
   useEffect(() => {
     if (!id) {
-      setId(btoa(Date.now().toString()));
+      setId(
+        `input-${btoa((Date.now() * Math.random()).toString()).replace(
+          /=/g,
+          ''
+        )}`
+      );
     }
   }, [id]);
 
@@ -52,7 +58,7 @@ const TextField: React.FC<{
 
   return (
     <label
-      className={cx(styles.input, { [styles.focus]: focus })}
+      className={cx(className, styles.field, { [styles.focus]: focus })}
       htmlFor={realId}
     >
       <input
@@ -63,13 +69,16 @@ const TextField: React.FC<{
         onBlur={onBlur}
         value={value}
         type={type}
+        className={styles.input}
       />
       <div className={styles.label}>{label}</div>
+      <div className={styles.border} />
     </label>
   );
 };
 
 TextField.propTypes = {
+  className: PT.string,
   defaultValue: PT.string,
   id: PT.string,
   label: PT.string,
@@ -96,3 +105,21 @@ TextField.defaultProps = {
 };
 
 export default TextField;
+
+export const SplitInputs: React.FC = ({ children }) => (
+  // eslint-disable-next-line jsx-a11y/label-has-associated-control, jsx-a11y/label-has-for
+  <label className={styles.split}>
+    {React.Children.map(children, child => {
+      // @ts-ignore
+      return React.cloneElement(child, {
+        // @ts-ignore
+        className: cx(child.props.className, styles['split-field'])
+      });
+    })}
+  </label>
+);
+
+SplitInputs.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  children: PT.any
+};

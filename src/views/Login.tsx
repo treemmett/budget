@@ -24,7 +24,7 @@ const Login: React.FC<RouteComponentProps> = () => {
   return (
     <div className={styles.login}>
       <form onSubmit={submitForm}>
-        <TextField defaultValue="foo" label="Email" name="email" />
+        <TextField label="Email" name="email" />
         <TextField label="Password" name="password" type="password" />
         <Btn label="Login" type="submit" />
       </form>
