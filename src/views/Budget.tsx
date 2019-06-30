@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import BudgetGroup from '../components/BudgetGroup';
+import { DragDropContext } from 'react-beautiful-dnd';
 import { RouteComponentProps } from '@reach/router';
 import { State } from '../redux/store';
 import { getBudgets } from '../redux/actions/budget';
@@ -20,11 +21,15 @@ const Budget: React.FC<RouteComponentProps> = () => {
     dispatch(getBudgets());
   }, [dispatch]);
 
+  function onDragEnd(): void {}
+
   return (
     <div className={styles['budget-list']}>
-      {budgetGroups.map(g => (
-        <BudgetGroup key={g.id} id={g.id} name={g.name} />
-      ))}
+      <DragDropContext onDragEnd={onDragEnd}>
+        {budgetGroups.map(g => (
+          <BudgetGroup key={g.id} id={g.id} name={g.name} />
+        ))}
+      </DragDropContext>
     </div>
   );
 };

@@ -45,10 +45,19 @@
 }
 
 .category {
+  position: relative;
   padding: 1em 2em;
+  background-color: #fff;
+  border-radius: 5px;
 
-  &:hover input {
-    border-color: #e7e7ea;
+  &:hover {
+    input {
+      border-color: #e7e7ea;
+    }
+
+    .drag-handle {
+      color: #ccc;
+    }
   }
 
   input {
@@ -69,10 +78,28 @@
 .category-name {
   display: inline-block;
   grid-area: name;
+  vertical-align: middle;
+  align-self: center;
 }
 
 .category-allocation {
   width: 6em;
   text-align: right;
   grid-area: allocation;
+}
+
+.drag-handle {
+  position: absolute;
+  top: 50%;
+  left: 0.3em;
+  transform: translateY(-50%);
+  height: 1.4em;
+  width: 1.4em;
+  color: #ccc0;
+  transition: color 0.2s ease;
+
+  svg {
+    height: 100%;
+    width: 100%;
+  }
 }

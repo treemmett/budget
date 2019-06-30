@@ -1,5 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import BudgetCategory from './BudgetCategory';
+import { Droppable } from 'react-beautiful-dnd';
 import { State } from '../redux/store';
 import styles from '../views/Budget.module.scss';
 import { useSelector } from 'react-redux';
@@ -24,11 +25,26 @@ const BudgetGroup: FC<BudgetGroupProps> = ({ id, name }: BudgetGroupProps) => {
         <div className={styles.allocation}>Allocated</div>
       </div>
       <div className={styles.border} />
-      <div className={styles['category-list']}>
-        {categories.map(c => (
-          <BudgetCategory key={c.id} id={c.id} name={c.name} />
-        ))}
-      </div>
+
+      <Droppable droppableId={id}>
+        {provided => (
+          <div
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+            className={styles['category-list']}
+          >
+            {categories.map((c, index) => (
+              <BudgetCategory
+                key={c.id}
+                id={c.id}
+                name={c.name}
+                index={index}
+              />
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
     </div>
   );
 };
