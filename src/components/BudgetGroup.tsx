@@ -14,7 +14,14 @@ const BudgetGroup: FC<BudgetGroupProps> = ({ id, name }: BudgetGroupProps) => {
   const allCategories = useSelector((state: State) => state.budget.categories);
 
   const categories = useMemo(
-    () => allCategories.filter(c => c.groupId === id),
+    () =>
+      allCategories
+        .filter(c => c.groupId === id)
+        .sort((a, b) => {
+          if (a.sort > b.sort) return 1;
+          if (a.sort < b.sort) return -1;
+          return 0;
+        }),
     [id, allCategories]
   );
 

@@ -8,7 +8,9 @@ import {
   GET_CATEGORIES,
   GetBudgets,
   GetCategories,
-  Group
+  Group,
+  SET_CATEGORIES,
+  SetCategories
 } from '../types/budget';
 import { State } from '../store';
 import { ThunkAction } from 'redux-thunk';
@@ -63,6 +65,53 @@ export const allocateFunds = (
   });
 };
 
+export const changeCategoryPosition = (
+  categoryId: string,
+  index: number
+): ThunkAction<void, State, null, SetCategories> => (dispatch, getState) => {
+  const { categories, selectedBudget } = getState().budget;
+
+  const category = categories.find(c => c.id === categoryId);
+
+  if (!category) {
+    throw new Error(`Category ID ${categoryId} not found.`);
+  }
+
+  // resort categories in our group
+  const groupCategories = categories
+    .filter(c => c.groupId === category.groupId)
+    .sort((a, b) => {
+      if (a.sort > b.sort) return 1;
+      if (a.sort < b.sort) return -1;
+      return 0;
+    });
+  const categoryIndex = groupCategories.findIndex(c => c.id === categoryId);
+  const [splicedCategory] = groupCategories.splice(categoryIndex, 1);
+  groupCategories.splice(index, 0, splicedCategory);
+
+  // get categories that aren't being resorted
+  const otherCategories = categories.filter(
+    c => c.groupId !== category.groupId
+  );
+
+  dispatch({
+    type: SET_CATEGORIES,
+    payload: {
+      categories: [
+        ...otherCategories,
+        ...groupCategories.map((c, i) => ({ ...c, sort: i }))
+      ]
+    }
+  });
+
+  // send update request
+  axios({
+    method: 'PATCH',
+    url: `/budgets/${selectedBudget}/categories/${categoryId}`,
+    data: { index }
+  });
+};
+
 export const getCategories = (
   budgetId: string
 ): ThunkAction<Promise<void>, State, null, GetCategories> => async dispatch => {
@@ -81,6 +130,7 @@ export const getCategories = (
         amount: string;
         id: string;
         name: string;
+        sort: number;
         groupId?: string;
       }[];
     }[];

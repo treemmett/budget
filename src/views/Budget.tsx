@@ -1,10 +1,10 @@
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import React, { useEffect, useMemo } from 'react';
+import { changeCategoryPosition, getBudgets } from '../redux/actions/budget';
 import { useDispatch, useSelector } from 'react-redux';
 import BudgetGroup from '../components/BudgetGroup';
-import { DragDropContext } from 'react-beautiful-dnd';
 import { RouteComponentProps } from '@reach/router';
 import { State } from '../redux/store';
-import { getBudgets } from '../redux/actions/budget';
 import styles from './Budget.module.scss';
 
 const Budget: React.FC<RouteComponentProps> = () => {
@@ -21,7 +21,21 @@ const Budget: React.FC<RouteComponentProps> = () => {
     dispatch(getBudgets());
   }, [dispatch]);
 
-  function onDragEnd(): void {}
+  function onDragEnd(result: DropResult): void {
+    const { destination, draggableId, source } = result;
+    if (!destination) {
+      return;
+    }
+
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    ) {
+      return;
+    }
+
+    dispatch(changeCategoryPosition(draggableId, destination.index));
+  }
 
   return (
     <div className={styles['budget-list']}>

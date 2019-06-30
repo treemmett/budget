@@ -1,6 +1,7 @@
 export const ALLOCATE_FUNDS = 'ALLOCATE_FUNDS';
 export const GET_BUDGETS = 'GET_BUDGETS';
 export const GET_CATEGORIES = 'GET_CATEGORIES';
+export const SET_CATEGORIES = 'SET_CATEGORIES';
 
 export interface Budget {
   id: string;
@@ -11,6 +12,7 @@ export interface Category {
   id: string;
   name: string;
   groupId: string;
+  sort: number;
 }
 
 export interface CategoryAllocation {
@@ -54,4 +56,15 @@ export interface GetCategories {
   };
 }
 
-export type BudgetActions = AllocateFunds | GetBudgets | GetCategories;
+export interface SetCategories {
+  type: typeof SET_CATEGORIES;
+  payload: {
+    categories: Category[];
+  };
+}
+
+export type BudgetActions =
+  | AllocateFunds
+  | GetBudgets
+  | GetCategories
+  | SetCategories;

@@ -6,7 +6,8 @@ import {
   CategoryAllocation,
   GET_BUDGETS,
   GET_CATEGORIES,
-  Group
+  Group,
+  SET_CATEGORIES
 } from '../types/budget';
 
 export const defaultState = {
@@ -58,6 +59,12 @@ export default function authentication(
         categoryAllocation: action.payload.categoryAllocations,
         categories: action.payload.categories,
         groups: action.payload.groups
+      };
+
+    case SET_CATEGORIES:
+      return {
+        ...state,
+        categories: action.payload.categories
       };
 
     default:
