@@ -34,7 +34,13 @@ const Budget: React.FC<RouteComponentProps> = () => {
       return;
     }
 
-    dispatch(changeCategoryPosition(draggableId, destination.index));
+    dispatch(
+      changeCategoryPosition(
+        draggableId,
+        destination.droppableId,
+        destination.index
+      )
+    );
   }
 
   return (

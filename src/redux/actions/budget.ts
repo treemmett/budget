@@ -67,6 +67,7 @@ export const allocateFunds = (
 
 export const changeCategoryPosition = (
   categoryId: string,
+  groupId: string,
   index: number
 ): ThunkAction<void, State, null, SetCategories> => (dispatch, getState) => {
   const { categories, selectedBudget } = getState().budget;
@@ -76,6 +77,8 @@ export const changeCategoryPosition = (
   if (!category) {
     throw new Error(`Category ID ${categoryId} not found.`);
   }
+
+  category.groupId = groupId;
 
   // resort categories in our group
   const groupCategories = categories
@@ -108,7 +111,7 @@ export const changeCategoryPosition = (
   axios({
     method: 'PATCH',
     url: `/budgets/${selectedBudget}/categories/${categoryId}`,
-    data: { index }
+    data: { group: groupId, index }
   });
 };
 
