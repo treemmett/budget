@@ -1,6 +1,7 @@
 import { LOGIN, LOGOUT, Login, Logout } from '../types/authentication';
 import { State } from '../store';
 import { ThunkAction } from 'redux-thunk';
+// eslint-disable-next-line import/no-cycle
 import axios from '../../utils/axios';
 
 export const login = (
@@ -44,6 +45,40 @@ export const logout = (): ThunkAction<
   dispatch({
     type: LOGOUT
   });
+};
+
+export const refreshSession = (): ThunkAction<
+  Promise<void>,
+  State,
+  null,
+  Login
+> => async dispatch => {
+  const json = localStorage.getItem('session');
+
+  if (json) {
+    const session = JSON.parse(json);
+
+    const { data } = await axios({
+      method: 'PATCH',
+      url: '/auth',
+      data: {
+        refreshToken: session.refreshToken
+      }
+    });
+
+    const payload = {
+      accessToken: data.accessToken,
+      expiresAt: new Date(Date.now() + data.expiresIn * 1000),
+      refreshToken: data.refreshToken
+    };
+
+    localStorage.setItem('session', JSON.stringify(payload));
+
+    dispatch({
+      type: LOGIN,
+      payload
+    });
+  }
 };
 
 export const register = (
