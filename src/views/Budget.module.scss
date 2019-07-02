@@ -10,6 +10,10 @@
   box-shadow: 0 5px 20px rgba(#000, 0.1);
   margin-bottom: 1.5em;
   border-radius: 5px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .head,
@@ -136,6 +140,10 @@
   grid-area: name;
   vertical-align: middle;
   align-self: center;
+}
+
+.category-list {
+  min-height: 1em;
 }
 
 .category-allocation {
