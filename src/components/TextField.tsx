@@ -17,7 +17,8 @@ type Type =
   | 'url'
   | 'week';
 
-const TextField: React.FC<{
+interface TextFieldProps {
+  autoFocus?: boolean;
   className?: string;
   defaultValue?: string;
   id?: string;
@@ -26,7 +27,10 @@ const TextField: React.FC<{
   required?: boolean;
   type?: Type;
   value?: string;
-}> = ({
+}
+
+const TextField: React.FC<TextFieldProps> = ({
+  autoFocus,
   className,
   defaultValue,
   id,
@@ -35,7 +39,7 @@ const TextField: React.FC<{
   required,
   type = 'text',
   value
-}) => {
+}: TextFieldProps) => {
   const [realId, setId] = useState(id);
   const [focus, setFocus] = useState(!!(value || defaultValue));
 
@@ -72,6 +76,7 @@ const TextField: React.FC<{
       htmlFor={realId}
     >
       <input
+        autoFocus={autoFocus}
         className={styles.input}
         defaultValue={defaultValue}
         id={realId}
@@ -86,34 +91,6 @@ const TextField: React.FC<{
       <div className={styles.border} />
     </label>
   );
-};
-
-TextField.propTypes = {
-  className: PT.string,
-  defaultValue: PT.string,
-  id: PT.string,
-  label: PT.string,
-  name: PT.string,
-  required: PT.bool,
-  type: PT.oneOf([
-    'date',
-    'datetime-local',
-    'email',
-    'month',
-    'number',
-    'password',
-    'search',
-    'tel',
-    'text',
-    'time',
-    'url',
-    'week'
-  ]),
-  value: PT.string
-};
-
-TextField.defaultProps = {
-  type: 'text'
 };
 
 export default TextField;

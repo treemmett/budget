@@ -14,16 +14,19 @@
   box-shadow: 0 8px 20px rgba($blue, 0.4);
   font-weight: 500;
   border: 1px solid $blue;
-  transition: all 0.2s ease;
+  transition: 0.2s ease;
+  transition-property: transform, background-color, box-shadow;
   outline: none;
 
   &:hover {
     transform: translateY(-1px);
+    box-shadow: 0 8px 20px 5px rgba($blue, 0.4);
   }
 
   &:active,
   &:focus {
     transform: translateY(1px);
     background-color: darken($blue, 2%);
+    box-shadow: 0 8px 10px rgba($blue, 0.4);
   }
 }

@@ -13,6 +13,11 @@ $border: 1px solid #e7e7ea;
   &:not(.split-field) {
     border-right: $border;
 
+    &,
+    .split {
+      box-shadow: 0 10px 20px rgba(#000, 0.03);
+    }
+
     &:last-of-type {
       border-bottom: $border;
       border-bottom-left-radius: 6px;
