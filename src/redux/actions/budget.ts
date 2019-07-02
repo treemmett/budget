@@ -12,7 +12,9 @@ import {
   GetCategories,
   Group,
   SET_CATEGORIES,
-  SetCategories
+  SET_TRANSACTIONS,
+  SetCategories,
+  SetTransactions
 } from '../types/budget';
 import { State } from '../store';
 import { ThunkAction } from 'redux-thunk';
@@ -221,4 +223,22 @@ export const getBudgets = (): ThunkAction<
     }
   });
   dispatch(getCategories(data[0].id));
+};
+
+export const getTransactions = (
+  budetId: string
+): ThunkAction<
+  Promise<void>,
+  State,
+  null,
+  SetTransactions
+> => async dispatch => {
+  const { data } = await axios({
+    url: `/budgets/${budetId}/transactions`
+  });
+
+  dispatch({
+    type: SET_TRANSACTIONS,
+    payload: data
+  });
 };

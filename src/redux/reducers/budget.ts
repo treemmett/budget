@@ -8,15 +8,18 @@ import {
   GET_BUDGETS,
   GET_CATEGORIES,
   Group,
-  SET_CATEGORIES
+  SET_CATEGORIES,
+  SET_TRANSACTIONS,
+  Transaction
 } from '../types/budget';
 
 export const defaultState = {
-  selectedBudget: '',
   budgets: [] as Budget[],
   categories: [] as Category[],
   categoryAllocation: [] as CategoryAllocation[],
-  groups: [] as Group[]
+  groups: [] as Group[],
+  selectedBudget: '',
+  transactions: [] as Transaction[]
 };
 
 export default function authentication(
@@ -72,6 +75,12 @@ export default function authentication(
       return {
         ...state,
         categories: action.payload.categories
+      };
+
+    case SET_TRANSACTIONS:
+      return {
+        ...state,
+        transactions: action.payload
       };
 
     default:

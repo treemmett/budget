@@ -3,6 +3,7 @@ export const ALLOCATE_FUNDS = 'ALLOCATE_FUNDS';
 export const GET_BUDGETS = 'GET_BUDGETS';
 export const GET_CATEGORIES = 'GET_CATEGORIES';
 export const SET_CATEGORIES = 'SET_CATEGORIES';
+export const SET_TRANSACTIONS = 'SET_TRANSACTIONS';
 
 export interface Budget {
   id: string;
@@ -27,6 +28,13 @@ export interface Group {
   id: string;
   name: string;
   budgetId: string;
+}
+
+export interface Transaction {
+  id: string;
+  description: string;
+  categoryId: string;
+  amount: number;
 }
 
 export interface AddCategory {
@@ -69,9 +77,15 @@ export interface SetCategories {
   };
 }
 
+export interface SetTransactions {
+  type: typeof SET_TRANSACTIONS;
+  payload: Transaction[];
+}
+
 export type BudgetActions =
   | AddCategory
   | AllocateFunds
   | GetBudgets
   | GetCategories
-  | SetCategories;
+  | SetCategories
+  | SetTransactions;
