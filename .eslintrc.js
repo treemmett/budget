@@ -19,6 +19,7 @@ module.exports = {
   rules: {
     'import/order': 0,
     'no-param-reassign': 0,
+    'jsx-a11y/no-autofocus': 0,
     'prettier/prettier': [2, { singleQuote: true }],
     'react/button-has-type': 0,
     'react/jsx-filename-extension': [2, { extensions: ['.tsx', '.jsx'] }],

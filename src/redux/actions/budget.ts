@@ -1,6 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 import {
+  ADD_CATEGORY,
   ALLOCATE_FUNDS,
+  AddCategory,
   AllocateFunds,
   Category,
   CategoryAllocation,
@@ -15,6 +17,32 @@ import {
 import { State } from '../store';
 import { ThunkAction } from 'redux-thunk';
 import axios from '../../utils/axios';
+
+export const addCategory = (
+  name: string,
+  groupId: string
+): ThunkAction<Promise<void>, State, null, AddCategory> => async (
+  dispatch,
+  getState
+) => {
+  const { selectedBudget } = getState().budget;
+
+  const { data } = await axios({
+    method: 'POST',
+    url: `/budgets/${selectedBudget}/groups/${groupId}/category`,
+    data: {
+      name
+    }
+  });
+
+  dispatch({
+    type: ADD_CATEGORY,
+    payload: {
+      ...data,
+      groupId
+    }
+  });
+};
 
 export const allocateFunds = (
   budgetId: string,

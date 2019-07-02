@@ -1,4 +1,5 @@
 import {
+  ADD_CATEGORY,
   ALLOCATE_FUNDS,
   Budget,
   BudgetActions,
@@ -23,6 +24,12 @@ export default function authentication(
   action: BudgetActions
 ): typeof defaultState {
   switch (action.type) {
+    case ADD_CATEGORY:
+      return {
+        ...state,
+        categories: [...state.categories, action.payload]
+      };
+
     case ALLOCATE_FUNDS: {
       if (action.payload.index) {
         return {

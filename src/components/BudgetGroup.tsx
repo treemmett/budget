@@ -1,9 +1,11 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import BudgetCategory from './BudgetCategory';
 import { Droppable } from 'react-beautiful-dnd';
+import Plus from './icons/Plus';
 import { State } from '../redux/store';
+import { addCategory } from '../redux/actions/budget';
 import styles from '../views/Budget.module.scss';
-import { useSelector } from 'react-redux';
 
 interface BudgetGroupProps {
   id: string;
@@ -11,7 +13,9 @@ interface BudgetGroupProps {
 }
 
 const BudgetGroup: FC<BudgetGroupProps> = ({ id, name }: BudgetGroupProps) => {
+  const dispatch = useDispatch();
   const allCategories = useSelector((state: State) => state.budget.categories);
+  const [inputVisible, setInput] = useState(false);
 
   const categories = useMemo(
     () =>
@@ -25,11 +29,42 @@ const BudgetGroup: FC<BudgetGroupProps> = ({ id, name }: BudgetGroupProps) => {
     [id, allCategories]
   );
 
+  function createCategory(e: React.KeyboardEvent): void {
+    if (e.keyCode !== 13) {
+      return;
+    }
+
+    const input = e.currentTarget as HTMLInputElement;
+
+    dispatch(addCategory(input.value, id));
+
+    setInput(false);
+  }
+
   return (
     <div className={styles.group}>
       <div className={styles.head}>
-        <div className={styles['group-name']}>{name}</div>
+        <div className={styles['group-name']}>
+          {name}
+          <button
+            className={styles.add}
+            type="button"
+            onClick={() => setInput(true)}
+          >
+            <Plus />
+          </button>
+        </div>
         <div className={styles.allocation}>Allocated</div>
+        {inputVisible && (
+          <div className={styles['category-input']}>
+            <input
+              autoFocus
+              onBlur={() => setInput(false)}
+              placeholder="New Category Name"
+              onKeyDown={createCategory}
+            />
+          </div>
+        )}
       </div>
       <div className={styles.border} />
 

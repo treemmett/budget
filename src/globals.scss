@@ -4,3 +4,12 @@ $font-stack: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen',
 
 $blue: #0082f9;
 $blue-gradient: linear-gradient(120deg, #00c6ff 0%, #00f2fe 100%);
+$purple-gradient: linear-gradient(#7c69f4, 0%, #5546f2 85%);
+$orange-gradient: linear-gradient(
+  to right top,
+  #c6578b,
+  #eb6c7c,
+  #ff8b6c,
+  #ffb161,
+  #fed966
+);
