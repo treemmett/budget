@@ -30,6 +30,7 @@ $border: 1px solid #e7e7ea;
     }
   }
 
+  &.active,
   &:focus-within {
     .label {
       color: $blue;
@@ -93,6 +94,7 @@ $border: 1px solid #e7e7ea;
   border: 0;
   box-sizing: border-box;
   font-size: 16px;
+  height: 4.3125em;
 }
 
 .label {
@@ -116,5 +118,82 @@ $border: 1px solid #e7e7ea;
   height: 100%;
   border: 1px solid $blue;
   opacity: 0;
+  pointer-events: none;
   border-radius: inherit;
+}
+
+.calendar-field {
+  input {
+    position: absolute;
+    color: red;
+  }
+}
+
+.calendar {
+  pointer-events: auto;
+  position: absolute;
+  top: 0%;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+  padding: 1em;
+  background-color: #fff;
+  box-shadow: 0 10px 20px rgba(#000, 0.2);
+  box-sizing: border-box;
+  border-radius: 6px;
+  cursor: auto;
+  user-select: none;
+
+  .selector {
+    font-weight: 500;
+    margin-bottom: 1em;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    .text {
+      width: 7.5em;
+      text-align: center;
+    }
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(7, auto);
+    grid-gap: 1px;
+
+    .weekday,
+    .day {
+      text-align: center;
+      padding: 2px 0;
+    }
+
+    .weekday {
+      font-weight: 500;
+    }
+
+    .day {
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin: 1px;
+      outline: none;
+      width: 100%;
+      border: 2px solid transparent;
+
+      &.today {
+        border-color: $blue;
+      }
+
+      &:focus,
+      &:hover {
+        background-color: darken(#fff, 5%);
+      }
+
+      &.selected {
+        background-color: lighten($blue, 40%);
+      }
+    }
+  }
 }

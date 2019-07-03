@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getBudgets, getTransactions } from '../redux/actions/budget';
 import { useDispatch, useSelector } from 'react-redux';
 import Btn from '../components/Btn';
+import DateField from '../components/DateField';
 import Fab from '../components/Fab';
 import { RouteComponentProps } from '@reach/router';
 import { State } from '../redux/store';
@@ -10,7 +11,7 @@ import styles from './Transactions.module.scss';
 
 const Transactions: React.FC<RouteComponentProps> = () => {
   const dispatch = useDispatch();
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(true);
   const budget = useSelector((state: State) => state.budget.selectedBudget);
   const transactions = useSelector((state: State) => state.budget.transactions);
 
@@ -39,7 +40,7 @@ const Transactions: React.FC<RouteComponentProps> = () => {
                 required
                 autoFocus
               />
-              <TextField label="Date" name="date" required />
+              <DateField label="Date" name="date" required />
               <TextField label="Amount" name="amount" required />
               <TextField label="Category" name="category" required />
               <Btn label="Save Category" type="submit" />
