@@ -1,8 +1,10 @@
 /* eslint-disable import/prefer-default-export */
 import {
   ADD_CATEGORY,
+  ADD_TRANSACTION,
   ALLOCATE_FUNDS,
   AddCategory,
+  AddTransaction,
   AllocateFunds,
   Category,
   CategoryAllocation,
@@ -43,6 +45,33 @@ export const addCategory = (
       ...data,
       groupId
     }
+  });
+};
+
+export const addTransaction = (
+  description: string,
+  date: string,
+  amount: number,
+  categoryId: string
+): ThunkAction<Promise<void>, State, null, AddTransaction> => async (
+  dispatch,
+  getState
+) => {
+  const { selectedBudget } = getState().budget;
+
+  const { data } = await axios({
+    method: 'POST',
+    url: `/budgets/${selectedBudget}/categories/${categoryId}/transactions`,
+    data: {
+      amount,
+      date,
+      description
+    }
+  });
+
+  dispatch({
+    type: ADD_TRANSACTION,
+    payload: data
   });
 };
 

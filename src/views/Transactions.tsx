@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { getBudgets, getTransactions } from '../redux/actions/budget';
+import {
+  addTransaction,
+  getBudgets,
+  getTransactions
+} from '../redux/actions/budget';
 import { useDispatch, useSelector } from 'react-redux';
 import Btn from '../components/Btn';
 import DateField from '../components/DateField';
@@ -12,7 +16,7 @@ import styles from './Transactions.module.scss';
 
 const Transactions: React.FC<RouteComponentProps> = () => {
   const dispatch = useDispatch();
-  const [showForm, setShowForm] = useState(true);
+  const [showForm, setShowForm] = useState(false);
   const budget = useSelector((state: State) => state.budget.selectedBudget);
   const transactions = useSelector((state: State) => state.budget.transactions);
   const categories = useSelector((state: State) => state.budget.categories);
@@ -25,6 +29,26 @@ const Transactions: React.FC<RouteComponentProps> = () => {
     }
   }, [budget, dispatch]);
 
+  async function saveTransaction(
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> {
+    e.preventDefault();
+
+    const { description, date, amount, category } = (e.currentTarget
+      .elements as unknown) as { [key: string]: HTMLInputElement };
+
+    await dispatch(
+      addTransaction(
+        description.value,
+        date.value,
+        Number(amount.value.replace(/[?!.]\D/g, '')),
+        category.value
+      )
+    );
+
+    setShowForm(false);
+  }
+
   return (
     <div className={styles.transactions}>
       {showForm && (
@@ -35,7 +59,7 @@ const Transactions: React.FC<RouteComponentProps> = () => {
             className={styles.form}
             onClick={(e: React.SyntheticEvent) => e.stopPropagation()}
           >
-            <form>
+            <form onSubmit={saveTransaction}>
               <TextField
                 label="Description"
                 name="description"

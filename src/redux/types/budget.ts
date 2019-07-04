@@ -1,4 +1,5 @@
 export const ADD_CATEGORY = 'ADD_CATEGORY';
+export const ADD_TRANSACTION = 'ADD_TRANSACTION';
 export const ALLOCATE_FUNDS = 'ALLOCATE_FUNDS';
 export const GET_BUDGETS = 'GET_BUDGETS';
 export const GET_CATEGORIES = 'GET_CATEGORIES';
@@ -40,6 +41,11 @@ export interface Transaction {
 export interface AddCategory {
   type: typeof ADD_CATEGORY;
   payload: Category;
+}
+
+export interface AddTransaction {
+  type: typeof ADD_TRANSACTION;
+  payload: Transaction;
 }
 
 export interface AllocateFunds {
@@ -84,6 +90,7 @@ export interface SetTransactions {
 
 export type BudgetActions =
   | AddCategory
+  | AddTransaction
   | AllocateFunds
   | GetBudgets
   | GetCategories

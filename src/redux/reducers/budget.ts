@@ -1,5 +1,6 @@
 import {
   ADD_CATEGORY,
+  ADD_TRANSACTION,
   ALLOCATE_FUNDS,
   Budget,
   BudgetActions,
@@ -31,6 +32,12 @@ export default function authentication(
       return {
         ...state,
         categories: [...state.categories, action.payload]
+      };
+
+    case ADD_TRANSACTION:
+      return {
+        ...state,
+        transactions: [...state.transactions, action.payload]
       };
 
     case ALLOCATE_FUNDS: {
