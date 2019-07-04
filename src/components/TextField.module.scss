@@ -44,7 +44,7 @@ $border: 1px solid #e7e7ea;
   &.focus,
   &:focus-within {
     .label {
-      transform: translateY(-110%);
+      transform: translateY(-19px);
       font-size: 13px;
     }
   }
@@ -120,6 +120,7 @@ $border: 1px solid #e7e7ea;
   opacity: 0;
   pointer-events: none;
   border-radius: inherit;
+  transition: opacity 0.15s ease;
 }
 
 .calendar-field {
