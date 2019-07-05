@@ -1,6 +1,6 @@
 .transactions {
   position: relative;
-  padding: 0 2em;
+  height: calc(100vh - 3.5em);
 }
 
 .shadow {
@@ -21,4 +21,12 @@
   margin-left: auto;
   box-shadow: 0 5px 20px rgba(#000, 0.1);
   box-sizing: border-box;
+}
+
+.transaction {
+  background-color: #fff;
+  box-shadow: 0 5px 20px rgba(#000, 0.1);
+  border-radius: 4px;
+  padding: 1em;
+  margin: 2em;
 }

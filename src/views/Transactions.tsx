@@ -1,3 +1,8 @@
+import {
+  FixedSizeList as List,
+  ListChildComponentProps,
+  areEqual
+} from 'react-window';
 import React, { useEffect, useState } from 'react';
 import {
   addTransaction,
@@ -5,7 +10,9 @@ import {
   getTransactions
 } from '../redux/actions/budget';
 import { useDispatch, useSelector } from 'react-redux';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import Btn from '../components/Btn';
+import { Category } from '../redux/types/budget';
 import DateField from '../components/DateField';
 import Fab from '../components/Fab';
 import { RouteComponentProps } from '@reach/router';
@@ -49,8 +56,38 @@ const Transactions: React.FC<RouteComponentProps> = () => {
     setShowForm(false);
   }
 
+  const Row = React.memo<ListChildComponentProps>(
+    ({ style, index }: ListChildComponentProps) => {
+      const transaction = transactions[index];
+      const category = categories.find(
+        c => c.id === transaction.categoryId
+      ) as Category;
+
+      return (
+        <div style={style} className={styles['transaction-wrapper']}>
+          <div className={styles.transaction}>
+            {transaction.description} - {category.name}
+          </div>
+        </div>
+      );
+    },
+    areEqual
+  );
+
   return (
     <div className={styles.transactions}>
+      <AutoSizer>
+        {({ height, width }) => (
+          <List
+            height={height}
+            width={width}
+            itemCount={transactions.length}
+            itemSize={67}
+          >
+            {Row}
+          </List>
+        )}
+      </AutoSizer>
       {showForm && (
         // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
         <div className={styles.shadow} onClick={() => setShowForm(false)}>
@@ -79,11 +116,6 @@ const Transactions: React.FC<RouteComponentProps> = () => {
           </div>
         </div>
       )}
-      {transactions.map(t => (
-        <div key={t.id}>
-          {t.amount} {t.description}
-        </div>
-      ))}
       <Fab onClick={() => setShowForm(true)} />
     </div>
   );
