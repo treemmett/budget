@@ -19,7 +19,7 @@ export interface Category {
 }
 
 export interface CategoryAllocation {
-  amount: string;
+  amount: number;
   categoryId: string;
   month: number;
   year: number;
@@ -51,7 +51,7 @@ export interface AddTransaction {
 export interface AllocateFunds {
   type: typeof ALLOCATE_FUNDS;
   payload: {
-    amount: string;
+    amount: number;
     categoryId: string;
     month: number;
     year: number;

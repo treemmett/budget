@@ -9,6 +9,7 @@ import {
   getBudgets,
   getTransactions
 } from '../redux/actions/budget';
+import formatCurrency, { parseCurrency } from '../utils/formatCurrency';
 import { useDispatch, useSelector } from 'react-redux';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import Btn from '../components/Btn';
@@ -48,7 +49,7 @@ const Transactions: React.FC<RouteComponentProps> = () => {
       addTransaction(
         description.value,
         date.value,
-        Number(amount.value.replace(/[?!.]\D/g, '')),
+        parseCurrency(amount.value),
         category.value
       )
     );
@@ -104,7 +105,12 @@ const Transactions: React.FC<RouteComponentProps> = () => {
                 autoFocus
               />
               <DateField label="Date" name="date" required />
-              <TextField label="Amount" name="amount" required />
+              <TextField
+                label="Amount"
+                name="amount"
+                mask={formatCurrency}
+                required
+              />
               <SelectField
                 label="Category"
                 name="category"

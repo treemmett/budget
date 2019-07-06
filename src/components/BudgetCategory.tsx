@@ -1,8 +1,8 @@
-import React, { FC, SyntheticEvent, useMemo } from 'react';
+import React, { FC, SyntheticEvent, useEffect, useState } from 'react';
+import formatCurrency, { parseCurrency } from '../utils/formatCurrency';
 import { useDispatch, useSelector } from 'react-redux';
 import DragHandle from './icons/DragHandle';
 import { Draggable } from 'react-beautiful-dnd';
-import MoneyInput from './MoneyInput';
 import { State } from '../redux/store';
 import { allocateFunds } from '../redux/actions/budget';
 import styles from '../views/Budget.module.scss';
@@ -25,25 +25,26 @@ const BudgetCategory: FC<BudgetCategoryProps> = ({
   );
   const month = new Date().getMonth();
   const year = new Date().getFullYear();
+  const [value, setValue] = useState('');
 
-  const amount = useMemo(() => {
+  useEffect(() => {
     const allocated = allocations.find(
       a => a.categoryId === id && a.month === month && a.year === year
     );
 
-    return allocated ? allocated.amount : '0.00';
+    if (allocated) {
+      setValue(allocated.amount.toString());
+    } else {
+      setValue('0.00');
+    }
   }, [allocations, id, month, year]);
 
-  function onChange(e: SyntheticEvent): void {
-    dispatch(
-      allocateFunds(
-        budgetId,
-        id,
-        (e.target as HTMLInputElement).value,
-        month,
-        year
-      )
-    );
+  function onChange(e: SyntheticEvent<HTMLInputElement>): void {
+    const formatted = formatCurrency((e.target as HTMLInputElement).value);
+    setValue(formatted);
+
+    const parsed = parseCurrency(formatted);
+    dispatch(allocateFunds(budgetId, id, parsed, month, year));
   }
 
   return (
@@ -58,9 +59,9 @@ const BudgetCategory: FC<BudgetCategoryProps> = ({
             <DragHandle />
           </div>
           <div className={styles['category-name']}>{name}</div>
-          <MoneyInput
+          <input
             className={styles['category-allocation']}
-            value={amount}
+            value={formatCurrency(value)}
             onChange={onChange}
           />
         </div>

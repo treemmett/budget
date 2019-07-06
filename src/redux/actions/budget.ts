@@ -78,20 +78,18 @@ export const addTransaction = (
 export const allocateFunds = (
   budgetId: string,
   categoryId: string,
-  amount: string,
+  amount: number,
   month: number,
   year: number
 ): ThunkAction<Promise<void>, State, null, AllocateFunds> => async (
   dispatch,
   getState
 ) => {
-  const str = amount.replace(/\D/gi, '');
-  const num = Number(str) / 100;
   await axios({
     method: 'PUT',
     url: `/budgets/${budgetId}/categories/${categoryId}/${year}/${month}`,
     data: {
-      amount: num.toString()
+      amount
     }
   });
 
@@ -99,7 +97,7 @@ export const allocateFunds = (
     categoryId: string;
     month: number;
     year: number;
-    amount: string;
+    amount: number;
     index?: number;
   } = {
     categoryId,
@@ -189,7 +187,7 @@ export const getCategories = (
       name: string;
       budgetId?: string;
       categories: {
-        amount: string;
+        amount: number;
         id: string;
         name: string;
         sort: number;

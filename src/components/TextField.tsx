@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PT from 'prop-types';
 import cx from 'classnames';
+import randomString from '../utils/randomString';
 import styles from './TextField.module.scss';
 
 type Type =
@@ -23,6 +24,7 @@ interface TextFieldProps {
   defaultValue?: string;
   id?: string;
   label?: string;
+  mask?: (input: string) => string | number;
   name?: string;
   required?: boolean;
   type?: Type;
@@ -35,38 +37,41 @@ const TextField: React.FC<TextFieldProps> = ({
   defaultValue,
   id,
   label,
+  mask,
   name,
   required,
   type = 'text',
   value
 }: TextFieldProps) => {
-  const [realId, setId] = useState(id);
-  const [focus, setFocus] = useState(!!(value || defaultValue));
+  const [focus, setFocus] = useState(
+    mask ? !!mask(value || defaultValue || '') : !!(value || defaultValue)
+  );
+  const [renderedValue, setValue] = useState(value || '');
+  const realId = useMemo(() => id || `input-${randomString()}`, [id]);
 
   useEffect(() => {
-    if (!id) {
-      setId(
-        `input-${btoa((Date.now() * Math.random()).toString()).replace(
-          /=/g,
-          ''
-        )}`
-      );
+    const newFocus = mask
+      ? !!mask(value || defaultValue || '')
+      : !!(value || defaultValue);
+
+    if (newFocus !== focus) {
+      setFocus(newFocus);
     }
-  }, [id]);
+  }, [value, defaultValue, mask, focus]);
 
-  useEffect(() => {
-    setFocus(!!(value || defaultValue));
-  }, [value, defaultValue]);
+  function changeHandler(e: React.SyntheticEvent<HTMLInputElement>): void {
+    setValue(value || e.currentTarget.value);
+  }
 
   function onFocus(): void {
     setFocus(true);
   }
 
-  function onBlur(e: React.SyntheticEvent): void {
-    const input = e.target as HTMLInputElement;
+  function onBlur(e: React.SyntheticEvent<HTMLInputElement>): void {
+    const newFocus = !!e.currentTarget.value.trim();
 
-    if (!input.value.trim()) {
-      setFocus(false);
+    if (newFocus !== focus) {
+      setFocus(newFocus);
     }
   }
 
@@ -81,11 +86,12 @@ const TextField: React.FC<TextFieldProps> = ({
         defaultValue={defaultValue}
         id={realId}
         name={name}
+        onChange={changeHandler}
         onBlur={onBlur}
         onFocus={onFocus}
         required={required}
         type={type}
-        value={value}
+        value={mask ? mask(renderedValue) : renderedValue}
       />
       <div className={styles.label}>{label}</div>
       <div className={styles.border} />
