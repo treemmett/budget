@@ -4,6 +4,7 @@ export const ALLOCATE_FUNDS = 'ALLOCATE_FUNDS';
 export const GET_BUDGETS = 'GET_BUDGETS';
 export const GET_CATEGORIES = 'GET_CATEGORIES';
 export const SET_CATEGORIES = 'SET_CATEGORIES';
+export const SET_GROUPS = 'SET_GROUPS';
 export const SET_TRANSACTIONS = 'SET_TRANSACTIONS';
 
 export interface Budget {
@@ -29,6 +30,7 @@ export interface Group {
   id: string;
   name: string;
   budgetId: string;
+  sort: number;
 }
 
 export interface Transaction {
@@ -83,6 +85,13 @@ export interface SetCategories {
   };
 }
 
+export interface SetGroups {
+  type: typeof SET_GROUPS;
+  payload: {
+    groups: Group[];
+  };
+}
+
 export interface SetTransactions {
   type: typeof SET_TRANSACTIONS;
   payload: Transaction[];
@@ -95,4 +104,5 @@ export type BudgetActions =
   | GetBudgets
   | GetCategories
   | SetCategories
+  | SetGroups
   | SetTransactions;

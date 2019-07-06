@@ -14,8 +14,10 @@ import {
   GetCategories,
   Group,
   SET_CATEGORIES,
+  SET_GROUPS,
   SET_TRANSACTIONS,
   SetCategories,
+  SetGroups,
   SetTransactions
 } from '../types/budget';
 import { State } from '../store';
@@ -137,7 +139,7 @@ export const changeCategoryPosition = (
 
   category.groupId = groupId;
 
-  // resort categories in our group
+  // resort categories in the groups
   const groupCategories = categories
     .filter(c => c.groupId === category.groupId)
     .sort((a, b) => {
@@ -172,6 +174,45 @@ export const changeCategoryPosition = (
   });
 };
 
+export const changeGroupPosition = (
+  groupId: string,
+  index: number
+): ThunkAction<void, State, null, SetGroups> => (dispatch, getState) => {
+  const { groups, selectedBudget } = getState().budget;
+
+  // resort groups in the budget
+  const budgetGroups = groups
+    .filter(g => g.budgetId === selectedBudget)
+    .sort((a, b) => {
+      if (a.sort > b.sort) return 1;
+      if (a.sort < b.sort) return -1;
+      return 0;
+    });
+  const groupIndex = budgetGroups.findIndex(g => g.id === groupId);
+  const [splicedGroup] = budgetGroups.splice(groupIndex, 1);
+  budgetGroups.splice(index, 0, splicedGroup);
+
+  // get categories that aren't being resorted
+  const otherGroups = groups.filter(g => g.budgetId !== selectedBudget);
+
+  dispatch({
+    type: SET_GROUPS,
+    payload: {
+      groups: [
+        ...otherGroups,
+        ...budgetGroups.map((c, i) => ({ ...c, sort: i }))
+      ]
+    }
+  });
+
+  // send update request
+  axios({
+    method: 'PATCH',
+    url: `/budgets/${selectedBudget}/groups/${groupId}`,
+    data: { index }
+  });
+};
+
 export const getCategories = (
   budgetId: string
 ): ThunkAction<Promise<void>, State, null, GetCategories> => async dispatch => {
@@ -185,6 +226,7 @@ export const getCategories = (
     groups: {
       id: string;
       name: string;
+      sort: number;
       budgetId?: string;
       categories: {
         amount: number;
@@ -214,7 +256,12 @@ export const getCategories = (
         };
       });
 
-      acc[0].push({ budgetId, id: group.id, name: group.name });
+      acc[0].push({
+        budgetId,
+        id: group.id,
+        name: group.name,
+        sort: group.sort
+      });
       acc[1].push(...cs);
 
       return acc;

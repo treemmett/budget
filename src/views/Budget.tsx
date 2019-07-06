@@ -1,6 +1,10 @@
-import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, DropResult, Droppable } from 'react-beautiful-dnd';
 import React, { useEffect, useMemo } from 'react';
-import { changeCategoryPosition, getBudgets } from '../redux/actions/budget';
+import {
+  changeCategoryPosition,
+  changeGroupPosition,
+  getBudgets
+} from '../redux/actions/budget';
 import { useDispatch, useSelector } from 'react-redux';
 import BudgetGroup from '../components/BudgetGroup';
 import { RouteComponentProps } from '@reach/router';
@@ -10,11 +14,18 @@ import styles from './Budget.module.scss';
 const Budget: React.FC<RouteComponentProps> = () => {
   const dispatch = useDispatch();
   const budgetId = useSelector((state: State) => state.budget.selectedBudget);
-  const groups = useSelector((state: State) => state.budget.groups);
+  const allGroups = useSelector((state: State) => state.budget.groups);
 
-  const budgetGroups = useMemo(
-    () => groups.filter(g => g.budgetId === budgetId),
-    [budgetId, groups]
+  const groups = useMemo(
+    () =>
+      allGroups
+        .filter(g => g.budgetId === budgetId)
+        .sort((a, b) => {
+          if (a.sort > b.sort) return 1;
+          if (a.sort < b.sort) return -1;
+          return 0;
+        }),
+    [budgetId, allGroups]
   );
 
   useEffect(() => {
@@ -34,23 +45,36 @@ const Budget: React.FC<RouteComponentProps> = () => {
       return;
     }
 
-    dispatch(
-      changeCategoryPosition(
-        draggableId,
-        destination.droppableId,
-        destination.index
-      )
-    );
+    if (result.type === 'category') {
+      dispatch(
+        changeCategoryPosition(
+          draggableId,
+          destination.droppableId,
+          destination.index
+        )
+      );
+    } else if (result.type === 'group') {
+      dispatch(changeGroupPosition(draggableId, destination.index));
+    }
   }
 
   return (
-    <div className={styles['budget-list']}>
-      <DragDropContext onDragEnd={onDragEnd}>
-        {budgetGroups.map(g => (
-          <BudgetGroup key={g.id} id={g.id} name={g.name} />
-        ))}
-      </DragDropContext>
-    </div>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable droppableId="budget" type="group">
+        {provided => (
+          <div
+            className={styles['budget-list']}
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+          >
+            {groups.map((g, i) => (
+              <BudgetGroup key={g.id} id={g.id} index={i} name={g.name} />
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 };
 

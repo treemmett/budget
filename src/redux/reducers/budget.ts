@@ -10,6 +10,7 @@ import {
   GET_CATEGORIES,
   Group,
   SET_CATEGORIES,
+  SET_GROUPS,
   SET_TRANSACTIONS,
   Transaction
 } from '../types/budget';
@@ -82,6 +83,12 @@ export default function authentication(
       return {
         ...state,
         categories: action.payload.categories
+      };
+
+    case SET_GROUPS:
+      return {
+        ...state,
+        groups: action.payload.groups
       };
 
     case SET_TRANSACTIONS:

@@ -48,7 +48,7 @@ const BudgetCategory: FC<BudgetCategoryProps> = ({
   }
 
   return (
-    <Draggable draggableId={id} index={index}>
+    <Draggable draggableId={id} index={index} type="category">
       {provided => (
         <div
           {...provided.draggableProps}
