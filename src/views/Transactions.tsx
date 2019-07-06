@@ -28,6 +28,7 @@ const Transactions: React.FC<RouteComponentProps> = () => {
   const budget = useSelector((state: State) => state.budget.selectedBudget);
   const transactions = useSelector((state: State) => state.budget.transactions);
   const categories = useSelector((state: State) => state.budget.categories);
+  const groups = useSelector((state: State) => state.budget.groups);
 
   useEffect(() => {
     if (budget) {
@@ -114,7 +115,24 @@ const Transactions: React.FC<RouteComponentProps> = () => {
               <SelectField
                 label="Category"
                 name="category"
-                options={categories.map(c => ({ label: c.name, value: c.id }))}
+                options={categories
+                  .sort((a, b) => {
+                    if (a.sort > b.sort) return 1;
+                    if (a.sort < b.sort) return -1;
+                    return 0;
+                  })
+                  .map(c => ({
+                    label: c.name,
+                    value: c.id,
+                    group: c.groupId
+                  }))}
+                groups={groups
+                  .sort((a, b) => {
+                    if (a.sort > b.sort) return 1;
+                    if (a.sort < b.sort) return -1;
+                    return 0;
+                  })
+                  .map(g => ({ id: g.id, label: g.name }))}
                 required
               />
               <Btn label="Save Transaction" type="submit" />
