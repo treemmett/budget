@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import Chevron from './icons/Chevron';
 import cx from 'classnames';
 import inputStyles from './TextField.module.scss';
@@ -51,17 +51,55 @@ const SelectField: React.FC<SelectFieldProps> = ({
   const [focus, setFocus] = useState(false);
   const [renderedValueName, setValueName] = useState('');
   const [renderedLabel, setLabel] = useState('');
+  const [search, setSearch] = useState('');
   const [focusedValue, setFocusedValue] = useState(-1);
-  const [renderedId, setId] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const fakeId = useRef<string>(`select=${randomString()}`);
 
   const items = useMemo(() => {
     let totalOptions = -1;
 
+    const regex = new RegExp(search, 'i');
+
+    const filteredGroups =
+      search && groups
+        ? groups.filter(g => {
+            if (regex.test(g.label)) {
+              return true;
+            }
+
+            const groupOptions = options.filter(
+              o => o.group && o.group === g.id
+            );
+
+            return groupOptions.some(o => regex.test(o.label || o.value));
+          })
+        : groups;
+
+    const filteredOptions = search
+      ? options.filter(o => {
+          // check if option matches result
+          if (regex.test(o.label || o.value)) {
+            // option matches, check if we need
+            return true;
+          }
+
+          // check if option is part of a matched group
+          if (o.group && groups) {
+            const group = groups.find(g => g.id === o.group);
+
+            return group && regex.test(group.label);
+          }
+
+          return false;
+        })
+      : options;
+
     const returnValue: (GroupItem | OptionItem)[] = [];
+
     // add items that don't have a group first
     returnValue.push(
-      ...options
+      ...filteredOptions
         .filter(o => !o.group)
         .map(o => {
           totalOptions += 1;
@@ -77,11 +115,11 @@ const SelectField: React.FC<SelectFieldProps> = ({
         })
     );
 
-    if (!groups) {
+    if (!filteredGroups) {
       return returnValue;
     }
 
-    groups.forEach(g => {
+    filteredGroups.forEach(g => {
       returnValue.push({
         group: true,
         id: g.id,
@@ -89,7 +127,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
       });
 
       returnValue.push(
-        ...options
+        ...filteredOptions
           .filter(o => o.group && o.group === g.id)
           .map(o => {
             totalOptions += 1;
@@ -107,11 +145,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
     });
 
     return returnValue;
-  }, [groups, options]);
-
-  useEffect(() => {
-    setId(id || `select-${randomString()}`);
-  }, [id]);
+  }, [groups, options, search]);
 
   function onFocus(): void {
     setShowDropdown(true);
@@ -153,26 +187,25 @@ const SelectField: React.FC<SelectFieldProps> = ({
     setValueName(value.value);
     setLabel(value.label || value.value);
     setFocus(!!value);
+    setSearch('');
     setShowDropdown(false);
     const input = inputRef.current as HTMLInputElement;
     input.blur();
   }
 
-  function onKeyDown(e: React.KeyboardEvent): void {
+  function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>): void {
     switch (e.key) {
       case 'ArrowDown':
-      case 'ArrowRight':
         focusValue('next');
-        return;
+        break;
 
       case 'ArrowUp':
-      case 'ArrowLeft':
         focusValue('prev');
-        return;
+        break;
 
       case 'Enter':
         selectOption();
-        return;
+        break;
 
       case 'Escape': {
         setShowDropdown(false);
@@ -182,9 +215,12 @@ const SelectField: React.FC<SelectFieldProps> = ({
       }
 
       default:
-        e.preventDefault();
         break;
     }
+  }
+
+  function handleSearch(e: React.SyntheticEvent<HTMLInputElement>): void {
+    setSearch(e.currentTarget.value);
   }
 
   return (
@@ -192,7 +228,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
       className={cx(inputStyles.field, styles.field, {
         [inputStyles.focus]: focus
       })}
-      htmlFor={renderedId}
+      htmlFor={fakeId.current}
       onMouseDown={e => e.preventDefault()}
       onClick={e => {
         e.preventDefault();
@@ -204,23 +240,26 @@ const SelectField: React.FC<SelectFieldProps> = ({
         }
       }}
     >
-      <div className={cx(inputStyles.input, styles.display)}>
-        {renderedLabel}
-      </div>
+      <input
+        className={inputStyles.input}
+        id={fakeId.current}
+        onBlur={onBlur}
+        onFocus={onFocus}
+        onKeyDown={onKeyDown}
+        onChange={handleSearch}
+        value={showDropdown ? search : renderedLabel}
+        ref={inputRef}
+      />
       <div className={styles.indicator}>
         <Chevron />
       </div>
       <div className={inputStyles.label}>{label}</div>
       <input
         className={styles.input}
-        id={renderedId}
+        id={id}
         name={name}
-        onBlur={onBlur}
-        onChange={selectOption}
-        onFocus={onFocus}
-        onKeyDown={onKeyDown}
-        ref={inputRef}
         required={required}
+        onChange={selectOption}
         value={renderedValueName}
       />
       {showDropdown && (
