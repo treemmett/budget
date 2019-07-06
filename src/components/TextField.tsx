@@ -54,10 +54,8 @@ const TextField: React.FC<TextFieldProps> = ({
       ? !!mask(value || defaultValue || '')
       : !!(value || defaultValue);
 
-    if (newFocus !== focus) {
-      setFocus(newFocus);
-    }
-  }, [value, defaultValue, mask, focus]);
+    setFocus(newFocus);
+  }, [value, defaultValue, mask]);
 
   function changeHandler(e: React.SyntheticEvent<HTMLInputElement>): void {
     setValue(value || e.currentTarget.value);
