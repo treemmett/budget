@@ -9,6 +9,7 @@ import {
   getBudgets,
   getTransactions
 } from '../redux/actions/budget';
+import { animated, useTransition } from 'react-spring';
 import formatCurrency, { parseCurrency } from '../utils/formatCurrency';
 import { useDispatch, useSelector } from 'react-redux';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -29,6 +30,36 @@ const Transactions: React.FC<RouteComponentProps> = () => {
   const transactions = useSelector((state: State) => state.budget.transactions);
   const categories = useSelector((state: State) => state.budget.categories);
   const groups = useSelector((state: State) => state.budget.groups);
+  const menuTransition = useTransition(showForm, null, {
+    from: {
+      transform: 'translateX(100%)'
+    },
+    enter: {
+      transform: 'translateX(0%)'
+    },
+    leave: {
+      transform: 'translateX(100%)'
+    },
+    config: {
+      tension: 270,
+      friction: 30
+    }
+  });
+  const shadowTransition = useTransition(showForm, null, {
+    from: {
+      backgroundColor: 'rgba(0, 0, 0, 0)'
+    },
+    enter: {
+      backgroundColor: 'rgba(0, 0, 0, 0.4)'
+    },
+    leave: {
+      backgroundColor: 'rgba(0, 0, 0, 0)'
+    },
+    config: {
+      tension: 270,
+      friction: 30
+    }
+  });
 
   useEffect(() => {
     if (budget) {
@@ -90,55 +121,70 @@ const Transactions: React.FC<RouteComponentProps> = () => {
           </List>
         )}
       </AutoSizer>
-      {showForm && (
-        // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-        <div className={styles.shadow} onClick={() => setShowForm(false)}>
-          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-          <div
-            className={styles.form}
-            onClick={(e: React.SyntheticEvent) => e.stopPropagation()}
-          >
-            <form onSubmit={saveTransaction}>
-              <TextField
-                label="Description"
-                name="description"
-                required
-                autoFocus
-              />
-              <DateField label="Date" name="date" required />
-              <TextField
-                label="Amount"
-                name="amount"
-                mask={formatCurrency}
-                required
-              />
-              <SelectField
-                label="Category"
-                name="category"
-                options={categories
-                  .sort((a, b) => {
-                    if (a.sort > b.sort) return 1;
-                    if (a.sort < b.sort) return -1;
-                    return 0;
-                  })
-                  .map(c => ({
-                    label: c.name,
-                    value: c.id,
-                    group: c.groupId
-                  }))}
-                groups={groups
-                  .sort((a, b) => {
-                    if (a.sort > b.sort) return 1;
-                    if (a.sort < b.sort) return -1;
-                    return 0;
-                  })
-                  .map(g => ({ id: g.id, label: g.name }))}
-                required
-              />
-              <Btn label="Save Transaction" type="submit" />
-            </form>
-          </div>
-        </div>
+      {shadowTransition.map(
+        ({ item, key, props }) =>
+          item && (
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+            <animated.div
+              key={key}
+              style={props}
+              className={styles.shadow}
+              onClick={() => setShowForm(false)}
+            >
+              {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+              {menuTransition.map(
+                menuTran =>
+                  menuTran.item && (
+                    <animated.div
+                      key={menuTran.key}
+                      style={menuTran.props}
+                      className={styles.form}
+                      onClick={(e: React.SyntheticEvent) => e.stopPropagation()}
+                    >
+                      <form onSubmit={saveTransaction}>
+                        <TextField
+                          label="Description"
+                          name="description"
+                          required
+                          autoFocus
+                        />
+                        <DateField label="Date" name="date" required />
+                        <TextField
+                          label="Amount"
+                          name="amount"
+                          mask={formatCurrency}
+                          required
+                        />
+                        <SelectField
+                          label="Category"
+                          name="category"
+                          options={categories
+                            .sort((a, b) => {
+                              if (a.sort > b.sort) return 1;
+                              if (a.sort < b.sort) return -1;
+                              return 0;
+                            })
+                            .map(c => ({
+                              label: c.name,
+                              value: c.id,
+                              group: c.groupId
+                            }))}
+                          groups={groups
+                            .sort((a, b) => {
+                              if (a.sort > b.sort) return 1;
+                              if (a.sort < b.sort) return -1;
+                              return 0;
+                            })
+                            .map(g => ({ id: g.id, label: g.name }))}
+                          required
+                        />
+                        <Btn label="Save Transaction" type="submit" />
+                      </form>
+                    </animated.div>
+                  )
+              )}
+            </animated.div>
+          )
       )}
       <Fab onClick={() => setShowForm(true)} />
     </div>
