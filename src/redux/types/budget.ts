@@ -35,6 +35,7 @@ export interface Group {
 
 export interface Transaction {
   id: string;
+  date: string;
   description: string;
   categoryId: string;
   amount: number;

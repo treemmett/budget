@@ -6,7 +6,11 @@ const formatter = new Intl.NumberFormat('en-US', {
 });
 
 const formatCurrency = (input: string | number): string => {
-  const i = input.toString().replace(/\D/gi, '');
+  if (input.toString() && input.toString().indexOf('.') === -1) {
+    return formatter.format(parseInt(input.toString(), 10));
+  }
+
+  const i = input.toString().replace(/[^0-9-]/gi, '');
 
   const number = Number(i) / 100;
 

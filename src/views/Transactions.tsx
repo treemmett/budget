@@ -3,7 +3,7 @@ import {
   ListChildComponentProps,
   areEqual
 } from 'react-window';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import TextField, { SplitInputs } from '../components/TextField';
 import {
   addTransaction,
@@ -22,13 +22,25 @@ import Radio from '../components/Radio';
 import { RouteComponentProps } from '@reach/router';
 import SelectField from '../components/SelectField';
 import { State } from '../redux/store';
+import cx from 'classnames';
 import styles from './Transactions.module.scss';
 
 const Transactions: React.FC<RouteComponentProps> = () => {
   const dispatch = useDispatch();
   const [showForm, setShowForm] = useState(false);
   const budget = useSelector((state: State) => state.budget.selectedBudget);
-  const transactions = useSelector((state: State) => state.budget.transactions);
+  const allTransactions = useSelector(
+    (state: State) => state.budget.transactions
+  );
+  const transactions = useMemo(
+    () =>
+      allTransactions.sort((a, b) => {
+        if (a.date < b.date) return 1;
+        if (a.date > b.date) return -1;
+        return 0;
+      }),
+    [allTransactions]
+  );
   const categories = useSelector((state: State) => state.budget.categories);
   const groups = useSelector((state: State) => state.budget.groups);
   const menuTransition = useTransition(showForm, null, {
@@ -82,7 +94,7 @@ const Transactions: React.FC<RouteComponentProps> = () => {
       addTransaction(
         description.value,
         date.value,
-        parseCurrency(amount.value) * (type.value === 'expense' ? 1 : -1),
+        parseCurrency(amount.value) * (type.value === 'expense' ? -1 : 1),
         category.value
       )
     );
@@ -100,7 +112,18 @@ const Transactions: React.FC<RouteComponentProps> = () => {
       return (
         <div style={style} className={styles['transaction-wrapper']}>
           <div className={styles.transaction}>
-            {transaction.description} - {category.name}
+            <div className={styles.text}>
+              <div className={styles.merchant}>{transaction.description}</div>
+              <div className={styles.category}>{category.name}</div>
+            </div>
+            <div
+              className={cx(styles.amount, {
+                [styles.expense]: transaction.amount < 0,
+                [styles.income]: transaction.amount > 0
+              })}
+            >
+              {formatCurrency(transaction.amount)}
+            </div>
           </div>
         </div>
       );
@@ -116,7 +139,7 @@ const Transactions: React.FC<RouteComponentProps> = () => {
             height={height}
             width={width}
             itemCount={transactions.length}
-            itemSize={67}
+            itemSize={80}
           >
             {Row}
           </List>
