@@ -56,16 +56,14 @@ const BudgetGroup: FC<BudgetGroupProps> = ({
           ref={groupProvided.innerRef}
         >
           <div className={styles.head}>
-            <div className={styles['group-name']}>
-              {name}
-              <button
-                className={styles.add}
-                type="button"
-                onClick={() => setInput(true)}
-              >
-                <Plus />
-              </button>
-            </div>
+            <div className={styles.name}>{name}</div>
+            <button
+              className={styles.add}
+              type="button"
+              onClick={() => setInput(true)}
+            >
+              <Plus />
+            </button>
             <div className={styles.activity}>Activity</div>
             <div className={styles.allocation}>Allocated</div>
             {inputVisible && (

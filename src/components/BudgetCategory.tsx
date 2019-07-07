@@ -77,7 +77,7 @@ const BudgetCategory: FC<BudgetCategoryProps> = ({
           <div {...provided.dragHandleProps} className={styles['drag-handle']}>
             <DragHandle />
           </div>
-          <div className={styles['category-name']}>{name}</div>
+          <div className={styles.name}>{name}</div>
           <div
             className={cx(styles.activity, {
               [styles['with-value']]: activity !== 0,

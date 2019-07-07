@@ -90,9 +90,9 @@
 .head,
 .category {
   display: grid;
-  grid-template-columns: 1fr 6em 6em;
+  grid-template-columns: minmax(1em, min-content) 1fr 6em 6em;
   grid-template-rows: 1fr;
-  grid-template-areas: 'name activity allocation';
+  grid-template-areas: 'name add activity allocation';
   grid-column-gap: 0.5em;
 
   &:hover {
@@ -112,38 +112,37 @@
   font-weight: 500;
   color: #666;
 
-  .group-name {
-    display: flex;
-    align-items: center;
-    grid-area: name;
+  .name {
     font-size: 20px;
+  }
 
-    .add {
-      display: inline-block;
-      height: 1.5em;
-      width: 1.5em;
-      padding: 3px;
-      margin-left: 0.5em;
-      border-radius: 1.5em;
-      color: darken(#fff, 15%);
-      box-sizing: border-box;
-      transition: 0.15s ease;
-      transition-property: color, background-color;
-      border: none;
-      font-size: 16px;
-      cursor: pointer;
-      outline: none;
+  .add {
+    display: inline-block;
+    height: 1.5em;
+    width: 1.5em;
+    padding: 3px;
+    margin-left: 0.5em;
+    border-radius: 1.5em;
+    margin-right: auto;
+    color: darken(#fff, 15%);
+    box-sizing: border-box;
+    transition: 0.15s ease;
+    transition-property: color, background-color;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    outline: none;
+    grid-area: add;
 
-      &:hover {
-        background-color: darken(#fff, 5%);
-        color: darken(#fff, 20%);
-      }
+    &:hover {
+      background-color: darken(#fff, 5%);
+      color: darken(#fff, 20%);
+    }
 
-      &:active,
-      &:focus {
-        background-color: darken(#fff, 10%);
-        color: darken(#fff, 25%);
-      }
+    &:active,
+    &:focus {
+      background-color: darken(#fff, 10%);
+      color: darken(#fff, 25%);
     }
   }
 
@@ -207,11 +206,14 @@
   }
 }
 
-.category-name {
+.name {
   display: inline-block;
   grid-area: name;
-  vertical-align: middle;
   align-self: center;
+  vertical-align: middle;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .category-list {
