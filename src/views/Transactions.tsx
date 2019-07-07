@@ -4,6 +4,7 @@ import {
   areEqual
 } from 'react-window';
 import React, { useEffect, useState } from 'react';
+import TextField, { SplitInputs } from '../components/TextField';
 import {
   addTransaction,
   getBudgets,
@@ -17,10 +18,10 @@ import Btn from '../components/Btn';
 import { Category } from '../redux/types/budget';
 import DateField from '../components/DateField';
 import Fab from '../components/Fab';
+import Radio from '../components/Radio';
 import { RouteComponentProps } from '@reach/router';
 import SelectField from '../components/SelectField';
 import { State } from '../redux/store';
-import TextField from '../components/TextField';
 import styles from './Transactions.module.scss';
 
 const Transactions: React.FC<RouteComponentProps> = () => {
@@ -74,14 +75,14 @@ const Transactions: React.FC<RouteComponentProps> = () => {
   ): Promise<void> {
     e.preventDefault();
 
-    const { description, date, amount, category } = (e.currentTarget
+    const { description, date, amount, category, type } = (e.currentTarget
       .elements as unknown) as { [key: string]: HTMLInputElement };
 
     await dispatch(
       addTransaction(
         description.value,
         date.value,
-        parseCurrency(amount.value),
+        parseCurrency(amount.value) * (type.value === 'expense' ? 1 : -1),
         category.value
       )
     );
@@ -178,6 +179,15 @@ const Transactions: React.FC<RouteComponentProps> = () => {
                             .map(g => ({ id: g.id, label: g.name }))}
                           required
                         />
+                        <SplitInputs>
+                          <Radio
+                            defaultChecked
+                            name="type"
+                            label="Expense"
+                            value="expense"
+                          />
+                          <Radio name="type" label="Income" value="income" />
+                        </SplitInputs>
                         <Btn label="Save Transaction" type="submit" />
                       </form>
                     </animated.div>

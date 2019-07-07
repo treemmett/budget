@@ -79,8 +79,9 @@ $border: 1px solid #e7e7ea;
 }
 
 .split-field {
+  flex-grow: 1;
+
   &:last-child {
-    padding-left: 1px;
     border-right: $border;
   }
 }
@@ -136,7 +137,7 @@ $border: 1px solid #e7e7ea;
   top: 0%;
   left: 0;
   width: 100%;
-  z-index: 1;
+  z-index: 2;
   padding: 1em;
   background-color: #fff;
   box-shadow: 0 10px 20px rgba(#000, 0.2);
