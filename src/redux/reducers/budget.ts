@@ -4,6 +4,7 @@ import {
   ALLOCATE_FUNDS,
   Budget,
   BudgetActions,
+  CHANGE_DATE,
   Category,
   CategoryAllocation,
   GET_BUDGETS,
@@ -20,8 +21,10 @@ export const defaultState = {
   categories: [] as Category[],
   categoryAllocation: [] as CategoryAllocation[],
   groups: [] as Group[],
+  month: new Date().getMonth(),
   selectedBudget: '',
-  transactions: [] as Transaction[]
+  transactions: [] as Transaction[],
+  year: new Date().getFullYear()
 };
 
 export default function authentication(
@@ -63,6 +66,13 @@ export default function authentication(
         categoryAllocation: [...state.categoryAllocation, action.payload]
       };
     }
+
+    case CHANGE_DATE:
+      return {
+        ...state,
+        month: action.payload.month,
+        year: action.payload.year
+      };
 
     case GET_BUDGETS:
       return {

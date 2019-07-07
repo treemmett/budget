@@ -24,8 +24,8 @@ const BudgetCategory: FC<BudgetCategoryProps> = ({
   const allocations = useSelector(
     (state: State) => state.budget.categoryAllocation
   );
-  const month = new Date().getMonth();
-  const year = new Date().getFullYear();
+  const month = useSelector((state: State) => state.budget.month);
+  const year = useSelector((state: State) => state.budget.year);
   const [value, setValue] = useState('');
   const transactions = useSelector((state: State) => state.budget.transactions);
 

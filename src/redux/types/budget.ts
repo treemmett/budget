@@ -1,6 +1,7 @@
 export const ADD_CATEGORY = 'ADD_CATEGORY';
 export const ADD_TRANSACTION = 'ADD_TRANSACTION';
 export const ALLOCATE_FUNDS = 'ALLOCATE_FUNDS';
+export const CHANGE_DATE = 'CHANGE_DATE';
 export const GET_BUDGETS = 'GET_BUDGETS';
 export const GET_CATEGORIES = 'GET_CATEGORIES';
 export const SET_CATEGORIES = 'SET_CATEGORIES';
@@ -62,6 +63,14 @@ export interface AllocateFunds {
   };
 }
 
+export interface ChangeDate {
+  type: typeof CHANGE_DATE;
+  payload: {
+    month: number;
+    year: number;
+  };
+}
+
 export interface GetBudgets {
   type: typeof GET_BUDGETS;
   payload: {
@@ -102,6 +111,7 @@ export type BudgetActions =
   | AddCategory
   | AddTransaction
   | AllocateFunds
+  | ChangeDate
   | GetBudgets
   | GetCategories
   | SetCategories

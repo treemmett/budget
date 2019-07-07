@@ -1,7 +1,78 @@
 @import '../globals';
 
-.budget-list {
+.view {
   padding: 2em;
+}
+
+.page-header {
+  color: #42475a;
+  padding: 0 2em;
+}
+
+.budget-title {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.date {
+  display: inline-flex;
+  font-weight: 500;
+  color: $blue;
+  background-color: lighten($blue, 40%);
+  border-radius: 4px;
+  margin-top: 1em;
+  height: 2em;
+  line-height: 2em;
+  align-items: center;
+  justify-content: center;
+  width: 13em;
+  user-select: none;
+
+  .text {
+    display: inline;
+    margin: auto;
+  }
+
+  .prev,
+  .next {
+    display: inline-flex;
+    width: 1.5em;
+    height: 1.5em;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 5px;
+    border: 1px solid transparent;
+    border-radius: 1.5em;
+    margin: 0 0.5em;
+    fill: $blue;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    background-color: transparent;
+    font-size: inherit;
+    outline: none;
+
+    &:hover {
+      border-color: $blue;
+    }
+
+    svg {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  .prev {
+    transform: rotate(90deg);
+  }
+
+  .next {
+    transform: rotate(-90deg);
+  }
+}
+
+.budget-list {
+  margin-top: 2em;
 }
 
 .group {

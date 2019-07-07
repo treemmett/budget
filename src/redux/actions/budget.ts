@@ -6,8 +6,10 @@ import {
   AddCategory,
   AddTransaction,
   AllocateFunds,
+  CHANGE_DATE,
   Category,
   CategoryAllocation,
+  ChangeDate,
   GET_BUDGETS,
   GET_CATEGORIES,
   GetBudgets,
@@ -171,6 +173,23 @@ export const changeCategoryPosition = (
     method: 'PATCH',
     url: `/budgets/${selectedBudget}/categories/${categoryId}`,
     data: { group: groupId, index }
+  });
+};
+
+export const changeDate = (
+  direction: -1 | 1
+): ThunkAction<void, State, null, ChangeDate> => (dispatch, getState) => {
+  const date = new Date();
+  const { year, month } = getState().budget;
+  date.setFullYear(year);
+  date.setMonth(month + direction);
+
+  dispatch({
+    type: CHANGE_DATE,
+    payload: {
+      month: date.getMonth(),
+      year: date.getFullYear()
+    }
   });
 };
 
