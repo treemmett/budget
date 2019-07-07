@@ -66,6 +66,7 @@ const BudgetGroup: FC<BudgetGroupProps> = ({
                 <Plus />
               </button>
             </div>
+            <div className={styles.activity}>Activity</div>
             <div className={styles.allocation}>Allocated</div>
             {inputVisible && (
               <div className={styles['category-input']}>

@@ -19,9 +19,10 @@
 .head,
 .category {
   display: grid;
-  grid-template-columns: 1fr 6em;
+  grid-template-columns: 1fr 6em 6em;
   grid-template-rows: 1fr;
-  grid-template-areas: 'name allocation';
+  grid-template-areas: 'name activity allocation';
+  grid-column-gap: 0.5em;
 
   &:hover {
     input {
@@ -144,6 +145,35 @@
 
 .category-list {
   min-height: 1em;
+}
+
+.activity {
+  text-align: right;
+  grid-area: activity;
+  color: inherit;
+  border-radius: 4px;
+  padding: 2px 8px;
+
+  &.with-value {
+    font-weight: 500;
+
+    &.positive {
+      color: $green;
+      background-color: lighten($green, 48%);
+    }
+
+    &.negative {
+      color: $red;
+      background-color: lighten($red, 30%);
+    }
+  }
+}
+
+.activity,
+.allocation {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .category-allocation {

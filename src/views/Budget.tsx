@@ -3,7 +3,8 @@ import React, { useEffect, useMemo } from 'react';
 import {
   changeCategoryPosition,
   changeGroupPosition,
-  getBudgets
+  getBudgets,
+  getTransactions
 } from '../redux/actions/budget';
 import { useDispatch, useSelector } from 'react-redux';
 import BudgetGroup from '../components/BudgetGroup';
@@ -15,6 +16,7 @@ const Budget: React.FC<RouteComponentProps> = () => {
   const dispatch = useDispatch();
   const budgetId = useSelector((state: State) => state.budget.selectedBudget);
   const allGroups = useSelector((state: State) => state.budget.groups);
+  const transactions = useSelector((state: State) => state.budget.transactions);
 
   const groups = useMemo(
     () =>
@@ -29,8 +31,14 @@ const Budget: React.FC<RouteComponentProps> = () => {
   );
 
   useEffect(() => {
-    dispatch(getBudgets());
-  }, [dispatch]);
+    if (!budgetId) {
+      dispatch(getBudgets());
+    }
+
+    if (!transactions.length && budgetId) {
+      dispatch(getTransactions(budgetId));
+    }
+  }, [dispatch, transactions, budgetId]);
 
   function onDragEnd(result: DropResult): void {
     const { destination, draggableId, source } = result;
