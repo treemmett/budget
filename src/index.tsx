@@ -1,8 +1,8 @@
 import './index.scss';
 import * as serviceWorker from './serviceWorker';
+import App from './components/layouts/App';
 import Budget from './views/Budget';
 import Login from './views/Login';
-import NavBar from './components/NavBar';
 import { Provider } from 'react-redux';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -10,19 +10,19 @@ import Register from './views/Register';
 import { Router } from '@reach/router';
 import Toaster from './components/Toaster';
 import Transactions from './views/Transactions';
-import navStyles from './components/NavBar.module.scss';
 import store from './redux/store';
 
 ReactDOM.render(
   <Provider store={store}>
     <Toaster />
-    <NavBar />
-    <Router className={navStyles.next}>
-      <Budget path="/" />
-      <Login path="/login" />
-      <Register path="/register" />
-      <Transactions path="/transactions" />
-    </Router>
+    <App>
+      <Router>
+        <Budget path="/" />
+        <Login path="/login" />
+        <Register path="/register" />
+        <Transactions path="/transactions" />
+      </Router>
+    </App>
   </Provider>,
   document.getElementById('root')
 );

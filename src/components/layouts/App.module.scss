@@ -1,0 +1,64 @@
+.app {
+  display: grid;
+  height: 100%;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 3.5em;
+  grid-template-areas: 'content' 'nav';
+  overflow: hidden;
+}
+
+.content {
+  grid-area: content;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nav {
+  display: flex;
+  grid-area: nav;
+  height: 100%;
+  background-color: #fff;
+
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+    pointer-events: none;
+    box-shadow: 0 -5px 20px rgba(#000, 0.1);
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+    padding: 0.5em 1em;
+    box-sizing: border-box;
+    stroke: #5f6369;
+    color: #5f6369;
+    text-decoration: none;
+    transition: 0.15s ease;
+    transition-property: color, stroke;
+
+    &.active-link {
+      color: #eb6c7c;
+      stroke: #eb6c7c;
+    }
+
+    svg {
+      fill: transparent;
+      height: 100%;
+      width: 100%;
+    }
+
+    .title {
+      font-size: 14px;
+    }
+  }
+}
