@@ -16,7 +16,7 @@ ReactDOM.render(
   <Provider store={store}>
     <Toaster />
     <App>
-      <Router>
+      <Router style={{ height: '100%' }}>
         <Budget path="/" />
         <Login path="/login" />
         <Register path="/register" />

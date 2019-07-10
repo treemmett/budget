@@ -132,7 +132,7 @@ const Transactions: React.FC<RouteComponentProps> = () => {
   );
 
   return (
-    <div className={styles.transactions}>
+    <div className={styles.transactions} data-foo="true">
       <AutoSizer>
         {({ height, width }) => (
           <List
