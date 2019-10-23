@@ -11,7 +11,8 @@ module.exports = {
     sourceType: 'module'
   },
   rules: {
-    'sort-imports': 2
+    'sort-imports': 2,
+    'import/order': 0
   },
   settings: {
     'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],

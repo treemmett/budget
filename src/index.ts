@@ -1,18 +1,20 @@
-/* eslint-disable sort-imports */
-/* eslint-disable import/first */
+import bodyParser from 'body-parser';
+import { createConnection } from 'typeorm';
 import dotenv from 'dotenv';
+import express from 'express';
+import genRouter from './routes';
+import helmet from 'helmet';
+import path from 'path';
 
 dotenv.config();
-
-import { createConnection } from 'typeorm';
-import path from 'path';
 
 const {
   DB_DATABASE,
   DB_HOST,
   DB_PASS,
   DB_PORT = '5432',
-  DB_USER = 'postgres'
+  DB_USER = 'postgres',
+  PORT = '8080'
 } = process.env;
 
 createConnection({
@@ -25,8 +27,17 @@ createConnection({
   database: DB_DATABASE,
   synchronize: process.env.NODE_ENV === 'development'
 })
-  .then(() => {
-    console.log('Database connected.');
+  .then(async () => {
+    const app = express();
+    app.use(helmet());
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
+
+    app.use(await genRouter());
+
+    const port = parseInt(PORT, 10);
+
+    app.listen(port, () => console.log(`Rudget API running on port ${port}.`));
   })
   .catch(err => {
     console.error('Error while opening database connection.');
