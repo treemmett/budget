@@ -7,13 +7,20 @@
     "start:dev": "nodemon",
     "test:lint": "eslint src/ --ext js,ts"
   },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "pg": "^7.12.1",
+    "typeorm": "^0.2.20"
+  },
   "devDependencies": {
     "@types/node": "^12.11.2",
     "@typescript-eslint/eslint-plugin": "^2.5.0",
     "@typescript-eslint/parser": "^2.5.0",
     "chalk": "^2.4.2",
-    "eslint": "^6.5.1",
+    "eslint": "6.1.0",
+    "eslint-config-airbnb-base": "14.0.0",
     "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-prettier": "^3.1.1",
     "husky": "^3.0.9",
     "nodemon": "^1.19.4",
