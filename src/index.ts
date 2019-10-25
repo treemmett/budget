@@ -1,12 +1,11 @@
+import 'dotenv/config';
+import 'reflect-metadata';
 import bodyParser from 'body-parser';
 import { createConnection } from 'typeorm';
-import dotenv from 'dotenv';
 import express from 'express';
 import genRouter from './routes';
 import helmet from 'helmet';
 import path from 'path';
-
-dotenv.config();
 
 const {
   DB_DATABASE,
