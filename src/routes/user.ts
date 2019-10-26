@@ -26,7 +26,10 @@ router.post(
         password
       );
 
-      res.send(user.getUser());
+      res.send({
+        user: user.getUser(),
+        token: user.getTokenDetails()
+      });
     } catch (e) {
       next(e);
     }
@@ -47,7 +50,7 @@ router.post(
     try {
       const { email, password } = req.body;
       const user = await UserController.login(email, password);
-      res.send(user.getUser());
+      res.send(user.getTokenDetails());
     } catch (e) {
       next(e);
     }

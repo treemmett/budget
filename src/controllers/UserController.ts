@@ -1,7 +1,10 @@
 import { decrypt, encrypt, hash512 } from '../utils/encryption';
+import Token from '../entities/Token';
 import User from '../entities/User';
 import bcrypt from 'bcryptjs';
 import { getManager } from 'typeorm';
+import jwt from 'jsonwebtoken';
+import uuid from 'uuid';
 
 export default class UserController {
   private static passwordEncryptionKey = Buffer.from(
@@ -9,10 +12,18 @@ export default class UserController {
     'hex'
   );
 
+  private static jwtSecret = Buffer.from(
+    process.env.JWT_SECRET as string,
+    'hex'
+  );
+
+  public token: Token;
+
   public user: User;
 
-  public constructor(user: User) {
+  public constructor(user: User, token: Token) {
     this.user = user;
+    this.token = token;
   }
 
   public static async createUser(
@@ -23,7 +34,7 @@ export default class UserController {
   ): Promise<UserController> {
     const hash = await UserController.hashPassword(password);
 
-    const u = getManager().create(User, {
+    const user = getManager().create(User, {
       firstName,
       lastName,
       email,
@@ -31,7 +42,7 @@ export default class UserController {
     });
 
     try {
-      await getManager().save(User, u);
+      await getManager().save(User, user);
     } catch (e) {
       // check if email is already registered
       if (e.code === '23505') {
@@ -41,7 +52,9 @@ export default class UserController {
       }
     }
 
-    return new UserController(u);
+    const token = await UserController.createAccessToken(user);
+
+    return new UserController(user, token);
   }
 
   public static async login(
@@ -60,7 +73,26 @@ export default class UserController {
       throw new Error('Incorrect password.');
     }
 
-    return new UserController(user);
+    const token = await UserController.createAccessToken(user);
+
+    return new UserController(user, token);
+  }
+
+  private static async createAccessToken(user: User): Promise<Token> {
+    // set time the token expires
+    const expires = new Date();
+    expires.setHours(expires.getHours() + 1);
+
+    // create a session token
+    const token = getManager().create(Token, {
+      user,
+      jti: uuid(),
+      expires
+    });
+
+    await getManager().save(Token, token);
+
+    return token;
   }
 
   private static async hashPassword(password: string): Promise<Buffer> {
@@ -88,6 +120,16 @@ export default class UserController {
     } catch (e) {
       return false;
     }
+  }
+
+  public getTokenDetails(): { expiresAt: number; token: string } {
+    const exp = Math.floor(this.token.expires.getTime() / 1000);
+    const iat = Math.floor(this.token.issued.getTime() / 1000);
+
+    return {
+      expiresAt: Math.floor(this.token.expires.getTime() / 1000),
+      token: jwt.sign({ exp, iat, sub: this.user.id }, UserController.jwtSecret)
+    };
   }
 
   public getUser(): {
