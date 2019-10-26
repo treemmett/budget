@@ -18,7 +18,7 @@ const {
 } = process.env;
 
 createConnection({
-  entities: [path.resolve(__dirname, 'entities/*.ts')],
+  entities: [path.resolve(__dirname, 'entities/*.js')],
   type: 'postgres',
   host: DB_HOST,
   port: parseInt(DB_PORT, 10),
