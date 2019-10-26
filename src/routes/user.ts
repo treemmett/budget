@@ -33,4 +33,25 @@ router.post(
   }
 );
 
+router.post(
+  '/auth',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string()
+        .email()
+        .required(),
+      password: Joi.string().required()
+    })
+  }),
+  async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+      const user = await UserController.login(email, password);
+      res.send(user.getUser());
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
 export default router;

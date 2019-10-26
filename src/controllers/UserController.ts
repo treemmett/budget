@@ -44,6 +44,25 @@ export default class UserController {
     return new UserController(u);
   }
 
+  public static async login(
+    email: string,
+    password: string
+  ): Promise<UserController> {
+    const user = await getManager().findOne(User, { email });
+
+    if (!user) {
+      throw new Error('User not found.');
+    }
+
+    const passMatch = await UserController.verifyPassword(password, user.hash);
+
+    if (!passMatch) {
+      throw new Error('Incorrect password.');
+    }
+
+    return new UserController(user);
+  }
+
   private static async hashPassword(password: string): Promise<Buffer> {
     // create sha512 digest of the password to ellimate truncation and dos issues
     const hash = await hash512(Buffer.from(password));
