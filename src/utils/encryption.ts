@@ -28,6 +28,10 @@ export async function encrypt(
 }
 
 export async function decrypt(cipher: Buffer, key: Buffer): Promise<Buffer> {
+  if (!sodium) {
+    sodium = await SodiumPlus.auto();
+  }
+
   const nonceLength = cipher[0] as number;
   const nonce = cipher.slice(1, nonceLength + 1);
   const block = cipher.slice(nonceLength + 1);

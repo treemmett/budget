@@ -2,6 +2,7 @@ import 'dotenv/config';
 import 'reflect-metadata';
 import bodyParser from 'body-parser';
 import { createConnection } from 'typeorm';
+import { errors } from 'celebrate';
 import express from 'express';
 import genRouter from './routes';
 import helmet from 'helmet';
@@ -33,6 +34,8 @@ createConnection({
     app.use(bodyParser.urlencoded({ extended: true }));
 
     app.use(await genRouter());
+
+    app.use(errors());
 
     const port = parseInt(PORT, 10);
 

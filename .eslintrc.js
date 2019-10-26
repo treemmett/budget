@@ -12,7 +12,9 @@ module.exports = {
   },
   rules: {
     'sort-imports': 2,
-    'import/order': 0
+    'import/order': 0,
+    '@typescript-eslint/explicit-member-accessibility': 2,
+    '@typescript-eslint/member-ordering': 2
   },
   settings: {
     'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
