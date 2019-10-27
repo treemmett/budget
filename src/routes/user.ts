@@ -1,8 +1,13 @@
 import { Joi, celebrate } from 'celebrate';
 import { Router } from 'express';
 import UserController from '../controllers/UserController';
+import authenticate from '../middleware/authenticate';
 
 const router = Router();
+
+router.get('/', authenticate(), (req, res) => {
+  res.send(req.user.getUser());
+});
 
 router.post(
   '/',

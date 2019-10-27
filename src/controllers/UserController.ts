@@ -78,6 +78,25 @@ export default class UserController {
     return new UserController(user, token);
   }
 
+  public static async verifyAccessToken(
+    token: string
+  ): Promise<UserController> {
+    try {
+      const claims = jwt.verify(token, UserController.jwtSecret, {
+        algorithms: ['HS256']
+      }) as { iat: number; exp: number; sub: string; jti: string };
+
+      const t = await getManager().findOneOrFail(Token, {
+        where: { jti: claims.jti },
+        relations: ['user']
+      });
+
+      return new UserController(t.user, t);
+    } catch (e) {
+      throw new Error('Invalid access token.');
+    }
+  }
+
   private static async createAccessToken(user: User): Promise<Token> {
     // set time the token expires
     const expires = new Date();
@@ -128,7 +147,10 @@ export default class UserController {
 
     return {
       expiresAt: Math.floor(this.token.expires.getTime() / 1000),
-      token: jwt.sign({ exp, iat, sub: this.user.id }, UserController.jwtSecret)
+      token: jwt.sign({ exp, iat }, UserController.jwtSecret, {
+        jwtid: this.token.jti,
+        subject: this.user.id
+      })
     };
   }
 
