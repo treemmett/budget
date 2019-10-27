@@ -28,6 +28,14 @@ export default class BudgetController {
     return new BudgetController(budget);
   }
 
+  public static listBudgets(user: User): Promise<Budget[]> {
+    return getManager()
+      .createQueryBuilder(Budget, 'budget')
+      .leftJoin('budget.user', 'user')
+      .where('user.id = :userId', { userId: user.id })
+      .getMany();
+  }
+
   public getBudgetDetails(): BudgetDetails {
     return {
       id: this.budget.id,

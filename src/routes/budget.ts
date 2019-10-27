@@ -5,6 +5,15 @@ import authenticate from '../middleware/authenticate';
 
 const router = Router();
 
+router.get('/', authenticate(), async (req, res, next) => {
+  try {
+    const budgets = await BudgetController.listBudgets(req.user.user);
+    res.send(budgets);
+  } catch (e) {
+    next(e);
+  }
+});
+
 router.post(
   '/',
   authenticate(),
