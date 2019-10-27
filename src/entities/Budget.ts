@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  ManyToOne,
+  PrimaryGeneratedColumn
+} from 'typeorm';
+import User from './User';
 
 @Entity({ name: 'budgets' })
 export default class Budget {
@@ -7,4 +14,8 @@ export default class Budget {
 
   @Column()
   public name: string;
+
+  @ManyToOne(() => User)
+  @Index()
+  public user: User;
 }
