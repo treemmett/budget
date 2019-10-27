@@ -35,4 +35,17 @@ router.post(
   }
 );
 
+router.get('/:id', authenticate(), async (req, res, next) => {
+  try {
+    const budget = await BudgetController.openBudget(
+      req.params.id,
+      req.user.user
+    );
+
+    res.send(budget.getBudgetDetails());
+  } catch (e) {
+    next(e);
+  }
+});
+
 export default router;

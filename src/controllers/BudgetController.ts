@@ -36,6 +36,24 @@ export default class BudgetController {
       .getMany();
   }
 
+  public static async openBudget(
+    budgetId: string,
+    user: User
+  ): Promise<BudgetController> {
+    const budget = await getManager()
+      .createQueryBuilder(Budget, 'budget')
+      .leftJoin('budget.user', 'user')
+      .where('user.id = :userId', { userId: user.id })
+      .andWhere('budget.id = :budgetId', { budgetId })
+      .getOne();
+
+    if (!budget) {
+      throw new Error('Budget not found.');
+    }
+
+    return new BudgetController(budget);
+  }
+
   public getBudgetDetails(): BudgetDetails {
     return {
       id: this.budget.id,
