@@ -1,4 +1,5 @@
 import { decrypt, encrypt, hash512 } from '../utils/encryption';
+import HttpException from '../utils/HttpException';
 import Token from '../entities/Token';
 import User from '../entities/User';
 import bcrypt from 'bcryptjs';
@@ -46,7 +47,11 @@ export default class UserController {
     } catch (e) {
       // check if email is already registered
       if (e.code === '23505') {
-        throw new Error(`Email ${email} is already registered.`);
+        throw new HttpException({
+          error: 'invalid_request',
+          message: 'Email is already registered.',
+          status: 400
+        });
       } else {
         throw e;
       }
@@ -64,13 +69,21 @@ export default class UserController {
     const user = await getManager().findOne(User, { email });
 
     if (!user) {
-      throw new Error('User not found.');
+      throw new HttpException({
+        error: 'unauthorized_request',
+        message: 'User not found.',
+        status: 401
+      });
     }
 
     const passMatch = await UserController.verifyPassword(password, user.hash);
 
     if (!passMatch) {
-      throw new Error('Incorrect password.');
+      throw new HttpException({
+        error: 'unauthorized_request',
+        message: 'Incorrect password.',
+        status: 401
+      });
     }
 
     const token = await UserController.createAccessToken(user);
@@ -93,7 +106,11 @@ export default class UserController {
 
       return new UserController(t.user, t);
     } catch (e) {
-      throw new Error('Invalid access token.');
+      throw new HttpException({
+        error: 'unauthorized_request',
+        message: 'Invalid access token.',
+        status: 401
+      });
     }
   }
 

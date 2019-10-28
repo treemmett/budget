@@ -31,3 +31,9 @@ Create a new user.
 | `token`           | Object | Details about the access token. |
 | `token.expiresAt` | Number | Timestamp of token expiration.  |
 | `token.token`     | String | The access token.               |
+
+## Error Responses
+
+| Error             | Message                      | Status Code | Reason                                                   |
+| ----------------- | ---------------------------- | ----------- | -------------------------------------------------------- |
+| `invalid_request` | Email is already registered. | 400         | The provided `email` is already in use for another user. |

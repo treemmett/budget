@@ -1,4 +1,5 @@
 import Budget from '../entities/Budget';
+import HttpException from '../utils/HttpException';
 import User from '../entities/User';
 import { getManager } from 'typeorm';
 
@@ -48,7 +49,11 @@ export default class BudgetController {
       .getOne();
 
     if (!budget) {
-      throw new Error('Budget not found.');
+      throw new HttpException({
+        error: 'invalid_request',
+        message: 'Budget not found.',
+        status: 404
+      });
     }
 
     return new BudgetController(budget);

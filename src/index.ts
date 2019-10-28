@@ -2,6 +2,7 @@ import 'dotenv/config';
 import 'reflect-metadata';
 import bodyParser from 'body-parser';
 import { createConnection } from 'typeorm';
+import errorHandler from './middleware/errorHandler';
 import { errors } from 'celebrate';
 import express from 'express';
 import genRouter from './routes';
@@ -36,6 +37,7 @@ createConnection({
     app.use(await genRouter());
 
     app.use(errors());
+    app.use(errorHandler());
 
     const port = parseInt(PORT, 10);
 
