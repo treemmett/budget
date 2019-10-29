@@ -5,7 +5,9 @@
   "license": "UNLICENSED",
   "scripts": {
     "start:dev": "tsc && nodemon & tsc -w",
+    "test:commit": "concurrently \"yarn:test:lint\" \"yarn:test:typing\"",
     "test:lint": "eslint src/ --ext js,ts",
+    "test:typing": "tsc --noEmit",
     "build": "tsc"
   },
   "dependencies": {
@@ -59,7 +61,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "node scripts/commitMsg",
-      "pre-commit": "yarn test:lint"
+      "pre-commit": "yarn test:commit"
     }
   }
 }
