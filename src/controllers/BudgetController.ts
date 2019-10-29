@@ -1,11 +1,16 @@
 import Budget from '../entities/Budget';
 import HttpException from '../utils/HttpException';
+import TransactionCategory from '../entities/TransactionCategory';
 import User from '../entities/User';
 import { getManager } from 'typeorm';
 
 export interface BudgetDetails {
   id: string;
   name: string;
+}
+
+export interface CategoryDetails extends BudgetDetails {
+  budget: string;
 }
 
 export default class BudgetController {
@@ -44,6 +49,7 @@ export default class BudgetController {
     const budget = await getManager()
       .createQueryBuilder(Budget, 'budget')
       .leftJoin('budget.user', 'user')
+      .leftJoinAndSelect('budget.categories', 'categories')
       .where('user.id = :userId', { userId: user.id })
       .andWhere('budget.id = :budgetId', { budgetId })
       .getOne();
@@ -59,10 +65,49 @@ export default class BudgetController {
     return new BudgetController(budget);
   }
 
+  public async createCateogry(name: string): Promise<TransactionCategory> {
+    const category = getManager().create(TransactionCategory, {
+      name,
+      budget: this.budget
+    });
+
+    await getManager().save(TransactionCategory, category);
+
+    this.budget.categories.push(category);
+
+    return category;
+  }
+
   public getBudgetDetails(): BudgetDetails {
     return {
       id: this.budget.id,
       name: this.budget.name
+    };
+  }
+
+  public getCategories(): CategoryDetails[] {
+    return this.budget.categories.map(c => ({
+      budget: this.budget.id,
+      id: c.id,
+      name: c.name
+    }));
+  }
+
+  public getCategoryDetails(categoryId: string): CategoryDetails {
+    const category = this.budget.categories.find(c => c.id === categoryId);
+
+    if (!category) {
+      throw new HttpException({
+        error: 'invalid_request',
+        message: 'Category not found.',
+        status: 404
+      });
+    }
+
+    return {
+      id: category.id,
+      name: category.name,
+      budget: category.budget.id
     };
   }
 }
