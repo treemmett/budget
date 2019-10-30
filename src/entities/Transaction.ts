@@ -24,4 +24,20 @@ export default class Transaction {
   @Index()
   @ManyToOne(() => TransactionCategory, category => category.transactions)
   public category: TransactionCategory;
+
+  public getDetails(): {
+    id: string;
+    description: string;
+    date: string;
+    amount: number;
+    category: string;
+  } {
+    return {
+      id: this.id,
+      description: this.description,
+      date: this.date,
+      amount: Number(this.amount),
+      category: this.category.id
+    };
+  }
 }

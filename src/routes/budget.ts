@@ -115,4 +115,39 @@ router.post(
   }
 );
 
+router.get(
+  '/:id/transaction/:year/:month',
+  authenticate(),
+  celebrate({
+    params: {
+      year: Joi.number()
+        .positive()
+        .integer()
+        .min(2000)
+        .max(2032),
+      month: Joi.number()
+        .positive()
+        .integer()
+        .min(1)
+        .max(12),
+      id: Joi.string().required()
+    }
+  }),
+  async (req, res, next) => {
+    try {
+      const { id, year, month } = (req.params as unknown) as {
+        id: string;
+        year: number;
+        month: number;
+      };
+
+      const controller = await BudgetController.openBudget(id, req.user.user);
+      const transactions = await controller.getTransactions(year, month);
+      res.send(transactions.map(t => t.getDetails()));
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
 export default router;

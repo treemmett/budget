@@ -134,4 +134,43 @@ export default class BudgetController {
       budget: category.budget.id
     };
   }
+
+  public getTransactions(year: number, month: number): Promise<Transaction[]> {
+    if (month < 1 || month > 12 || year.toString().length !== 4) {
+      throw new HttpException({
+        error: 'invalid_request',
+        message: 'Invalid date provided.',
+        status: 400
+      });
+    }
+
+    // create from date
+    const fromDate = new Date();
+    fromDate.setUTCFullYear(year);
+    fromDate.setUTCMonth(month - 1);
+    fromDate.setUTCDate(1);
+    fromDate.setUTCHours(0);
+    fromDate.setUTCMinutes(0);
+    fromDate.setUTCSeconds(0);
+    fromDate.setUTCMilliseconds(0);
+
+    // create to date
+    const toDate = new Date(fromDate.toISOString());
+    toDate.setUTCMonth(month);
+
+    return getManager()
+      .createQueryBuilder(Transaction, 'transaction')
+      .leftJoinAndSelect('transaction.category', 'category')
+      .leftJoin('category.budget', 'budget')
+      .orderBy('transaction.date')
+      .addOrderBy('transaction.description')
+      .where('budget.id = :budgetId', { budgetId: this.budget.id })
+      .andWhere('transaction.date >= :fromDate', {
+        fromDate: fromDate.toISOString().substr(0, 10)
+      })
+      .andWhere('transaction.date < :toDate', {
+        toDate: toDate.toISOString().substr(0, 10)
+      })
+      .getMany();
+  }
 }
