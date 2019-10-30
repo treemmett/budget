@@ -79,4 +79,40 @@ router.post(
   }
 );
 
+router.post(
+  '/:id/transaction',
+  authenticate(),
+  celebrate({
+    body: Joi.object().keys({
+      amount: Joi.number()
+        .positive()
+        .precision(2)
+        .required(),
+      category: Joi.string()
+        .uuid()
+        .required(),
+      date: Joi.string()
+        .isoDate()
+        .required(),
+      description: Joi.string().required()
+    })
+  }),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { amount, category, date, description } = req.body;
+      const controller = await BudgetController.openBudget(id, req.user.user);
+      const transaction = await controller.createTransaction(
+        description,
+        date,
+        category,
+        amount
+      );
+      res.send(transaction);
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
 export default router;

@@ -1,5 +1,6 @@
 import Budget from '../entities/Budget';
 import HttpException from '../utils/HttpException';
+import Transaction from '../entities/Transaction';
 import TransactionCategory from '../entities/TransactionCategory';
 import User from '../entities/User';
 import { getManager } from 'typeorm';
@@ -78,6 +79,23 @@ export default class BudgetController {
     return category;
   }
 
+  public async createTransaction(
+    description: string,
+    date: string,
+    categoryId: string,
+    amount: number
+  ): Promise<Transaction> {
+    const category = this.getCategory(categoryId);
+    const transaction = getManager().create(Transaction, {
+      amount,
+      category,
+      date: date.substr(0, 10),
+      description
+    });
+    await getManager().save(Transaction, transaction);
+    return transaction;
+  }
+
   public getBudgetDetails(): BudgetDetails {
     return {
       id: this.budget.id,
@@ -93,7 +111,7 @@ export default class BudgetController {
     }));
   }
 
-  public getCategoryDetails(categoryId: string): CategoryDetails {
+  public getCategory(categoryId: string): TransactionCategory {
     const category = this.budget.categories.find(c => c.id === categoryId);
 
     if (!category) {
@@ -103,6 +121,12 @@ export default class BudgetController {
         status: 404
       });
     }
+
+    return category;
+  }
+
+  public getCategoryDetails(categoryId: string): CategoryDetails {
+    const category = this.getCategory(categoryId);
 
     return {
       id: category.id,

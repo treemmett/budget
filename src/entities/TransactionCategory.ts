@@ -1,5 +1,12 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn
+} from 'typeorm';
 import Budget from './Budget';
+import Transaction from './Transaction';
 
 @Entity({ name: 'transaction-categories' })
 export default class TransactionCategory {
@@ -11,4 +18,7 @@ export default class TransactionCategory {
 
   @ManyToOne(() => Budget, budget => budget.categories)
   public budget: Budget;
+
+  @OneToMany(() => Transaction, transaction => transaction.category)
+  public transactions: Transaction[];
 }
