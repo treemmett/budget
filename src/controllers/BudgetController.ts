@@ -1,4 +1,5 @@
 import Account, { AccountType } from '../entities/Account';
+import IncomeSource, { PayScale } from '../entities/IncomeSource';
 import Budget from '../entities/Budget';
 import HttpException from '../utils/HttpException';
 import Transaction from '../entities/Transaction';
@@ -51,6 +52,7 @@ export default class BudgetController {
       .leftJoin('budget.user', 'user')
       .leftJoinAndSelect('budget.categories', 'categories')
       .leftJoinAndSelect('budget.accounts', 'accounts')
+      .leftJoinAndSelect('budget.incomes', 'income')
       .where('user.id = :userId', { userId })
       .andWhere('budget.id = :budgetId', { budgetId })
       .getOne();
@@ -64,6 +66,41 @@ export default class BudgetController {
     }
 
     return new BudgetController(budget);
+  }
+
+  public calculateIncome(): number {
+    let income = 0;
+
+    for (let i = 0; i < this.budget.incomes.length; i += 1) {
+      const job = this.budget.incomes[i];
+
+      switch (job.scale) {
+        case PayScale.yearly:
+        case PayScale.fixed:
+          income += job.rate;
+          break;
+
+        case PayScale.hourly:
+          if (!job.hours) {
+            break;
+          }
+          income += job.rate * job.hours * 52;
+          break;
+
+        case PayScale.monthly:
+          income += job.rate * 12;
+          break;
+
+        case PayScale.weekly:
+          income += job.rate * 52;
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    return income;
   }
 
   public async createAccount(
@@ -92,6 +129,31 @@ export default class BudgetController {
     this.budget.categories.push(category);
 
     return category;
+  }
+
+  public createIncome(
+    name: string,
+    scale: keyof typeof PayScale,
+    rate: number,
+    hours?: number
+  ): Promise<IncomeSource> {
+    if (PayScale[scale] === PayScale.hourly && !hours) {
+      throw new HttpException({
+        error: 'invalid_request',
+        message: 'Hourly income sources require hours.',
+        status: 400
+      });
+    }
+
+    const income = getManager().create(IncomeSource, {
+      budget: this.budget,
+      hours: PayScale[scale] === PayScale.hourly ? hours : undefined,
+      name,
+      rate,
+      scale: PayScale[scale]
+    });
+
+    return getManager().save(IncomeSource, income);
   }
 
   public async createTransaction(

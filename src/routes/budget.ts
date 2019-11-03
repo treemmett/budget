@@ -1,6 +1,7 @@
 import { Joi, celebrate } from 'celebrate';
 import { AccountType } from '../entities/Account';
 import BudgetController from '../controllers/BudgetController';
+import { PayScale } from '../entities/IncomeSource';
 import { Router } from 'express';
 import authenticate from '../middleware/authenticate';
 
@@ -144,6 +145,50 @@ router.post(
       const controller = await BudgetController.openBudget(id, req.user);
       const category = await controller.createCateogry(name);
       res.send(category.getDetails());
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
+router.get('/:id/income', authenticate(), async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const controller = await BudgetController.openBudget(id, req.user);
+    res.send({
+      income: controller.calculateIncome(),
+      jobs: controller.budget.incomes.map(i => i.getDetails())
+    });
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.post(
+  '/:id/income',
+  authenticate(),
+  celebrate({
+    body: Joi.object().keys({
+      hours: Joi.number().when('scale', {
+        is: 'hourly',
+        then: Joi.required()
+      }),
+      name: Joi.string().required(),
+      scale: Joi.string()
+        .valid(Object.keys(PayScale).filter(f => Number.isNaN(parseInt(f, 10))))
+        .required(),
+      rate: Joi.number()
+        .precision(2)
+        .required()
+    })
+  }),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { hours, name, scale, rate } = req.body;
+      const controller = await BudgetController.openBudget(id, req.user);
+      const income = await controller.createIncome(name, scale, rate, hours);
+      res.send(income.getDetails());
     } catch (e) {
       next(e);
     }
