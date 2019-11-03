@@ -95,6 +95,40 @@ router.get('/:id/category', authenticate(), async (req, res, next) => {
   }
 });
 
+router.get(
+  '/:id/category/:year/:month',
+  authenticate(),
+  celebrate({
+    params: {
+      year: Joi.number()
+        .positive()
+        .integer()
+        .min(2000)
+        .max(2032),
+      month: Joi.number()
+        .positive()
+        .integer()
+        .min(1)
+        .max(12),
+      id: Joi.string().required()
+    }
+  }),
+  async (req, res, next) => {
+    try {
+      const { id, year, month } = (req.params as unknown) as {
+        id: string;
+        year: number;
+        month: number;
+      };
+      const controller = await BudgetController.openBudget(id, req.user);
+      const categories = await controller.getCategoryAllocations(year, month);
+      res.send(categories);
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
 router.post(
   '/:id/category',
   authenticate(),

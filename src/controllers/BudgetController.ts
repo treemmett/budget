@@ -142,6 +142,39 @@ export default class BudgetController {
     return category;
   }
 
+  public async getCategoryAllocations(
+    year: number,
+    month: number
+  ): Promise<
+    {
+      id: string;
+      name: string;
+      amount: number;
+    }[]
+  > {
+    const categories: {
+      id: string;
+      name: string;
+      amount: number;
+    }[] = this.budget.categories.map(c => ({
+      id: c.id,
+      name: c.name,
+      amount: 0
+    }));
+    const transactions = await this.getTransactions(year, month);
+
+    for (let i = 0; i < transactions.length; i += 1) {
+      const tran = transactions[i];
+      const category = categories.find(c => c.id === tran.category.id);
+
+      if (category) {
+        category.amount += tran.getDetails().amount;
+      }
+    }
+
+    return categories;
+  }
+
   public getTransactions(year: number, month: number): Promise<Transaction[]> {
     if (month < 1 || month > 12 || year.toString().length !== 4) {
       throw new HttpException({
