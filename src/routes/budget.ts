@@ -8,7 +8,7 @@ const router = Router();
 
 router.get('/', authenticate(), async (req, res, next) => {
   try {
-    const budgets = await BudgetController.listBudgets(req.user.user);
+    const budgets = await BudgetController.listBudgets(req.user);
     res.send(budgets);
   } catch (e) {
     next(e);
@@ -27,7 +27,7 @@ router.post(
     try {
       const { name } = req.body;
 
-      const budget = await BudgetController.createBudget(req.user.user, name);
+      const budget = await BudgetController.createBudget(req.user, name);
 
       res.send(budget.getBudgetDetails());
     } catch (e) {
@@ -38,10 +38,7 @@ router.post(
 
 router.get('/:id', authenticate(), async (req, res, next) => {
   try {
-    const budget = await BudgetController.openBudget(
-      req.params.id,
-      req.user.user
-    );
+    const budget = await BudgetController.openBudget(req.params.id, req.user);
 
     res.send(budget.getBudgetDetails());
   } catch (e) {
@@ -52,7 +49,7 @@ router.get('/:id', authenticate(), async (req, res, next) => {
 router.get('/:id/account', authenticate(), async (req, res, next) => {
   try {
     const { id } = req.params;
-    const controller = await BudgetController.openBudget(id, req.user.user);
+    const controller = await BudgetController.openBudget(id, req.user);
     res.send(controller.getAccounts());
   } catch (e) {
     next(e);
@@ -74,7 +71,7 @@ router.post(
     try {
       const { id } = req.params;
       const { name, type } = req.body;
-      const controller = await BudgetController.openBudget(id, req.user.user);
+      const controller = await BudgetController.openBudget(id, req.user);
       const account = await controller.createAccount(
         name,
         AccountType[type as keyof typeof AccountType]
@@ -89,7 +86,7 @@ router.post(
 router.get('/:id/category', authenticate(), async (req, res, next) => {
   try {
     const { id } = req.params;
-    const controller = await BudgetController.openBudget(id, req.user.user);
+    const controller = await BudgetController.openBudget(id, req.user);
     res.send(controller.getCategories());
   } catch (e) {
     next(e);
@@ -108,7 +105,7 @@ router.post(
     try {
       const { id } = req.params;
       const { name } = req.body;
-      const controller = await BudgetController.openBudget(id, req.user.user);
+      const controller = await BudgetController.openBudget(id, req.user);
       const category = await controller.createCateogry(name);
       res.send(controller.getCategoryDetails(category.id));
     } catch (e) {
@@ -139,7 +136,7 @@ router.post(
     try {
       const { id } = req.params;
       const { amount, category, date, description } = req.body;
-      const controller = await BudgetController.openBudget(id, req.user.user);
+      const controller = await BudgetController.openBudget(id, req.user);
       const transaction = await controller.createTransaction(
         description,
         date,
@@ -179,7 +176,7 @@ router.get(
         month: number;
       };
 
-      const controller = await BudgetController.openBudget(id, req.user.user);
+      const controller = await BudgetController.openBudget(id, req.user);
       const transactions = await controller.getTransactions(year, month);
       res.send(transactions.map(t => t.getDetails()));
     } catch (e) {

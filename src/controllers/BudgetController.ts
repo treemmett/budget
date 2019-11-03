@@ -4,6 +4,7 @@ import HttpException from '../utils/HttpException';
 import Transaction from '../entities/Transaction';
 import TransactionCategory from '../entities/TransactionCategory';
 import User from '../entities/User';
+import UserController from './UserController';
 import { getManager } from 'typeorm';
 
 export interface BudgetDetails {
@@ -23,11 +24,13 @@ export default class BudgetController {
   }
 
   public static async createBudget(
-    user: User,
+    user: User | UserController,
     name: string
   ): Promise<BudgetController> {
+    const u = user instanceof User ? user : user.user;
+
     const budget = getManager().create(Budget, {
-      user,
+      user: u,
       name
     });
 
@@ -36,24 +39,28 @@ export default class BudgetController {
     return new BudgetController(budget);
   }
 
-  public static listBudgets(user: User): Promise<Budget[]> {
+  public static listBudgets(user: User | UserController): Promise<Budget[]> {
+    const userId = user instanceof User ? user.id : user.user.id;
+
     return getManager()
       .createQueryBuilder(Budget, 'budget')
       .leftJoin('budget.user', 'user')
-      .where('user.id = :userId', { userId: user.id })
+      .where('user.id = :userId', { userId })
       .getMany();
   }
 
   public static async openBudget(
     budgetId: string,
-    user: User
+    user: User | UserController
   ): Promise<BudgetController> {
+    const userId = user instanceof User ? user.id : user.user.id;
+
     const budget = await getManager()
       .createQueryBuilder(Budget, 'budget')
       .leftJoin('budget.user', 'user')
       .leftJoinAndSelect('budget.categories', 'categories')
       .leftJoinAndSelect('budget.accounts', 'accounts')
-      .where('user.id = :userId', { userId: user.id })
+      .where('user.id = :userId', { userId })
       .andWhere('budget.id = :budgetId', { budgetId })
       .getOne();
 
