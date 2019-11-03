@@ -1,3 +1,4 @@
+import Account, { AccountType } from '../entities/Account';
 import Budget from '../entities/Budget';
 import HttpException from '../utils/HttpException';
 import Transaction from '../entities/Transaction';
@@ -51,6 +52,7 @@ export default class BudgetController {
       .createQueryBuilder(Budget, 'budget')
       .leftJoin('budget.user', 'user')
       .leftJoinAndSelect('budget.categories', 'categories')
+      .leftJoinAndSelect('budget.accounts', 'accounts')
       .where('user.id = :userId', { userId: user.id })
       .andWhere('budget.id = :budgetId', { budgetId })
       .getOne();
@@ -64,6 +66,21 @@ export default class BudgetController {
     }
 
     return new BudgetController(budget);
+  }
+
+  public async createAccount(
+    name: string,
+    type: AccountType
+  ): Promise<Account> {
+    const account = getManager().create(Account, {
+      budget: this.budget,
+      name,
+      type
+    });
+
+    await getManager().save(Account, account);
+
+    return account;
   }
 
   public async createCateogry(name: string): Promise<TransactionCategory> {
@@ -94,6 +111,10 @@ export default class BudgetController {
     });
     await getManager().save(Transaction, transaction);
     return transaction;
+  }
+
+  public getAccounts(): { name: string; id: string; type: string }[] {
+    return this.budget.accounts.map(a => a.getDetails());
   }
 
   public getBudgetDetails(): BudgetDetails {

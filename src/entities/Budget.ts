@@ -6,6 +6,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn
 } from 'typeorm';
+import Account from './Account';
 import TransactionCategory from './TransactionCategory';
 import User from './User';
 
@@ -23,4 +24,7 @@ export default class Budget {
 
   @OneToMany(() => TransactionCategory, category => category.budget)
   public categories: TransactionCategory[];
+
+  @OneToMany(() => Account, account => account.budget)
+  public accounts: Account[];
 }

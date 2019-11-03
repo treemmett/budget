@@ -1,4 +1,5 @@
 import { Joi, celebrate } from 'celebrate';
+import { AccountType } from '../entities/Account';
 import BudgetController from '../controllers/BudgetController';
 import { Router } from 'express';
 import authenticate from '../middleware/authenticate';
@@ -47,6 +48,43 @@ router.get('/:id', authenticate(), async (req, res, next) => {
     next(e);
   }
 });
+
+router.get('/:id/account', authenticate(), async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const controller = await BudgetController.openBudget(id, req.user.user);
+    res.send(controller.getAccounts());
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.post(
+  '/:id/account',
+  authenticate(),
+  celebrate({
+    body: Joi.object().keys({
+      name: Joi.string().required(),
+      type: Joi.string()
+        .valid('checking', 'creditCard', 'savings')
+        .required()
+    })
+  }),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { name, type } = req.body;
+      const controller = await BudgetController.openBudget(id, req.user.user);
+      const account = await controller.createAccount(
+        name,
+        AccountType[type as keyof typeof AccountType]
+      );
+      res.send(account.getDetails());
+    } catch (e) {
+      next(e);
+    }
+  }
+);
 
 router.get('/:id/category', authenticate(), async (req, res, next) => {
   try {
