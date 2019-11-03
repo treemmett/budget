@@ -119,6 +119,9 @@ router.post(
   authenticate(),
   celebrate({
     body: Joi.object().keys({
+      account: Joi.string()
+        .uuid()
+        .required(),
       amount: Joi.number()
         .positive()
         .precision(2)
@@ -135,15 +138,16 @@ router.post(
   async (req, res, next) => {
     try {
       const { id } = req.params;
-      const { amount, category, date, description } = req.body;
+      const { account, amount, category, date, description } = req.body;
       const controller = await BudgetController.openBudget(id, req.user);
       const transaction = await controller.createTransaction(
+        account,
         description,
         date,
         category,
         amount
       );
-      res.send(transaction);
+      res.send(transaction.getDetails());
     } catch (e) {
       next(e);
     }

@@ -104,13 +104,16 @@ export default class BudgetController {
   }
 
   public async createTransaction(
+    accountId: string,
     description: string,
     date: string,
     categoryId: string,
     amount: number
   ): Promise<Transaction> {
+    const account = this.getAccount(accountId);
     const category = this.getCategory(categoryId);
     const transaction = getManager().create(Transaction, {
+      account,
       amount,
       category,
       date: date.substr(0, 10),
@@ -118,6 +121,20 @@ export default class BudgetController {
     });
     await getManager().save(Transaction, transaction);
     return transaction;
+  }
+
+  public getAccount(accountId: string): Account {
+    const account = this.budget.accounts.find(a => a.id === accountId);
+
+    if (!account) {
+      throw new HttpException({
+        error: 'invalid_request',
+        message: 'Account not found.',
+        status: 404
+      });
+    }
+
+    return account;
   }
 
   public getAccounts(): { name: string; id: string; type: string }[] {
@@ -189,6 +206,7 @@ export default class BudgetController {
     return getManager()
       .createQueryBuilder(Transaction, 'transaction')
       .leftJoinAndSelect('transaction.category', 'category')
+      .leftJoinAndSelect('transaction.account', 'account')
       .leftJoin('category.budget', 'budget')
       .orderBy('transaction.date')
       .addOrderBy('transaction.description')

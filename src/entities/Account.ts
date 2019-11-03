@@ -1,5 +1,12 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn
+} from 'typeorm';
 import Budget from './Budget';
+import Transaction from './Transaction';
 
 export enum AccountType {
   checking,
@@ -23,6 +30,9 @@ export default class Account {
 
   @ManyToOne(() => Budget, budget => budget.accounts)
   public budget: Budget;
+
+  @OneToMany(() => Transaction, transaction => transaction.account)
+  public transactions: Transaction[];
 
   public getDetails(): { id: string; name: string; type: string } {
     return {

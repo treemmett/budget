@@ -26,6 +26,7 @@ List all transactions in a given budget.
 | `[n].description` | String | Description of the transaction.                     |
 | `[n].date`        | String | Date the transaction took place in ISO 8601 format. |
 | `[n].amount`      | Number | Amount of the transaction.                          |
+| `[n].account`     | String | ID of the account the transaction is occured in.    |
 | `[n].category`    | String | ID of the category the transaction is in.           |
 
 ## Error Responses

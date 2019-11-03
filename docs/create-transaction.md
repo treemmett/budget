@@ -20,6 +20,7 @@ Add a new transaction entry.
 
 | Property      | Type   | Required | Description                                                                                  |
 | ------------- | ------ | -------- | -------------------------------------------------------------------------------------------- |
+| `account`     | String | ✓        | ID of the account the transaction took place in.                                             |
 | `amount`      | Number | ✓        | Positive number representing amount of the transaction. Will be trimmed to 2 decimal places. |
 | `category`    | String | ✓        | ID of the category to add the transaction to.                                                |
 | `date`        | String | ✓        | ISO 8601 date string of when the transaction occured.                                        |
@@ -27,12 +28,11 @@ Add a new transaction entry.
 
 ## Success Response
 
-| Property        | Type   | Description                                             |
-| --------------- | ------ | ------------------------------------------------------- |
-| `amount`        | Number | Positive number representing amount of the transaction. |
-| `category`      | Object | Details of the category the transaction is in.          |
-| `category.id`   | String | ID of the category.                                     |
-| `category.name` | String | Name of the category.                                   |
-| `date`          | String | ISO 8601 date string of when the transaction occured.   |
-| `description`   | String | Description of the transaction.                         |
-| `id`            | String | ID of the transaction.                                  |
+| Property      | Type   | Description                                             |
+| ------------- | ------ | ------------------------------------------------------- |
+| `amount`      | Number | Positive number representing amount of the transaction. |
+| `category`    | String | ID of the category the transaction is in.               |
+| `account`     | String | ID of the account the transaction is occured in.        |
+| `date`        | String | ISO 8601 date string of when the transaction occured.   |
+| `description` | String | Description of the transaction.                         |
+| `id`          | String | ID of the transaction.                                  |
