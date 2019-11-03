@@ -27,4 +27,11 @@ export default class Budget {
 
   @OneToMany(() => Account, account => account.budget)
   public accounts: Account[];
+
+  public getDetails(): { id: string; name: string } {
+    return {
+      id: this.id,
+      name: this.name
+    };
+  }
 }

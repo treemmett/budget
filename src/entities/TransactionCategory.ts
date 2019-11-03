@@ -21,4 +21,11 @@ export default class TransactionCategory {
 
   @OneToMany(() => Transaction, transaction => transaction.category)
   public transactions: Transaction[];
+
+  public getDetails(): { id: string; name: string } {
+    return {
+      id: this.id,
+      name: this.name
+    };
+  }
 }

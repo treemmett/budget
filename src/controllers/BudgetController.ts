@@ -7,15 +7,6 @@ import User from '../entities/User';
 import UserController from './UserController';
 import { getManager } from 'typeorm';
 
-export interface BudgetDetails {
-  id: string;
-  name: string;
-}
-
-export interface CategoryDetails extends BudgetDetails {
-  budget: string;
-}
-
 export default class BudgetController {
   public budget: Budget;
 
@@ -137,25 +128,6 @@ export default class BudgetController {
     return account;
   }
 
-  public getAccounts(): { name: string; id: string; type: string }[] {
-    return this.budget.accounts.map(a => a.getDetails());
-  }
-
-  public getBudgetDetails(): BudgetDetails {
-    return {
-      id: this.budget.id,
-      name: this.budget.name
-    };
-  }
-
-  public getCategories(): CategoryDetails[] {
-    return this.budget.categories.map(c => ({
-      budget: this.budget.id,
-      id: c.id,
-      name: c.name
-    }));
-  }
-
   public getCategory(categoryId: string): TransactionCategory {
     const category = this.budget.categories.find(c => c.id === categoryId);
 
@@ -168,16 +140,6 @@ export default class BudgetController {
     }
 
     return category;
-  }
-
-  public getCategoryDetails(categoryId: string): CategoryDetails {
-    const category = this.getCategory(categoryId);
-
-    return {
-      id: category.id,
-      name: category.name,
-      budget: category.budget.id
-    };
   }
 
   public getTransactions(year: number, month: number): Promise<Transaction[]> {

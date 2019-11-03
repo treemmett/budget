@@ -29,7 +29,7 @@ router.post(
 
       const budget = await BudgetController.createBudget(req.user, name);
 
-      res.send(budget.getBudgetDetails());
+      res.send(budget.budget.getDetails());
     } catch (e) {
       next(e);
     }
@@ -40,7 +40,7 @@ router.get('/:id', authenticate(), async (req, res, next) => {
   try {
     const budget = await BudgetController.openBudget(req.params.id, req.user);
 
-    res.send(budget.getBudgetDetails());
+    res.send(budget.budget.getDetails());
   } catch (e) {
     next(e);
   }
@@ -50,7 +50,7 @@ router.get('/:id/account', authenticate(), async (req, res, next) => {
   try {
     const { id } = req.params;
     const controller = await BudgetController.openBudget(id, req.user);
-    res.send(controller.getAccounts());
+    res.send(controller.budget.accounts.map(a => a.getDetails()));
   } catch (e) {
     next(e);
   }
@@ -87,7 +87,9 @@ router.get('/:id/category', authenticate(), async (req, res, next) => {
   try {
     const { id } = req.params;
     const controller = await BudgetController.openBudget(id, req.user);
-    res.send(controller.getCategories());
+    const categories = controller.budget.categories.map(c => c.getDetails());
+
+    res.send(categories);
   } catch (e) {
     next(e);
   }
@@ -107,7 +109,7 @@ router.post(
       const { name } = req.body;
       const controller = await BudgetController.openBudget(id, req.user);
       const category = await controller.createCateogry(name);
-      res.send(controller.getCategoryDetails(category.id));
+      res.send(category.getDetails());
     } catch (e) {
       next(e);
     }
