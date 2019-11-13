@@ -27,6 +27,9 @@ export default class Token {
   @UpdateDateColumn()
   public lastUsed: Date;
 
-  @ManyToOne(() => User, user => user.tokens)
+  @ManyToOne(
+    () => User,
+    user => user.tokens
+  )
   public user: User;
 }

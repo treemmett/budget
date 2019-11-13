@@ -3,7 +3,6 @@ import {
   Entity,
   Index,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn
 } from 'typeorm';
 import Account from './Account';
@@ -24,10 +23,16 @@ export default class Transaction {
   public amount: number;
 
   @Index()
-  @ManyToOne(() => TransactionCategory, category => category.transactions)
+  @ManyToOne(
+    () => TransactionCategory,
+    category => category.transactions
+  )
   public category: TransactionCategory;
 
-  @ManyToOne(() => Account, account => account.transactions)
+  @ManyToOne(
+    () => Account,
+    account => account.transactions
+  )
   public account: Account;
 
   public getDetails(): {

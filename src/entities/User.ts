@@ -29,6 +29,9 @@ export default class User {
   @CreateDateColumn()
   public dateCreated: Date;
 
-  @OneToMany(() => Token, token => token.user)
+  @OneToMany(
+    () => Token,
+    token => token.user
+  )
   public tokens: Token[];
 }

@@ -22,16 +22,19 @@ export default class Account {
   @Column()
   public name: string;
 
-  @Column({
-    type: 'enum',
-    enum: AccountType
-  })
+  @Column({ type: 'enum', enum: AccountType })
   public type: AccountType;
 
-  @ManyToOne(() => Budget, budget => budget.accounts)
+  @ManyToOne(
+    () => Budget,
+    budget => budget.accounts
+  )
   public budget: Budget;
 
-  @OneToMany(() => Transaction, transaction => transaction.account)
+  @OneToMany(
+    () => Transaction,
+    transaction => transaction.account
+  )
   public transactions: Transaction[];
 
   public getDetails(): { id: string; name: string; type: string } {

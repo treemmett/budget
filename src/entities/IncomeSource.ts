@@ -26,7 +26,10 @@ export default class IncomeSource {
   @Column({ nullable: true })
   public hours?: number;
 
-  @ManyToOne(() => Budget, budget => budget.incomes)
+  @ManyToOne(
+    () => Budget,
+    budget => budget.incomes
+  )
   public budget: Budget;
 
   public getDetails(): {

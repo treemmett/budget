@@ -41,10 +41,8 @@ createConnection({
 
     const port = parseInt(PORT, 10);
 
-    app.listen(port, () => console.log(`Rudget API running on port ${port}.`));
+    app.listen(port);
   })
-  .catch(err => {
-    console.error('Error while opening database connection.');
-    console.error(err);
+  .catch(() => {
     process.exit(1);
   });

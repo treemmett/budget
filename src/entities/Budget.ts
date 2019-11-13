@@ -23,13 +23,22 @@ export default class Budget {
   @Index()
   public user: User;
 
-  @OneToMany(() => TransactionCategory, category => category.budget)
+  @OneToMany(
+    () => TransactionCategory,
+    category => category.budget
+  )
   public categories: TransactionCategory[];
 
-  @OneToMany(() => Account, account => account.budget)
+  @OneToMany(
+    () => Account,
+    account => account.budget
+  )
   public accounts: Account[];
 
-  @OneToMany(() => IncomeSource, income => income.budget)
+  @OneToMany(
+    () => IncomeSource,
+    income => income.budget
+  )
   public incomes: IncomeSource[];
 
   public getDetails(): { id: string; name: string } {

@@ -16,11 +16,13 @@
     "body-parser": "^1.19.0",
     "celebrate": "^10.0.1",
     "dotenv": "^8.2.0",
+    "eslint-config-zyehex": "^0.1.0",
     "express": "^4.17.1",
     "helmet": "^3.21.2",
     "jsonwebtoken": "^8.5.1",
     "pg": "^7.12.1",
     "reflect-metadata": "^0.1.13",
+    "sodium-native": "^2.4.6",
     "sodium-plus": "^0.4.0",
     "typeorm": "^0.2.20",
     "uuid": "^3.3.3"
@@ -35,28 +37,21 @@
     "@types/node": "^12.11.2",
     "@types/ronomon__crypto-async": "^2.0.0",
     "@types/uuid": "^3.4.5",
-    "@typescript-eslint/eslint-plugin": "^2.5.0",
-    "@typescript-eslint/parser": "^2.5.0",
     "chalk": "^2.4.2",
     "concurrently": "^5.0.0",
     "eslint": "6.1.0",
-    "eslint-config-airbnb-base": "14.0.0",
-    "eslint-config-prettier": "^6.4.0",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-prettier": "^3.1.1",
     "husky": "^3.0.9",
     "nodemon": "^1.19.4",
-    "prettier": "^1.18.2",
     "typescript": "^3.6.4"
   },
   "nodemonConfig": {
     "watch": [
       "build"
     ],
+    "env": {
+      "DEBUG": "*"
+    },
     "exec": "node ./build"
-  },
-  "prettier": {
-    "singleQuote": true
   },
   "husky": {
     "hooks": {

@@ -16,10 +16,16 @@ export default class TransactionCategory {
   @Column()
   public name: string;
 
-  @ManyToOne(() => Budget, budget => budget.categories)
+  @ManyToOne(
+    () => Budget,
+    budget => budget.categories
+  )
   public budget: Budget;
 
-  @OneToMany(() => Transaction, transaction => transaction.category)
+  @OneToMany(
+    () => Transaction,
+    transaction => transaction.category
+  )
   public transactions: Transaction[];
 
   public getDetails(): { id: string; name: string } {
