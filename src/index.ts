@@ -7,6 +7,7 @@ import { errors } from 'celebrate';
 import express from 'express';
 import genRouter from './routes';
 import helmet from 'helmet';
+import logger from './utils/logger';
 import path from 'path';
 
 const {
@@ -41,8 +42,10 @@ createConnection({
 
     const port = parseInt(PORT, 10);
 
-    app.listen(port);
+    app.listen(port, () => logger.info(`API is up on port: ${port}`));
   })
-  .catch(() => {
+  .catch(err => {
+    logger.error('Error occured while starting API.');
+    logger.error(err);
     process.exit(1);
   });
