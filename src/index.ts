@@ -6,6 +6,7 @@ import errorHandler from './middleware/errorHandler';
 import { errors } from 'celebrate';
 import express from 'express';
 import genRouter from './routes';
+import generateGQL from './graphql';
 import helmet from 'helmet';
 import logger from './utils/logger';
 import path from 'path';
@@ -40,12 +41,15 @@ createConnection({
     app.use(errors());
     app.use(errorHandler());
 
+    const gql = await generateGQL();
+    gql.applyMiddleware({ app });
+
     const port = parseInt(PORT, 10);
 
     app.listen(port, () => logger.info(`API is up on port: ${port}`));
   })
   .catch(err => {
-    logger.error('Error occured while starting API.');
+    logger.error('Error occurred while starting API.');
     logger.error(err);
     process.exit(1);
   });
