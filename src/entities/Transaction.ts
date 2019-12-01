@@ -5,7 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn
 } from 'typeorm';
-import { Field, Float, GraphQLISODateTime, ID, ObjectType } from 'type-graphql';
+import { Field, Float, ID, ObjectType } from 'type-graphql';
 import Account from './Account';
 import TransactionCategory from './TransactionCategory';
 
@@ -20,7 +20,7 @@ export default class Transaction {
   @Column()
   public description: string;
 
-  @Field(() => GraphQLISODateTime, {
+  @Field({
     description: 'Date the transaction occurred'
   })
   @Column({ type: 'date' })
