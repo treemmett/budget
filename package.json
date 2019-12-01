@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "UNLICENSED",
   "scripts": {
-    "start:dev": "tsc && nodemon & tsc -w",
+    "start:dev": "nodemon --inspect src/index.ts",
     "test:commit": "concurrently \"yarn:test:lint\" \"yarn:test:typing\"",
     "test:lint": "eslint src/ --ext js,ts",
     "test:typing": "tsc --noEmit",
@@ -47,13 +47,20 @@
     "eslint": "6.1.0",
     "husky": "^3.0.9",
     "nodemon": "^1.19.4",
+    "ts-node": "^8.5.4",
     "typescript": "^3.6.4"
   },
   "nodemonConfig": {
+    "env": {
+      "NODE_ENV": "development"
+    },
+    "execMap": {
+      "ts": "node --require ts-node/register"
+    },
+    "ext": "ts,js,json",
     "watch": [
-      "build"
-    ],
-    "exec": "node ./build"
+      "src"
+    ]
   },
   "husky": {
     "hooks": {
