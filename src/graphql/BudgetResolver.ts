@@ -1,7 +1,6 @@
 import { Arg, FieldResolver, Query, Resolver, Root } from 'type-graphql';
 import Account from '../entities/Account';
 import Budget from '../entities/Budget';
-import BudgetController from '../controllers/BudgetController';
 import HttpException from '../utils/HttpException';
 import IncomeSource from '../entities/IncomeSource';
 import TransactionCategory from '../entities/TransactionCategory';
@@ -15,8 +14,23 @@ export default class BudgetResolver {
     const user = await getManager().findOneOrFail(User, {
       email: 'tregan@tregan.me'
     });
-    const budget = await BudgetController.openBudget(id, user);
-    return budget.budget;
+
+    const budget = await getManager()
+      .createQueryBuilder(Budget, 'budget')
+      .leftJoin('budget.user', 'user')
+      .where('user.id = :userId', { userId: user.id })
+      .andWhere('budget.id = :budgetId', { budgetId: id })
+      .getOne();
+
+    if (!budget) {
+      throw new HttpException({
+        error: 'invalid_request',
+        message: 'Budget not found.',
+        status: 404
+      });
+    }
+
+    return budget;
   }
 
   @Query(() => [Budget])
@@ -24,7 +38,12 @@ export default class BudgetResolver {
     const user = await getManager().findOneOrFail(User, {
       email: 'tregan@tregan.me'
     });
-    return BudgetController.listBudgets(user);
+
+    return getManager()
+      .createQueryBuilder(Budget, 'budget')
+      .leftJoin('budget.user', 'user')
+      .where('user.id = :userId', { userId: user.id })
+      .getMany();
   }
 
   @FieldResolver(() => [Account])

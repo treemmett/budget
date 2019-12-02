@@ -2,10 +2,7 @@ import 'dotenv/config';
 import 'reflect-metadata';
 import bodyParser from 'body-parser';
 import { createConnection } from 'typeorm';
-import errorHandler from './middleware/errorHandler';
-import { errors } from 'celebrate';
 import express from 'express';
-import genRouter from './routes';
 import generateGQL from './graphql';
 import helmet from 'helmet';
 import logger from './utils/logger';
@@ -39,11 +36,6 @@ createConnection({
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
 
-    app.use(await genRouter());
-
-    app.use(errors());
-    app.use(errorHandler());
-
     const gql = await generateGQL();
     gql.applyMiddleware({ app });
 
@@ -53,6 +45,7 @@ createConnection({
   })
   .catch(err => {
     logger.error('Error occurred while starting API.');
-    logger.error(err);
+    // eslint-disable-next-line no-console
+    console.log(err);
     process.exit(1);
   });
