@@ -1,5 +1,6 @@
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
+import config from '../utils/config';
 import path from 'path';
 
 async function generateGQL(): Promise<ApolloServer> {
@@ -12,7 +13,7 @@ async function generateGQL(): Promise<ApolloServer> {
 
   const apollo = new ApolloServer({
     schema,
-    playground: process.env.NODE_ENV === 'development'
+    playground: config.DEVELOPMENT
   });
 
   return apollo;

@@ -1,6 +1,6 @@
-import 'dotenv/config';
 import 'reflect-metadata';
 import bodyParser from 'body-parser';
+import config from './utils/config';
 import { createConnection } from 'typeorm';
 import express from 'express';
 import generateGQL from './graphql';
@@ -9,13 +9,14 @@ import logger from './utils/logger';
 import path from 'path';
 
 const {
+  API_PORT,
+  DEVELOPMENT,
   DB_DATABASE,
   DB_HOST,
   DB_PASS,
-  DB_PORT = '5432',
-  DB_USER = 'postgres',
-  PORT = '8080'
-} = process.env;
+  DB_PORT,
+  DB_USER
+} = config;
 
 createConnection({
   entities: [
@@ -24,11 +25,11 @@ createConnection({
   ],
   type: 'postgres',
   host: DB_HOST,
-  port: parseInt(DB_PORT, 10),
+  port: DB_PORT,
   username: DB_USER,
   password: DB_PASS,
   database: DB_DATABASE,
-  synchronize: process.env.NODE_ENV === 'development'
+  synchronize: DEVELOPMENT
 })
   .then(async () => {
     const app = express();
@@ -39,9 +40,7 @@ createConnection({
     const gql = await generateGQL();
     gql.applyMiddleware({ app });
 
-    const port = parseInt(PORT, 10);
-
-    app.listen(port, () => logger.info(`API is up on port: ${port}`));
+    app.listen(API_PORT, () => logger.info(`API is up on port: ${API_PORT}`));
   })
   .catch(err => {
     logger.error('Error occurred while starting API.');
