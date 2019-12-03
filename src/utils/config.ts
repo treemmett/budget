@@ -1,5 +1,4 @@
 /* eslint-disable lines-between-class-members */
-import crypto from 'crypto';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -21,14 +20,6 @@ class Config {
   public readonly DB_PORT: number = env.DB_PORT
     ? parseInt(env.DB_PORT, 10)
     : 5432;
-
-  public readonly JWT_SECRET: Buffer = env.JWT_SECRET
-    ? Buffer.from(env.JWT_SECRET, 'hex')
-    : crypto.randomBytes(32);
-
-  public readonly HASH_ENCRYPTION_KEY: Buffer = env.HASH_ENCRYPTION_KEY
-    ? Buffer.from(env.HASH_ENCRYPTION_KEY, 'hex')
-    : crypto.randomBytes(32);
 }
 
 const config = new Config();

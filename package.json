@@ -11,7 +11,6 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@ronomon/crypto-async": "^5.0.1",
     "apollo-server-express": "^2.9.9",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
@@ -37,7 +36,6 @@
     "@types/helmet": "^0.0.44",
     "@types/jsonwebtoken": "^8.3.5",
     "@types/node": "^12.11.2",
-    "@types/ronomon__crypto-async": "^2.0.0",
     "@types/uuid": "^3.4.5",
     "chalk": "^2.4.2",
     "concurrently": "^5.0.0",
