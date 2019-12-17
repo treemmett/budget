@@ -1,6 +1,7 @@
-import { Arg, FieldResolver, Query, Resolver, Root } from 'type-graphql';
+import { Arg, Ctx, FieldResolver, Query, Resolver, Root } from 'type-graphql';
 import Account from '../entities/Account';
 import Budget from '../entities/Budget';
+import { Context } from '.';
 import HttpException from '../utils/HttpException';
 import IncomeSource from '../entities/IncomeSource';
 import TransactionCategory from '../entities/TransactionCategory';
@@ -10,15 +11,22 @@ import { getManager } from 'typeorm';
 @Resolver(() => Budget)
 export default class BudgetResolver {
   @Query(() => Budget)
-  public async budget(@Arg('id') id: string): Promise<Budget> {
-    const user = await getManager().findOneOrFail(User, {
-      email: 'tregan@tregan.me'
-    });
+  public async budget(
+    @Arg('id') id: string,
+    @Ctx() ctx: Context
+  ): Promise<Budget> {
+    if (!ctx.user) {
+      throw new HttpException({
+        error: 'unauthorized_request',
+        status: 401,
+        message: 'You are not logged in'
+      });
+    }
 
     const budget = await getManager()
       .createQueryBuilder(Budget, 'budget')
       .leftJoin('budget.user', 'user')
-      .where('user.id = :userId', { userId: user.id })
+      .where('user.id = :userId', { userId: ctx.user.id })
       .andWhere('budget.id = :budgetId', { budgetId: id })
       .getOne();
 
@@ -34,15 +42,19 @@ export default class BudgetResolver {
   }
 
   @Query(() => [Budget])
-  public async budgets(): Promise<Budget[]> {
-    const user = await getManager().findOneOrFail(User, {
-      email: 'tregan@tregan.me'
-    });
+  public async budgets(@Ctx() ctx: Context): Promise<Budget[]> {
+    if (!ctx.user) {
+      throw new HttpException({
+        error: 'unauthorized_request',
+        status: 401,
+        message: 'You are not logged in'
+      });
+    }
 
     return getManager()
       .createQueryBuilder(Budget, 'budget')
       .leftJoin('budget.user', 'user')
-      .where('user.id = :userId', { userId: user.id })
+      .where('user.id = :userId', { userId: ctx.user.id })
       .getMany();
   }
 
