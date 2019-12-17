@@ -1,4 +1,5 @@
 import Account, { AccountType } from '../entities/Account';
+import IncomeSource, { PayScale } from '../entities/IncomeSource';
 import Budget from '../entities/Budget';
 import HttpException from '../utils/HttpException';
 import TransactionCategory from '../entities/TransactionCategory';
@@ -133,5 +134,45 @@ export default class BudgetController {
     }
 
     return category;
+  }
+
+  // incomes
+  public async createIncome(
+    name: string,
+    rate: number,
+    scale: PayScale,
+    hours?: number
+  ): Promise<IncomeSource> {
+    const income = new IncomeSource();
+    income.budget = this.budget;
+    income.name = name;
+    income.rate = rate;
+    income.scale = scale;
+    income.hours = hours;
+    await getManager().save(income);
+    return income;
+  }
+
+  public async getIncomes(): Promise<IncomeSource[]>;
+  public async getIncomes(id: string): Promise<IncomeSource>;
+  public async getIncomes(id?: string): Promise<IncomeSource[] | IncomeSource> {
+    const query = getManager()
+      .createQueryBuilder(IncomeSource, 'income')
+      .leftJoin('income.budget', 'budget')
+      .where('budget.id = :budgetId', { budgetId: this.budget.id });
+
+    const income = id
+      ? await query.andWhere('income.id = :incomeId', { incomeId: id }).getOne()
+      : await query.getMany();
+
+    if (!income) {
+      throw new HttpException({
+        error: 'invalid_request',
+        message: 'Income not found',
+        status: 404
+      });
+    }
+
+    return income;
   }
 }

@@ -1,8 +1,19 @@
-import { FieldResolver, Resolver, Root } from 'type-graphql';
+import {
+  Arg,
+  Ctx,
+  FieldResolver,
+  Int,
+  Mutation,
+  Resolver,
+  Root
+} from 'type-graphql';
+import IncomeSource, { PayScale } from '../entities/IncomeSource';
 import Budget from '../entities/Budget';
+import BudgetController from '../controllers/BudgetController';
+import { Context } from '.';
 import HttpException from '../utils/HttpException';
-import IncomeSource from '../entities/IncomeSource';
 import { getManager } from 'typeorm';
+import requireAuth from '../utils/requireAuth';
 
 @Resolver(() => IncomeSource)
 export default class IncomeResolver {
@@ -23,5 +34,22 @@ export default class IncomeResolver {
     }
 
     return budget;
+  }
+
+  @Mutation(() => IncomeSource)
+  public async createIncome(
+    @Arg('name') name: string,
+    @Arg('rate', () => Int) rate: number,
+    @Arg('scale', () => PayScale) scale: PayScale,
+    @Arg('budgetId') budgetId: string,
+    @Arg('hours') hours: number,
+    @Ctx() ctx: Context
+  ): Promise<IncomeSource> {
+    const budget = await BudgetController.getBudgets(
+      requireAuth(ctx),
+      budgetId
+    );
+
+    return new BudgetController(budget).createIncome(name, rate, scale, hours);
   }
 }
