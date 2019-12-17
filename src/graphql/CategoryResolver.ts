@@ -1,9 +1,19 @@
-import { FieldResolver, Resolver, Root } from 'type-graphql';
+import {
+  Arg,
+  Ctx,
+  FieldResolver,
+  Mutation,
+  Resolver,
+  Root
+} from 'type-graphql';
 import Budget from '../entities/Budget';
+import BudgetController from '../controllers/BudgetController';
+import { Context } from '.';
 import HttpException from '../utils/HttpException';
 import Transaction from '../entities/Transaction';
 import TransactionCategory from '../entities/TransactionCategory';
 import { getManager } from 'typeorm';
+import requireAuth from '../utils/requireAuth';
 
 @Resolver(() => TransactionCategory)
 export default class CategoryResolver {
@@ -39,5 +49,21 @@ export default class CategoryResolver {
       .leftJoin('transaction.category', 'category')
       .where('category.id = :categoryId', { categoryId: parent.id })
       .getMany();
+  }
+
+  @Mutation(() => TransactionCategory)
+  public async createCategory(
+    @Arg('name') name: string,
+    @Arg('budgetId') budgetId: string,
+    @Ctx() ctx: Context
+  ): Promise<TransactionCategory> {
+    const budget = await BudgetController.getBudgets(
+      requireAuth(ctx),
+      budgetId
+    );
+
+    const transaction = await BudgetController.createCategory(name, budget);
+
+    return transaction;
   }
 }

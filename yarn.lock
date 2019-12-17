@@ -1544,10 +1544,10 @@ eslint-config-prettier@^6.5.0:
   dependencies:
     get-stdin "^6.0.0"
 
-eslint-config-zyehex@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/eslint-config-zyehex/-/eslint-config-zyehex-0.1.1.tgz#542ed6cec0402340cfe9b3694ff133af721e9e2e"
-  integrity sha512-BVr3/bP9St5IBfSRWirk2E8SXFEeSvBcY5nVslkaFaO2HeRNvJZMiavTn+g5V1DCemzFFosk5mLxYsck0ZlyUg==
+eslint-config-zyehex@0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/eslint-config-zyehex/-/eslint-config-zyehex-0.1.2.tgz#d83e460dc9141655f73737fe8231d5d2a8613133"
+  integrity sha512-gLsYRfJEoTJ7meggB4tRh/MPhpGSkJ2EVJ02XMEWfpeqKfNmov+C4uIyo4ODX/PFhxOtkuKQrDnj7JOxRZLDAg==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^2.7.0"
     "@typescript-eslint/parser" "^2.7.0"
