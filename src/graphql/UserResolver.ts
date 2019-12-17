@@ -4,6 +4,7 @@ import {
   FieldResolver,
   InputType,
   Mutation,
+  ObjectType,
   Resolver,
   Root
 } from 'type-graphql';
@@ -11,7 +12,10 @@ import HttpException from '../utils/HttpException';
 import Token from '../entities/Token';
 import User from '../entities/User';
 import bcrypt from 'bcryptjs';
+import config from '../utils/config';
 import { getManager } from 'typeorm';
+import jwt from 'jsonwebtoken';
+import uuid from 'uuid/v4';
 
 @InputType({ description: 'New user data' })
 class CreateUserInput {
@@ -26,6 +30,18 @@ class CreateUserInput {
 
   @Field()
   public lastName: string;
+}
+
+@ObjectType({ description: 'Token details for authorization' })
+class LoginToken {
+  @Field({ description: 'The authorization token' })
+  public jwt: string;
+
+  @Field({ description: 'Token details' })
+  public token: Token;
+
+  @Field({ description: 'Details about the logged in user' })
+  public user: User;
 }
 
 @Resolver(() => User)
@@ -56,11 +72,11 @@ export default class UserResolver {
     return user;
   }
 
-  @Mutation(() => User)
+  @Mutation(() => LoginToken)
   public async login(
     @Arg('email') email: string,
     @Arg('password') password: string
-  ): Promise<User> {
+  ): Promise<LoginToken> {
     const user = await getManager().findOne(User, { where: { email } });
 
     if (!user) {
@@ -81,6 +97,29 @@ export default class UserResolver {
       });
     }
 
-    return user;
+    // generate jwt
+    const token = new Token();
+    token.jti = uuid();
+    token.expires = new Date(Date.now() + 1000 * 60 * 60);
+    token.user = user;
+
+    const signedToken = jwt.sign(
+      {
+        exp: Math.floor(token.expires.getTime() / 1000)
+      },
+      config.JWT_SECRET,
+      {
+        jwtid: token.jti,
+        subject: user.id
+      }
+    );
+
+    await getManager().save(Token, token);
+
+    return {
+      token,
+      user,
+      jwt: signedToken
+    };
   }
 }
