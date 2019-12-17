@@ -1,9 +1,19 @@
-import { FieldResolver, Resolver, Root } from 'type-graphql';
-import Account from '../entities/Account';
+import Account, { AccountType } from '../entities/Account';
+import {
+  Arg,
+  Ctx,
+  FieldResolver,
+  Mutation,
+  Resolver,
+  Root
+} from 'type-graphql';
 import Budget from '../entities/Budget';
+import BudgetController from '../controllers/BudgetController';
+import { Context } from '.';
 import HttpException from '../utils/HttpException';
 import Transaction from '../entities/Transaction';
 import { getManager } from 'typeorm';
+import requireAuth from '../utils/requireAuth';
 
 @Resolver(() => Account)
 export default class AccountResolver {
@@ -33,5 +43,20 @@ export default class AccountResolver {
       .leftJoin('transaction.account', 'account')
       .where('account.id = :accountId', { accountId: parent.id })
       .getMany();
+  }
+
+  @Mutation(() => Account)
+  public async createAccount(
+    @Arg('name') name: string,
+    @Arg('type', () => AccountType) type: AccountType,
+    @Arg('budgetId') budgetId: string,
+    @Ctx() ctx: Context
+  ): Promise<Account> {
+    const budget = await BudgetController.getBudgets(
+      requireAuth(ctx),
+      budgetId
+    );
+
+    return new BudgetController(budget).createAccount(name, type);
   }
 }
