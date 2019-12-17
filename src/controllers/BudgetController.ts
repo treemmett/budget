@@ -5,6 +5,12 @@ import User from '../entities/User';
 import { getManager } from 'typeorm';
 
 export default class BudgetController {
+  public budget: Budget;
+
+  public constructor(budget: Budget) {
+    this.budget = budget;
+  }
+
   public static async createBudget(name: string, user: User): Promise<Budget> {
     const budget = new Budget();
     budget.name = name;
@@ -63,5 +69,32 @@ export default class BudgetController {
     }
 
     return budget;
+  }
+
+  public async getCategories(): Promise<TransactionCategory[]>;
+  public async getCategories(id: string): Promise<TransactionCategory>;
+  public async getCategories(
+    id?: string
+  ): Promise<TransactionCategory | TransactionCategory[]> {
+    const query = getManager()
+      .createQueryBuilder(TransactionCategory, 'category')
+      .leftJoin('category.budget', 'budget')
+      .where('budget.id = :budgetId', { budgetId: this.budget.id });
+
+    const category = id
+      ? await query
+          .andWhere('category.id = :categoryId', { categoryId: id })
+          .getOne()
+      : await query.getMany();
+
+    if (!category) {
+      throw new HttpException({
+        error: 'invalid_request',
+        message: 'Category not found',
+        status: 404
+      });
+    }
+
+    return category;
   }
 }

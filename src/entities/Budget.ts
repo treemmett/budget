@@ -37,6 +37,9 @@ export default class Budget {
   )
   public categories: TransactionCategory[];
 
+  @Field(() => TransactionCategory, { description: 'Category in the budget' })
+  public category: TransactionCategory;
+
   @Field(() => [Account], {
     description: 'List of bank accounts in the budget'
   })

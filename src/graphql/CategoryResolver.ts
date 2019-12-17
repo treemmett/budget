@@ -19,10 +19,6 @@ import requireAuth from '../utils/requireAuth';
 export default class CategoryResolver {
   @FieldResolver()
   public async budget(@Root() parent: TransactionCategory): Promise<Budget> {
-    if (parent.budget) {
-      return parent.budget;
-    }
-
     const budget = await getManager()
       .createQueryBuilder(Budget, 'budget')
       .leftJoin('budget.categories', 'category')

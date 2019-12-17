@@ -63,11 +63,15 @@ export default class BudgetResolver {
 
   @FieldResolver(() => [TransactionCategory])
   public categories(@Root() parent: Budget): Promise<TransactionCategory[]> {
-    return getManager()
-      .createQueryBuilder(TransactionCategory, 'category')
-      .leftJoin('category.budget', 'budget')
-      .where('budget.id = :budgetId', { budgetId: parent.id })
-      .getMany();
+    return new BudgetController(parent).getCategories();
+  }
+
+  @FieldResolver(() => TransactionCategory)
+  public category(
+    @Root() parent: Budget,
+    @Arg('id') id: string
+  ): Promise<TransactionCategory> {
+    return new BudgetController(parent).getCategories(id);
   }
 
   @FieldResolver(() => [IncomeSource])
