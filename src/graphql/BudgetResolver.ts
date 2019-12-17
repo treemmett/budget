@@ -21,35 +21,13 @@ import requireAuth from '../utils/requireAuth';
 @Resolver(() => Budget)
 export default class BudgetResolver {
   @Query(() => Budget)
-  public async budget(
-    @Arg('id') id: string,
-    @Ctx() ctx: Context
-  ): Promise<Budget> {
-    const budget = await getManager()
-      .createQueryBuilder(Budget, 'budget')
-      .leftJoin('budget.user', 'user')
-      .where('user.id = :userId', { userId: requireAuth(ctx).id })
-      .andWhere('budget.id = :budgetId', { budgetId: id })
-      .getOne();
-
-    if (!budget) {
-      throw new HttpException({
-        error: 'invalid_request',
-        message: 'Budget not found.',
-        status: 404
-      });
-    }
-
-    return budget;
+  public budget(@Arg('id') id: string, @Ctx() ctx: Context): Promise<Budget> {
+    return BudgetController.getBudgets(requireAuth(ctx), id);
   }
 
   @Query(() => [Budget])
-  public async budgets(@Ctx() ctx: Context): Promise<Budget[]> {
-    return getManager()
-      .createQueryBuilder(Budget, 'budget')
-      .leftJoin('budget.user', 'user')
-      .where('user.id = :userId', { userId: requireAuth(ctx).id })
-      .getMany();
+  public budgets(@Ctx() ctx: Context): Promise<Budget[]> {
+    return BudgetController.getBudgets(requireAuth(ctx));
   }
 
   @FieldResolver(() => [Account])
