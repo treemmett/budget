@@ -16,6 +16,7 @@ import IncomeSource from '../entities/IncomeSource';
 import TransactionCategory from '../entities/TransactionCategory';
 import User from '../entities/User';
 import { getManager } from 'typeorm';
+import requireAuth from '../utils/requireAuth';
 
 @Resolver(() => Budget)
 export default class BudgetResolver {
@@ -24,18 +25,10 @@ export default class BudgetResolver {
     @Arg('id') id: string,
     @Ctx() ctx: Context
   ): Promise<Budget> {
-    if (!ctx.user) {
-      throw new HttpException({
-        error: 'unauthorized_request',
-        status: 401,
-        message: 'You are not logged in'
-      });
-    }
-
     const budget = await getManager()
       .createQueryBuilder(Budget, 'budget')
       .leftJoin('budget.user', 'user')
-      .where('user.id = :userId', { userId: ctx.user.id })
+      .where('user.id = :userId', { userId: requireAuth(ctx).id })
       .andWhere('budget.id = :budgetId', { budgetId: id })
       .getOne();
 
@@ -52,18 +45,10 @@ export default class BudgetResolver {
 
   @Query(() => [Budget])
   public async budgets(@Ctx() ctx: Context): Promise<Budget[]> {
-    if (!ctx.user) {
-      throw new HttpException({
-        error: 'unauthorized_request',
-        status: 401,
-        message: 'You are not logged in'
-      });
-    }
-
     return getManager()
       .createQueryBuilder(Budget, 'budget')
       .leftJoin('budget.user', 'user')
-      .where('user.id = :userId', { userId: ctx.user.id })
+      .where('user.id = :userId', { userId: requireAuth(ctx).id })
       .getMany();
   }
 
@@ -118,15 +103,7 @@ export default class BudgetResolver {
     @Arg('name') name: string,
     @Ctx() ctx: Context
   ): Promise<Budget> {
-    if (!ctx.user) {
-      throw new HttpException({
-        error: 'unauthorized_request',
-        status: 401,
-        message: 'You are not logged in'
-      });
-    }
-
-    const budget = await BudgetController.createBudget(name, ctx.user);
+    const budget = await BudgetController.createBudget(name, requireAuth(ctx));
 
     return budget;
   }
