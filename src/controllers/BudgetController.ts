@@ -175,4 +175,23 @@ export default class BudgetController {
 
     return income;
   }
+
+  // user management
+  public async getUser(): Promise<User> {
+    const budget = await getManager()
+      .createQueryBuilder(Budget, 'budget')
+      .leftJoinAndSelect('budget.user', 'user')
+      .where('budget.id = :budgetId', { budgetId: this.budget.id })
+      .getOne();
+
+    if (!budget) {
+      throw new HttpException({
+        error: 'invalid_request',
+        message: 'Budget not found',
+        status: 404
+      });
+    }
+
+    return budget.user;
+  }
 }

@@ -11,11 +11,9 @@ import Account from '../entities/Account';
 import Budget from '../entities/Budget';
 import BudgetController from '../controllers/BudgetController';
 import { Context } from '.';
-import HttpException from '../utils/HttpException';
 import IncomeSource from '../entities/IncomeSource';
 import TransactionCategory from '../entities/TransactionCategory';
 import User from '../entities/User';
-import { getManager } from 'typeorm';
 import requireAuth from '../utils/requireAuth';
 
 @Resolver(() => Budget)
@@ -70,22 +68,8 @@ export default class BudgetResolver {
   }
 
   @FieldResolver(() => User)
-  public async user(@Root() parent: Budget): Promise<User> {
-    const budget = await getManager()
-      .createQueryBuilder(Budget, 'budget')
-      .leftJoinAndSelect('budget.user', 'user')
-      .where('budget.id = :budgetId', { budgetId: parent.id })
-      .getOne();
-
-    if (!budget) {
-      throw new HttpException({
-        error: 'invalid_request',
-        status: 404,
-        message: 'Budget not found.'
-      });
-    }
-
-    return budget.user;
+  public user(@Root() parent: Budget): Promise<User> {
+    return new BudgetController(parent).getUser();
   }
 
   @Mutation(() => Budget)
