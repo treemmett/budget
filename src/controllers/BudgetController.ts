@@ -25,24 +25,13 @@ export default class BudgetController {
       'Quality of Life'
     ];
 
+    const ctrl = new BudgetController(budget);
+
     await Promise.all(
-      defaultCategories.map(category =>
-        BudgetController.createCategory(category, budget)
-      )
+      defaultCategories.map(category => ctrl.createCategory(category))
     );
 
     return budget;
-  }
-
-  public static async createCategory(
-    name: string,
-    budget: Budget
-  ): Promise<TransactionCategory> {
-    const category = new TransactionCategory();
-    category.name = name;
-    category.budget = budget;
-    await getManager().save(category);
-    return category;
   }
 
   public static async getBudgets(user: User): Promise<Budget[]>;
@@ -69,6 +58,14 @@ export default class BudgetController {
     }
 
     return budget;
+  }
+
+  public async createCategory(name: string): Promise<TransactionCategory> {
+    const category = new TransactionCategory();
+    category.name = name;
+    category.budget = this.budget;
+    await getManager().save(category);
+    return category;
   }
 
   public async getCategories(): Promise<TransactionCategory[]>;

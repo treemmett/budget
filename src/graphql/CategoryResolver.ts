@@ -58,7 +58,9 @@ export default class CategoryResolver {
       budgetId
     );
 
-    const transaction = await BudgetController.createCategory(name, budget);
+    const controller = new BudgetController(budget);
+
+    const transaction = await controller.createCategory(name);
 
     return transaction;
   }
