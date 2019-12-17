@@ -1,3 +1,4 @@
+import Account, { AccountType } from '../entities/Account';
 import Budget from '../entities/Budget';
 import HttpException from '../utils/HttpException';
 import TransactionCategory from '../entities/TransactionCategory';
@@ -60,6 +61,45 @@ export default class BudgetController {
     return budget;
   }
 
+  // accounts
+  public async createAccount(
+    name: string,
+    type: AccountType
+  ): Promise<Account> {
+    const account = new Account();
+    account.budget = this.budget;
+    account.name = name;
+    account.type = type;
+    await getManager().save(account);
+    return account;
+  }
+
+  public async getAccounts(): Promise<Account[]>;
+  public async getAccounts(id: string): Promise<Account>;
+  public async getAccounts(id?: string): Promise<Account | Account[]> {
+    const query = getManager()
+      .createQueryBuilder(Account, 'account')
+      .leftJoin('account.budget', 'budget')
+      .where('budget.id = :budgetId', { budgetId: this.budget.id });
+
+    const account = id
+      ? await query
+          .andWhere('account.id = :accountId', { accountId: id })
+          .getOne()
+      : await query.getMany();
+
+    if (!account) {
+      throw new HttpException({
+        error: 'invalid_request',
+        message: 'Account not found',
+        status: 404
+      });
+    }
+
+    return account;
+  }
+
+  // categories
   public async createCategory(name: string): Promise<TransactionCategory> {
     const category = new TransactionCategory();
     category.name = name;

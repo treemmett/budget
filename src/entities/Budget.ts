@@ -49,6 +49,9 @@ export default class Budget {
   )
   public accounts: Account[];
 
+  @Field(() => Account, { description: 'Bank account in the budget' })
+  public account: Account;
+
   @Field(() => [IncomeSource], { description: 'List of incomes in the budget' })
   @OneToMany(
     () => IncomeSource,

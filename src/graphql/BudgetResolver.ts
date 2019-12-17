@@ -32,11 +32,15 @@ export default class BudgetResolver {
 
   @FieldResolver(() => [Account])
   public accounts(@Root() parent: Budget): Promise<Account[]> {
-    return getManager()
-      .createQueryBuilder(Account, 'account')
-      .leftJoin('account.budget', 'budget')
-      .where('budget.id = :budgetId', { budgetId: parent.id })
-      .getMany();
+    return new BudgetController(parent).getAccounts();
+  }
+
+  @FieldResolver(() => Account)
+  public account(
+    @Root() parent: Budget,
+    @Arg('id') id: string
+  ): Promise<Account> {
+    return new BudgetController(parent).getAccounts(id);
   }
 
   @FieldResolver(() => [TransactionCategory])
