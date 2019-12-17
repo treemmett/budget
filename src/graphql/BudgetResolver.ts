@@ -1,6 +1,15 @@
-import { Arg, Ctx, FieldResolver, Query, Resolver, Root } from 'type-graphql';
+import {
+  Arg,
+  Ctx,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+  Root
+} from 'type-graphql';
 import Account from '../entities/Account';
 import Budget from '../entities/Budget';
+import BudgetController from '../controllers/BudgetController';
 import { Context } from '.';
 import HttpException from '../utils/HttpException';
 import IncomeSource from '../entities/IncomeSource';
@@ -102,5 +111,23 @@ export default class BudgetResolver {
     }
 
     return budget.user;
+  }
+
+  @Mutation(() => Budget)
+  public async createBudget(
+    @Arg('name') name: string,
+    @Ctx() ctx: Context
+  ): Promise<Budget> {
+    if (!ctx.user) {
+      throw new HttpException({
+        error: 'unauthorized_request',
+        status: 401,
+        message: 'You are not logged in'
+      });
+    }
+
+    const budget = await BudgetController.createBudget(name, ctx.user);
+
+    return budget;
   }
 }
