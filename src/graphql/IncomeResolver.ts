@@ -52,4 +52,17 @@ export default class IncomeResolver {
 
     return new BudgetController(budget).createIncome(name, rate, scale, hours);
   }
+
+  @Mutation(() => Boolean)
+  public async deleteIncome(
+    @Arg('id') id: string,
+    @Arg('budgetId') budgetId: string,
+    @Ctx() ctx: Context
+  ): Promise<boolean> {
+    const budget = await BudgetController.getBudgets(
+      requireAuth(ctx),
+      budgetId
+    );
+    return new BudgetController(budget).deleteIncome(id);
+  }
 }

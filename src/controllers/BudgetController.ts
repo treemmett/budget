@@ -165,6 +165,12 @@ export default class BudgetController {
     return income;
   }
 
+  public async deleteIncome(id: string): Promise<boolean> {
+    const income = await this.getIncomes(id);
+    await getManager().remove(income);
+    return true;
+  }
+
   public async getIncomes(): Promise<IncomeSource[]>;
   public async getIncomes(id: string): Promise<IncomeSource>;
   public async getIncomes(id?: string): Promise<IncomeSource[] | IncomeSource> {
