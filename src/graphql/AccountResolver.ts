@@ -59,4 +59,18 @@ export default class AccountResolver {
 
     return new BudgetController(budget).createAccount(name, type);
   }
+
+  @Mutation(() => Boolean)
+  public async deleteAccount(
+    @Arg('id') id: string,
+    @Arg('budgetId') budgetId: string,
+    @Ctx() ctx: Context
+  ): Promise<boolean> {
+    const budget = await BudgetController.getBudgets(
+      requireAuth(ctx),
+      budgetId
+    );
+
+    return new BudgetController(budget).deleteAccount(id);
+  }
 }

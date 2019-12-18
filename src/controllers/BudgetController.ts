@@ -75,6 +75,12 @@ export default class BudgetController {
     return account;
   }
 
+  public async deleteAccount(id: string): Promise<boolean> {
+    const account = await this.getAccounts(id);
+    await getManager().remove(account);
+    return true;
+  }
+
   public async getAccounts(): Promise<Account[]>;
   public async getAccounts(id: string): Promise<Account>;
   public async getAccounts(id?: string): Promise<Account | Account[]> {
