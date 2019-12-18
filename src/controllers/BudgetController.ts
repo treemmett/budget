@@ -115,6 +115,12 @@ export default class BudgetController {
     return category;
   }
 
+  public async deleteCategory(id: string): Promise<boolean> {
+    const category = await this.getCategories(id);
+    await getManager().remove(category);
+    return true;
+  }
+
   public async getCategories(): Promise<TransactionCategory[]>;
   public async getCategories(id: string): Promise<TransactionCategory>;
   public async getCategories(

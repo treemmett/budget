@@ -60,4 +60,17 @@ export default class CategoryResolver {
 
     return new BudgetController(budget).createCategory(name);
   }
+
+  @Mutation(() => Boolean)
+  public async deleteCategory(
+    @Arg('id') id: string,
+    @Arg('budgetId') budgetId: string,
+    @Ctx() ctx: Context
+  ): Promise<boolean> {
+    const budget = await BudgetController.getBudgets(
+      requireAuth(ctx),
+      budgetId
+    );
+    return new BudgetController(budget).deleteCategory(id);
+  }
 }
