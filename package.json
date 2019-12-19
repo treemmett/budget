@@ -6,6 +6,9 @@
   "license": "MIT",
   "scripts": {
     "start": "webpack-dev-server",
+    "test:lint": "eslint src --ext ts,tsx,js,jsx",
+    "test:commit": "concurrently \"yarn:test:lint\" \"yarn:test:typing\"",
+    "test:typing": "tsc --noEmit",
     "build": "webpack -p"
   },
   "dependencies": {
@@ -16,10 +19,19 @@
     "@types/react": "^16.9.11",
     "@types/react-dom": "^16.9.4",
     "awesome-typescript-loader": "^5.2.1",
+    "concurrently": "^5.0.2",
+    "eslint": "^6.7.2",
+    "eslint-config-zyehex": "^0.2.0",
     "html-webpack-plugin": "^3.2.0",
+    "husky": "^3.1.0",
     "typescript": "^3.7.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.9.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn test:commit"
+    }
   }
 }
