@@ -48,22 +48,4 @@ export default class Transaction {
     account => account.transactions
   )
   public account: Account;
-
-  public getDetails(): {
-    id: string;
-    description: string;
-    date: string;
-    amount: number;
-    account: string;
-    category: string;
-  } {
-    return {
-      id: this.id,
-      description: this.description,
-      date: this.date,
-      amount: Number(this.amount),
-      category: this.category.id,
-      account: this.account.id
-    };
-  }
 }

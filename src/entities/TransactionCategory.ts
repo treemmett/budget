@@ -45,11 +45,4 @@ export default class TransactionCategory {
 
   @Field(() => Allocation, { description: 'Allocation for the category' })
   public allocation: Allocation;
-
-  public getDetails(): { id: string; name: string } {
-    return {
-      id: this.id,
-      name: this.name
-    };
-  }
 }

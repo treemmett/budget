@@ -44,20 +44,4 @@ export default class IncomeSource {
     budget => budget.incomes
   )
   public budget: Budget;
-
-  public getDetails(): {
-    id: string;
-    name: string;
-    scale: string;
-    rate: number;
-    hours?: number;
-  } {
-    return {
-      id: this.id,
-      name: this.name,
-      scale: PayScale[this.scale],
-      rate: this.rate,
-      hours: this.hours
-    };
-  }
 }

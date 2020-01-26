@@ -61,11 +61,4 @@ export default class Budget {
 
   @Field(() => IncomeSource, { description: 'Income source' })
   public income: IncomeSource;
-
-  public getDetails(): { id: string; name: string } {
-    return {
-      id: this.id,
-      name: this.name
-    };
-  }
 }

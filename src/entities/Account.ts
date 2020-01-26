@@ -48,12 +48,4 @@ export default class Account {
     transaction => transaction.account
   )
   public transactions: Transaction[];
-
-  public getDetails(): { id: string; name: string; type: string } {
-    return {
-      id: this.id,
-      name: this.name,
-      type: AccountType[this.type]
-    };
-  }
 }
