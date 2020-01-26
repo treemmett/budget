@@ -1,5 +1,6 @@
 import Account, { AccountType } from '../entities/Account';
 import IncomeSource, { PayScale } from '../entities/IncomeSource';
+import Allocation from '../entities/Allocation';
 import Budget from '../entities/Budget';
 import HttpException from '../utils/HttpException';
 import TransactionCategory from '../entities/TransactionCategory';
@@ -104,6 +105,53 @@ export default class BudgetController {
     }
 
     return account;
+  }
+
+  // allocations
+  public async setAllocation(
+    categoryId: string,
+    date: Date,
+    amount: number
+  ): Promise<Allocation> {
+    // ensure date is set to the first
+    date.setDate(1);
+
+    const allocation = await this.getAllocation(categoryId, date);
+
+    allocation.amount = parseFloat(amount.toFixed(2));
+
+    await getManager().save(allocation);
+    return allocation;
+  }
+
+  public async getAllocation(
+    categoryId: string,
+    date: Date
+  ): Promise<Allocation> {
+    const foundAllocation = await getManager()
+      .createQueryBuilder(Allocation, 'allocation')
+      .leftJoin('allocation.category', 'category')
+      .leftJoin('category.budget', 'budget')
+      .where('category.id = :categoryId', { categoryId })
+      .andWhere('budget.id = :budgetId', { budgetId: this.budget.id })
+      .andWhere('EXTRACT(YEAR FROM allocation.date) = :year', {
+        year: date.getFullYear()
+      })
+      .andWhere('EXTRACT(MONTH FROM allocation.date) = :month', {
+        month: date.getMonth() + 1
+      })
+      .getOne();
+
+    if (foundAllocation) {
+      return foundAllocation;
+    }
+
+    const fauxAllocation = new Allocation();
+    fauxAllocation.date = date;
+    fauxAllocation.category = await this.getCategories(categoryId);
+    fauxAllocation.amount = 0;
+
+    return fauxAllocation;
   }
 
   // categories

@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn
 } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
+import Allocation from './Allocation';
 import Budget from './Budget';
 import Transaction from './Transaction';
 
@@ -35,6 +36,15 @@ export default class TransactionCategory {
     transaction => transaction.category
   )
   public transactions: Transaction[];
+
+  @OneToMany(
+    () => Allocation,
+    allocation => allocation.category
+  )
+  public allocations: Allocation[];
+
+  @Field(() => Allocation, { description: 'Allocation for the category' })
+  public allocation: Allocation;
 
   public getDetails(): { id: string; name: string } {
     return {
