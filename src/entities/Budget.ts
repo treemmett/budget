@@ -4,11 +4,13 @@ import {
   Index,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn
 } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
 import Account from './Account';
 import IncomeSource from './IncomeSource';
+import Tax from './Tax';
 import TransactionCategory from './TransactionCategory';
 import User from './User';
 
@@ -61,4 +63,11 @@ export default class Budget {
 
   @Field(() => IncomeSource, { description: 'Income source' })
   public income: IncomeSource;
+
+  @OneToOne(
+    () => Tax,
+    tax => tax.budget
+  )
+  @Field(() => Tax, { description: 'Tax details' })
+  public tax: Tax;
 }

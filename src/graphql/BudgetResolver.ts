@@ -12,6 +12,7 @@ import Budget from '../entities/Budget';
 import BudgetController from '../controllers/BudgetController';
 import { Context } from '.';
 import IncomeSource from '../entities/IncomeSource';
+import Tax from '../entities/Tax';
 import TransactionCategory from '../entities/TransactionCategory';
 import User from '../entities/User';
 import requireAuth from '../utils/requireAuth';
@@ -65,6 +66,11 @@ export default class BudgetResolver {
     @Arg('id') id: string
   ): Promise<IncomeSource> {
     return new BudgetController(parent).getIncomes(id);
+  }
+
+  @FieldResolver(() => Tax)
+  public tax(@Root() parent: Budget): Promise<Tax> {
+    return new BudgetController(parent).getTax();
   }
 
   @FieldResolver(() => User)

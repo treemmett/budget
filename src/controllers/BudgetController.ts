@@ -1,5 +1,6 @@
 import Account, { AccountType } from '../entities/Account';
 import IncomeSource, { PayScale } from '../entities/IncomeSource';
+import Tax, { FilingStatus, State } from '../entities/Tax';
 import Allocation from '../entities/Allocation';
 import Budget from '../entities/Budget';
 import HttpException from '../utils/HttpException';
@@ -240,6 +241,67 @@ export default class BudgetController {
     }
 
     return income;
+  }
+
+  public async calculateIncome(): Promise<number> {
+    const incomes = await this.getIncomes();
+
+    return incomes.reduce((acc, cur) => {
+      switch (PayScale[cur.scale]) {
+        case 'yearly':
+          return acc + cur.rate;
+
+        case 'monthly':
+          return acc + cur.rate * 12;
+
+        case 'weekly':
+          return acc + cur.rate * 52;
+
+        case 'hourly':
+          if (!cur.hours) {
+            return acc;
+          }
+          return acc + cur.rate * 52 * cur.hours;
+
+        default:
+          return acc;
+      }
+    }, 0);
+  }
+
+  // tax
+  public async getTax(): Promise<Tax> {
+    const tax = await getManager()
+      .createQueryBuilder(Tax, 'tax')
+      .leftJoin('tax.budget', 'budget')
+      .where('budget.id = :id', { id: this.budget.id })
+      .getOne();
+
+    if (tax) {
+      return tax;
+    }
+
+    // if no tax data is saved yet, create one
+    const newTax = new Tax();
+    newTax.budget = this.budget;
+    newTax.state = State.Alabama;
+    newTax.status = FilingStatus.single;
+    await getManager().save(newTax);
+    return newTax;
+  }
+
+  public async setTax({
+    state,
+    status
+  }: {
+    state?: State;
+    status?: FilingStatus;
+  }): Promise<Tax> {
+    const tax = await this.getTax();
+    tax.state = state || tax.state;
+    tax.status = status || tax.status;
+    await getManager().save(tax);
+    return tax;
   }
 
   // user management
