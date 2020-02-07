@@ -32,7 +32,14 @@ module.exports = {
     })
   ],
   devServer: {
-    http2: true,
-    historyApiFallback: true
+    historyApiFallback: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    }
   }
 };
