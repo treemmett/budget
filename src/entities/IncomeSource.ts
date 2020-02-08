@@ -34,14 +34,24 @@ export default class IncomeSource {
   @Column()
   public rate: number;
 
-  @Field(() => Float, { description: 'Number of hours per week' })
+  @Field(() => Float, {
+    description: 'Number of hours per week',
+    nullable: true
+  })
   @Column({ nullable: true })
   public hours?: number;
 
-  @Field(() => Budget, { description: 'Budget the income is attached to' })
+  @Field(() => Budget, {
+    description: 'Budget the income source is attached to'
+  })
   @ManyToOne(
     () => Budget,
-    budget => budget.incomes
+    budget => budget.incomeSources
   )
   public budget: Budget;
+
+  @Field(() => Float, {
+    description: 'The total annual income from the source'
+  })
+  public annualIncome: number;
 }

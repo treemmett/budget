@@ -197,56 +197,88 @@ export default class BudgetController {
     return category;
   }
 
-  // incomes
-  public async createIncome(
+  // income source
+  public async createIncomeSource(
     name: string,
     rate: number,
     scale: PayScale,
     hours?: number
   ): Promise<IncomeSource> {
-    const income = new IncomeSource();
-    income.budget = this.budget;
-    income.name = name;
-    income.rate = rate;
-    income.scale = scale;
-    income.hours = hours;
-    await getManager().save(income);
-    return income;
+    const incomeSource = new IncomeSource();
+    incomeSource.budget = this.budget;
+    incomeSource.name = name;
+    incomeSource.rate = rate;
+    incomeSource.scale = scale;
+    incomeSource.hours = hours;
+    await getManager().save(incomeSource);
+    return incomeSource;
   }
 
-  public async deleteIncome(id: string): Promise<boolean> {
-    const income = await this.getIncomes(id);
-    await getManager().remove(income);
+  public async deleteIncomeSource(id: string): Promise<boolean> {
+    const incomeSource = await this.getIncomeSource(id);
+    await getManager().remove(incomeSource);
     return true;
   }
 
-  public async getIncomes(): Promise<IncomeSource[]>;
-  public async getIncomes(id: string): Promise<IncomeSource>;
-  public async getIncomes(id?: string): Promise<IncomeSource[] | IncomeSource> {
+  public async getIncomeSource(): Promise<IncomeSource[]>;
+  public async getIncomeSource(id: string): Promise<IncomeSource>;
+  public async getIncomeSource(
+    id?: string
+  ): Promise<IncomeSource[] | IncomeSource> {
     const query = getManager()
-      .createQueryBuilder(IncomeSource, 'income')
-      .leftJoin('income.budget', 'budget')
+      .createQueryBuilder(IncomeSource, 'incomeSource')
+      .leftJoin('incomeSource.budget', 'budget')
       .where('budget.id = :budgetId', { budgetId: this.budget.id });
 
-    const income = id
-      ? await query.andWhere('income.id = :incomeId', { incomeId: id }).getOne()
+    const incomeSource = id
+      ? await query
+          .andWhere('incomeSource.id = :incomeId', { incomeId: id })
+          .getOne()
       : await query.getMany();
 
-    if (!income) {
+    if (!incomeSource) {
       throw new HttpException({
         error: 'invalid_request',
-        message: 'Income not found',
+        message: 'Income source not found',
         status: 404
       });
     }
 
-    return income;
+    return incomeSource;
   }
 
-  public async calculateIncome(): Promise<number> {
-    const incomes = await this.getIncomes();
+  public async calculateIncome(incomeSourceId?: string): Promise<number> {
+    function parseIncomeSource(source: IncomeSource): number {
+      switch (PayScale[source.scale]) {
+        case 'yearly':
+          return source.rate;
 
-    return incomes.reduce((acc, cur) => {
+        case 'monthly':
+          return source.rate * 12;
+
+        case 'weekly':
+          return source.rate * 52;
+
+        case 'hourly':
+          if (!source.hours) {
+            return 0;
+          }
+          return source.rate * 52 * source.hours;
+
+        default:
+          return 0;
+      }
+    }
+
+    if (incomeSourceId) {
+      const incomeSource = await this.getIncomeSource(incomeSourceId);
+
+      return parseIncomeSource(incomeSource);
+    }
+
+    const incomeSources = await this.getIncomeSource();
+
+    return incomeSources.reduce((acc, cur) => {
       switch (PayScale[cur.scale]) {
         case 'yearly':
           return acc + cur.rate;

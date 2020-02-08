@@ -2,6 +2,7 @@ import {
   Arg,
   Ctx,
   FieldResolver,
+  Float,
   Int,
   Mutation,
   Resolver,
@@ -21,7 +22,7 @@ export default class IncomeResolver {
   public async budget(@Root() parent: IncomeSource): Promise<Budget> {
     const budget = await getManager()
       .createQueryBuilder(Budget, 'budget')
-      .leftJoin('budget.incomes', 'income')
+      .leftJoin('budget.incomeSources', 'income')
       .where('income.id = :incomeId', { incomeId: parent.id })
       .getOne();
 
@@ -36,8 +37,27 @@ export default class IncomeResolver {
     return budget;
   }
 
+  @FieldResolver(() => Float)
+  public async annualIncome(@Root() parent: IncomeSource): Promise<number> {
+    const budget = await getManager()
+      .createQueryBuilder(Budget, 'budget')
+      .leftJoin('budget.incomeSources', 'income')
+      .where('income.id = :incomeId', { incomeId: parent.id })
+      .getOne();
+
+    if (!budget) {
+      throw new HttpException({
+        error: 'invalid_request',
+        status: 404,
+        message: 'Budget not found.'
+      });
+    }
+
+    return new BudgetController(budget).calculateIncome(parent.id);
+  }
+
   @Mutation(() => IncomeSource)
-  public async createIncome(
+  public async createIncomeSource(
     @Arg('name') name: string,
     @Arg('rate', () => Int) rate: number,
     @Arg('scale', () => PayScale) scale: PayScale,
@@ -50,11 +70,16 @@ export default class IncomeResolver {
       budgetId
     );
 
-    return new BudgetController(budget).createIncome(name, rate, scale, hours);
+    return new BudgetController(budget).createIncomeSource(
+      name,
+      rate,
+      scale,
+      hours
+    );
   }
 
   @Mutation(() => Boolean)
-  public async deleteIncome(
+  public async deleteIncomeSource(
     @Arg('id') id: string,
     @Arg('budgetId') budgetId: string,
     @Ctx() ctx: Context
@@ -63,6 +88,6 @@ export default class IncomeResolver {
       requireAuth(ctx),
       budgetId
     );
-    return new BudgetController(budget).deleteIncome(id);
+    return new BudgetController(budget).deleteIncomeSource(id);
   }
 }

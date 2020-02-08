@@ -56,16 +56,16 @@ export default class BudgetResolver {
   }
 
   @FieldResolver(() => [IncomeSource])
-  public incomes(@Root() parent: Budget): Promise<IncomeSource[]> {
-    return new BudgetController(parent).getIncomes();
+  public incomeSources(@Root() parent: Budget): Promise<IncomeSource[]> {
+    return new BudgetController(parent).getIncomeSource();
   }
 
   @FieldResolver(() => IncomeSource)
-  public income(
+  public incomeSource(
     @Root() parent: Budget,
     @Arg('id') id: string
   ): Promise<IncomeSource> {
-    return new BudgetController(parent).getIncomes(id);
+    return new BudgetController(parent).getIncomeSource(id);
   }
 
   @FieldResolver(() => Tax)

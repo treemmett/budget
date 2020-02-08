@@ -54,15 +54,17 @@ export default class Budget {
   @Field(() => Account, { description: 'Bank account in the budget' })
   public account: Account;
 
-  @Field(() => [IncomeSource], { description: 'List of incomes in the budget' })
+  @Field(() => [IncomeSource], {
+    description: 'List of income sources in the budget'
+  })
   @OneToMany(
     () => IncomeSource,
-    income => income.budget
+    incomeSource => incomeSource.budget
   )
-  public incomes: IncomeSource[];
+  public incomeSources: IncomeSource[];
 
   @Field(() => IncomeSource, { description: 'Income source' })
-  public income: IncomeSource;
+  public incomeSource: IncomeSource;
 
   @OneToOne(
     () => Tax,
