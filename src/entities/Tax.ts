@@ -5,7 +5,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn
 } from 'typeorm';
-import { Field, Float, ObjectType, registerEnumType } from 'type-graphql';
+import { Field, ObjectType, registerEnumType } from 'type-graphql';
 import Budget from './Budget';
 
 export enum State {
@@ -95,13 +95,4 @@ export default class Tax {
   @Field(() => FilingStatus, { description: 'Filing status for income tax' })
   @Column({ type: 'enum', enum: FilingStatus })
   public status: FilingStatus;
-
-  @Field(() => Float, { description: 'Calculated gross income ' })
-  public grossIncome: number;
-
-  @Field(() => Float, { description: 'Estimated income tax' })
-  public incomeTax: number;
-
-  @Field(() => Float, { description: 'Estimated net income' })
-  public netIncome: number;
 }
