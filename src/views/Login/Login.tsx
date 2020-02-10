@@ -1,5 +1,8 @@
 import React, { FC } from 'react';
+import Input from '../../components/Input';
+import cx from 'classnames';
 import gql from 'graphql-tag';
+import styles from './Login.scss';
 import { useMutation } from '@apollo/react-hooks';
 
 const LOGIN = gql`
@@ -36,11 +39,27 @@ const Login: FC = () => {
   }
 
   return (
-    <form onSubmit={onSubmit}>
-      <input name="email" placeholder="email" />
-      <input name="password" placeholder="password" type="password" />
-      <button type="submit">Login</button>
-    </form>
+    <div className={styles.login}>
+      <h1 className={styles.brand}>Rudget</h1>
+      <form className={styles.form} onSubmit={onSubmit}>
+        <Input name="email" label="Email" className={styles.input} required />
+        <Input
+          name="password"
+          label="Password"
+          type="password"
+          className={styles.input}
+          required
+        />
+        <div className={styles.buttons}>
+          <a className={cx(styles.button, styles.secondary)} href="/register">
+            Register
+          </a>
+          <button className={styles.button} type="submit">
+            Login
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 

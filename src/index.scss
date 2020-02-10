@@ -1,0 +1,15 @@
+@import url('https://rsms.me/inter/inter.css');
+
+$font: 'Inter', 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
+  'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
+body {
+  background-color: hsl(216, 33%, 97%);
+  margin: 0;
+  font-family: $font;
+  color: #333;
+}
+
+input {
+  font-family: $font;
+}

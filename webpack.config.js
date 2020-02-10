@@ -15,6 +15,27 @@ module.exports = {
       {
         test: /\.tsx?$/,
         loader: 'awesome-typescript-loader'
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          'style-loader',
+          {
+            loader: require.resolve('css-loader'),
+            options: {
+              modules: {
+                localIdentName: '[hash:base64:6]'
+              }
+            }
+          },
+          {
+            loader: require.resolve('postcss-loader'),
+            options: {
+              plugins: [require('autoprefixer')]
+            }
+          },
+          'sass-loader'
+        ]
       }
     ]
   },

@@ -1,3 +1,4 @@
+import './index.scss';
 import React, { FC } from 'react';
 import { ApolloClient } from 'apollo-client';
 import { ApolloLink } from 'apollo-link';

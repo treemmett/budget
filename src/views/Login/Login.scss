@@ -1,0 +1,73 @@
+$green: #1ec965;
+
+.brand {
+  color: $green;
+}
+
+.login {
+  margin: 6rem auto;
+  width: 30rem;
+  max-width: calc(100vw - 5rem);
+}
+
+.form {
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 2px 10px 0 rgba(#444751, 0.13),
+    0 1.5rem 1.125rem -1.125rem rgba(#212125, 0.16);
+  background-color: #fff;
+}
+
+.input {
+  display: block !important;
+  margin-bottom: 1rem;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.button {
+  background-color: $green;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 1rem;
+  padding: 0.725rem 1.875rem;
+  outline: none;
+  cursor: pointer;
+  transition-property: box-shadow, background-color, border-color;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.68, 0.28, 0.31, 0.8);
+  user-select: none;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    background-color: desaturate($green, 10%);
+    box-shadow: 0 5px 10px 0px rgba(33, 33, 37, 0.3);
+  }
+
+  &:active {
+    background-color: desaturate($green, 20%);
+    box-shadow: 0px 2px 7px rgba(#212125, 0.3);
+  }
+
+  &.secondary {
+    background-color: transparent;
+    color: #333;
+    box-shadow: none;
+
+    &:hover,
+    &:focus {
+      border-color: $green;
+    }
+
+    &:active {
+      background-color: lighten($green, 40%);
+      border-color: lighten($green, 10%);
+    }
+  }
+}
