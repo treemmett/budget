@@ -8,6 +8,7 @@ import {
 import { Field, ID, ObjectType } from 'type-graphql';
 import Allocation from './Allocation';
 import Budget from './Budget';
+import CategoryGroup from './CategoryGroup';
 import Transaction from './Transaction';
 
 @ObjectType({ description: 'Budget category' })
@@ -27,6 +28,13 @@ export default class TransactionCategory {
     budget => budget.categories
   )
   public budget: Budget;
+
+  @Field(() => CategoryGroup, { description: 'The group the category is in' })
+  @ManyToOne(
+    () => CategoryGroup,
+    group => group.categories
+  )
+  public group: CategoryGroup;
 
   @Field(() => [Transaction], {
     description: 'List of transactions within the category'

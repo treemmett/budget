@@ -3,6 +3,7 @@ import IncomeSource, { PayScale } from '../entities/IncomeSource';
 import Tax, { FilingStatus, State } from '../entities/Tax';
 import Allocation from '../entities/Allocation';
 import Budget from '../entities/Budget';
+import CategoryGroup from '../entities/CategoryGroup';
 import HttpException from '../utils/HttpException';
 import TransactionCategory from '../entities/TransactionCategory';
 import User from '../entities/User';
@@ -195,6 +196,84 @@ export default class BudgetController {
     }
 
     return category;
+  }
+
+  public async setCategoryGroup(
+    categoryId: string,
+    categoryGroupId: string
+  ): Promise<CategoryGroup> {
+    const [category, group] = await Promise.all([
+      this.getCategories(categoryId),
+      this.getCategoryGroups(categoryGroupId)
+    ]);
+
+    category.group = group;
+    await getManager().save(category);
+
+    return group;
+  }
+
+  // category groups
+  public async createCategoryGroup(name: string): Promise<CategoryGroup> {
+    const categoryGroup = new CategoryGroup();
+    categoryGroup.budget = this.budget;
+    categoryGroup.name = name;
+    await getManager().save(categoryGroup);
+    return categoryGroup;
+  }
+
+  public async deleteCategoryGroup(groupId: string): Promise<true> {
+    const [group, categoriesInGroup] = await Promise.all([
+      this.getCategoryGroups(groupId),
+      this.getCategoriesInGroup(groupId)
+    ]);
+
+    if (categoriesInGroup.length) {
+      throw new HttpException({
+        status: 409,
+        error: 'request_failed',
+        message: 'Unable to delete group that contains categories'
+      });
+    }
+
+    await getManager().remove(group);
+
+    return true;
+  }
+
+  public async getCategoryGroups(): Promise<CategoryGroup[]>;
+  public async getCategoryGroups(groupId: string): Promise<CategoryGroup>;
+  public async getCategoryGroups(
+    groupId?: string
+  ): Promise<CategoryGroup | CategoryGroup[]> {
+    const query = getManager()
+      .createQueryBuilder(CategoryGroup, 'group')
+      .leftJoin('group.budget', 'budget')
+      .where('budget.id = :budgetId', { budgetId: this.budget.id });
+
+    const group = groupId
+      ? await query.andWhere('group.id = :groupId', { groupId }).getOne()
+      : await query.getMany();
+
+    if (!group) {
+      throw new HttpException({
+        error: 'invalid_request',
+        message: 'Category group not found',
+        status: 404
+      });
+    }
+
+    return group;
+  }
+
+  public getCategoriesInGroup(groupId: string): Promise<TransactionCategory[]> {
+    return getManager()
+      .createQueryBuilder(TransactionCategory, 'category')
+      .leftJoin('category.budget', 'budget')
+      .leftJoin('category.group', 'group')
+      .where('budget.id = :budgetId', { budgetId: this.budget.id })
+      .andWhere('group.id = :groupId', { groupId })
+      .getMany();
   }
 
   // income source

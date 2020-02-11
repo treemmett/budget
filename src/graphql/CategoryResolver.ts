@@ -13,6 +13,7 @@ import { Max, Min } from 'class-validator';
 import Allocation from '../entities/Allocation';
 import Budget from '../entities/Budget';
 import BudgetController from '../controllers/BudgetController';
+import CategoryGroup from '../entities/CategoryGroup';
 import { Context } from '.';
 import HttpException from '../utils/HttpException';
 import Transaction from '../entities/Transaction';
@@ -76,6 +77,27 @@ export default class CategoryResolver {
   }
 
   @FieldResolver()
+  public async group(
+    @Root() parent: TransactionCategory
+  ): Promise<CategoryGroup> {
+    const group = await getManager()
+      .createQueryBuilder(CategoryGroup, 'group')
+      .leftJoin('group.categories', 'category')
+      .where('category.id = :categoryId', { categoryId: parent.id })
+      .getOne();
+
+    if (!group) {
+      throw new HttpException({
+        error: 'invalid_request',
+        message: 'No group found for category',
+        status: 404
+      });
+    }
+
+    return group;
+  }
+
+  @FieldResolver()
   public async transactions(
     @Root() parent: TransactionCategory
   ): Promise<Transaction[]> {
@@ -111,5 +133,22 @@ export default class CategoryResolver {
       budgetId
     );
     return new BudgetController(budget).deleteCategory(id);
+  }
+
+  @Mutation(() => CategoryGroup)
+  public async setCategoryGroup(
+    @Arg('categoryGroupId') categoryGroupId: string,
+    @Arg('categoryId') categoryId: string,
+    @Arg('budgetId') budgetId: string,
+    @Ctx() ctx: Context
+  ): Promise<CategoryGroup> {
+    const budget = await BudgetController.getBudgets(
+      requireAuth(ctx),
+      budgetId
+    );
+    return new BudgetController(budget).setCategoryGroup(
+      categoryId,
+      categoryGroupId
+    );
   }
 }

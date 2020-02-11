@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
 import Account from './Account';
+import CategoryGroup from './CategoryGroup';
 import IncomeSource from './IncomeSource';
 import Tax from './Tax';
 import TransactionCategory from './TransactionCategory';
@@ -41,6 +42,15 @@ export default class Budget {
 
   @Field(() => TransactionCategory, { description: 'Category in the budget' })
   public category: TransactionCategory;
+
+  @Field(() => [CategoryGroup], {
+    description: 'All category groups within the budget'
+  })
+  @OneToMany(
+    () => CategoryGroup,
+    group => group.budget
+  )
+  public categoryGroups: CategoryGroup[];
 
   @Field(() => [Account], {
     description: 'List of bank accounts in the budget'

@@ -10,6 +10,7 @@ import {
 import Account from '../entities/Account';
 import Budget from '../entities/Budget';
 import BudgetController from '../controllers/BudgetController';
+import CategoryGroup from '../entities/CategoryGroup';
 import { Context } from '.';
 import IncomeSource from '../entities/IncomeSource';
 import Tax from '../entities/Tax';
@@ -53,6 +54,11 @@ export default class BudgetResolver {
     @Arg('id') id: string
   ): Promise<TransactionCategory> {
     return new BudgetController(parent).getCategories(id);
+  }
+
+  @FieldResolver(() => [CategoryGroup])
+  public categoryGroups(@Root() parent: Budget): Promise<CategoryGroup[]> {
+    return new BudgetController(parent).getCategoryGroups();
   }
 
   @FieldResolver(() => [IncomeSource])

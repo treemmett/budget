@@ -6,6 +6,7 @@ export interface HttpError {
 
 export type HttpErrorType =
   | 'invalid_request'
+  | 'request_failed'
   | 'server_error'
   | 'unauthorized_request';
 
