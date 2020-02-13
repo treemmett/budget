@@ -38,7 +38,8 @@ export default class Account {
   @Field(() => Budget)
   @ManyToOne(
     () => Budget,
-    budget => budget.accounts
+    budget => budget.accounts,
+    { onDelete: 'CASCADE', nullable: false }
   )
   public budget: Budget;
 

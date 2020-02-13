@@ -37,7 +37,8 @@ export default class Token {
   @Field(() => User, { description: 'The tokens owning user' })
   @ManyToOne(
     () => User,
-    user => user.tokens
+    user => user.tokens,
+    { onDelete: 'CASCADE', nullable: false }
   )
   public user: User;
 }

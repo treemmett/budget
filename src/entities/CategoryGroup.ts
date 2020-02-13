@@ -23,7 +23,8 @@ export default class CategoryGroup {
   @Field(() => Budget, { description: 'The budget of the group' })
   @ManyToOne(
     () => Budget,
-    budget => budget.categoryGroups
+    budget => budget.categoryGroups,
+    { onDelete: 'CASCADE', nullable: false }
   )
   public budget: Budget;
 

@@ -27,7 +27,7 @@ export default class Budget {
   public name: string;
 
   @Field(() => User, { description: "Budget's owner" })
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE', nullable: false })
   @Index()
   public user: User;
 

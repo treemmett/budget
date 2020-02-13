@@ -20,7 +20,8 @@ export default class Allocation {
   })
   @ManyToOne(
     () => TransactionCategory,
-    category => category.allocations
+    category => category.allocations,
+    { onDelete: 'CASCADE', nullable: false }
   )
   public category: TransactionCategory;
 

@@ -46,7 +46,8 @@ export default class IncomeSource {
   })
   @ManyToOne(
     () => Budget,
-    budget => budget.incomeSources
+    budget => budget.incomeSources,
+    { onDelete: 'CASCADE', nullable: false }
   )
   public budget: Budget;
 

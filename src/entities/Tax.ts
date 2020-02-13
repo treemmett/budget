@@ -83,7 +83,8 @@ export default class Tax {
 
   @OneToOne(
     () => Budget,
-    budget => budget.tax
+    budget => budget.tax,
+    { onDelete: 'CASCADE', nullable: false }
   )
   @JoinColumn()
   public budget: Budget;

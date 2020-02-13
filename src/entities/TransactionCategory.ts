@@ -25,14 +25,16 @@ export default class TransactionCategory {
   @Field(() => Budget, { description: 'Budget the transaction is attached to' })
   @ManyToOne(
     () => Budget,
-    budget => budget.categories
+    budget => budget.categories,
+    { onDelete: 'CASCADE', nullable: false }
   )
   public budget: Budget;
 
   @Field(() => CategoryGroup, { description: 'The group the category is in' })
   @ManyToOne(
     () => CategoryGroup,
-    group => group.categories
+    group => group.categories,
+    { onDelete: 'CASCADE', nullable: false }
   )
   public group: CategoryGroup;
 

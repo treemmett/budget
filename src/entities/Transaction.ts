@@ -36,7 +36,8 @@ export default class Transaction {
   @Index()
   @ManyToOne(
     () => TransactionCategory,
-    category => category.transactions
+    category => category.transactions,
+    { onDelete: 'CASCADE', nullable: false }
   )
   public category: TransactionCategory;
 
