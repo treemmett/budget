@@ -22,8 +22,6 @@
     "jsonwebtoken": "^8.5.1",
     "pg": "^7.12.1",
     "reflect-metadata": "^0.1.13",
-    "sodium-native": "^2.4.6",
-    "sodium-plus": "^0.4.0",
     "type-graphql": "^0.17.5",
     "typeorm": "^0.2.20",
     "uuid": "^3.3.3",
