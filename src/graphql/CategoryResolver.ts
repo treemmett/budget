@@ -111,6 +111,7 @@ export default class CategoryResolver {
   @Mutation(() => TransactionCategory)
   public async createCategory(
     @Arg('name') name: string,
+    @Arg('categoryGroupId') categoryGroupId: string,
     @Arg('budgetId') budgetId: string,
     @Ctx() ctx: Context
   ): Promise<TransactionCategory> {
@@ -119,7 +120,7 @@ export default class CategoryResolver {
       budgetId
     );
 
-    return new BudgetController(budget).createCategory(name);
+    return new BudgetController(budget).createCategory(name, categoryGroupId);
   }
 
   @Mutation(() => Boolean)

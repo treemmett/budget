@@ -22,7 +22,7 @@ export default class BudgetController {
     budget.user = user;
     await getManager().save(budget);
 
-    const defaultCategories = [
+    const defaultGroups = [
       'Housing',
       'Transportation',
       'Food',
@@ -33,7 +33,7 @@ export default class BudgetController {
     const ctrl = new BudgetController(budget);
 
     await Promise.all(
-      defaultCategories.map(category => ctrl.createCategory(category))
+      defaultGroups.map(group => ctrl.createCategoryGroup(group))
     );
 
     return budget;
@@ -157,10 +157,14 @@ export default class BudgetController {
   }
 
   // categories
-  public async createCategory(name: string): Promise<TransactionCategory> {
+  public async createCategory(
+    name: string,
+    groupId: string
+  ): Promise<TransactionCategory> {
     const category = new TransactionCategory();
     category.name = name;
     category.budget = this.budget;
+    category.group = await this.getCategoryGroups(groupId);
     await getManager().save(category);
     return category;
   }
