@@ -23,17 +23,44 @@ export default class BudgetController {
     await getManager().save(budget);
 
     const defaultGroups = [
-      'Housing',
-      'Transportation',
-      'Food',
-      'Personal Care',
-      'Quality of Life'
+      {
+        name: 'Housing',
+        categories: ['Rent', 'Insurance', 'Power', 'Gas', 'Internet']
+      },
+      {
+        name: 'Transportation',
+        categories: ['Auto Loan', 'Fuel', 'Insurance', 'Parking', 'Maintenance']
+      },
+      {
+        name: 'Food',
+        categories: ['Groceries', 'Dining']
+      },
+      {
+        name: 'Personal Care',
+        categories: ['Haircut', 'Medical']
+      },
+      {
+        name: 'Quality of Life',
+        categories: ['Entertainment', 'Clothing', 'Vacation']
+      }
     ];
 
     const ctrl = new BudgetController(budget);
 
     await Promise.all(
-      defaultGroups.map(group => ctrl.createCategoryGroup(group))
+      defaultGroups.map(async group => {
+        const createdGroup = await ctrl.createCategoryGroup(group.name);
+
+        await Promise.all(
+          group.categories.map(async categoryName => {
+            const category = new TransactionCategory();
+            category.name = categoryName;
+            category.budget = budget;
+            category.group = createdGroup;
+            await getManager().save(category);
+          })
+        );
+      })
     );
 
     return budget;
