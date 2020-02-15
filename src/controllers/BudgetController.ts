@@ -117,6 +117,18 @@ export default class BudgetController {
     return true;
   }
 
+  public async updateAccount(
+    id: string,
+    name?: string,
+    type?: AccountType
+  ): Promise<Account> {
+    const account = await this.getAccounts(id);
+    account.name = name === undefined ? account.name : name;
+    account.type = type === undefined ? account.type : type;
+    await getManager().save(account);
+    return account;
+  }
+
   public async getAccounts(): Promise<Account[]>;
   public async getAccounts(id: string): Promise<Account>;
   public async getAccounts(id?: string): Promise<Account | Account[]> {

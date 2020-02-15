@@ -73,4 +73,19 @@ export default class AccountResolver {
 
     return new BudgetController(budget).deleteAccount(id);
   }
+
+  @Mutation(() => Account)
+  public async updateAccount(
+    @Arg('id') id: string,
+    @Arg('budgetId') budgetId: string,
+    @Ctx() ctx: Context,
+    @Arg('name', { nullable: true }) name?: string,
+    @Arg('type', () => AccountType, { nullable: true }) type?: AccountType
+  ): Promise<Account> {
+    const budget = await BudgetController.getBudgets(
+      requireAuth(ctx),
+      budgetId
+    );
+    return new BudgetController(budget).updateAccount(id, name, type);
+  }
 }
