@@ -92,6 +92,12 @@ export default class BudgetController {
     return budget;
   }
 
+  public async renameBudget(newName: string): Promise<Budget> {
+    this.budget.name = newName;
+    await getManager().save(this.budget);
+    return this.budget;
+  }
+
   // accounts
   public async createAccount(
     name: string,

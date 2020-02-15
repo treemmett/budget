@@ -93,4 +93,14 @@ export default class BudgetResolver {
 
     return budget;
   }
+
+  @Mutation(() => Budget)
+  public async renameBudget(
+    @Arg('name') name: string,
+    @Arg('id') id: string,
+    @Ctx() ctx: Context
+  ): Promise<Budget> {
+    const budget = await BudgetController.getBudgets(requireAuth(ctx), id);
+    return new BudgetController(budget).renameBudget(name);
+  }
 }
