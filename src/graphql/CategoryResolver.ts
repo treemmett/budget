@@ -136,6 +136,20 @@ export default class CategoryResolver {
     return new BudgetController(budget).deleteCategory(id);
   }
 
+  @Mutation(() => TransactionCategory)
+  public async renameCategory(
+    @Arg('id') id: string,
+    @Arg('newName') newName: string,
+    @Arg('budgetId') budgetId: string,
+    @Ctx() ctx: Context
+  ): Promise<TransactionCategory> {
+    const budget = await BudgetController.getBudgets(
+      requireAuth(ctx),
+      budgetId
+    );
+    return new BudgetController(budget).renameCategory(id, newName);
+  }
+
   @Mutation(() => CategoryGroup)
   public async setCategoryGroup(
     @Arg('categoryGroupId') categoryGroupId: string,

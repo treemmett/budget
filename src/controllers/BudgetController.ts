@@ -202,6 +202,16 @@ export default class BudgetController {
     return true;
   }
 
+  public async renameCategory(
+    id: string,
+    newName: string
+  ): Promise<TransactionCategory> {
+    const category = await this.getCategories(id);
+    category.name = newName;
+    await getManager().save(category);
+    return category;
+  }
+
   public async getCategories(): Promise<TransactionCategory[]>;
   public async getCategories(id: string): Promise<TransactionCategory>;
   public async getCategories(
