@@ -7,6 +7,8 @@ import {
 } from 'typeorm';
 import { Field, Float, ID, ObjectType } from 'type-graphql';
 import Account from './Account';
+import Budget from './Budget';
+import DateScalar from '../graphql/scalars/Date';
 import TransactionCategory from './TransactionCategory';
 
 @ObjectType({ description: 'Transaction' })
@@ -16,15 +18,19 @@ export default class Transaction {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
+  @Field(() => Budget, { description: 'Budget the transaction is in' })
+  @ManyToOne(() => Budget, { nullable: false, onDelete: 'CASCADE' })
+  public budget: Budget;
+
   @Field({ description: 'Details of the transaction' })
   @Column()
   public description: string;
 
-  @Field({
+  @Field(() => DateScalar, {
     description: 'Date the transaction occurred'
   })
   @Column({ type: 'date' })
-  public date: string;
+  public date: Date;
 
   @Field(() => Float, { description: 'Amount of the transaction' })
   @Column({ type: 'decimal', precision: 13, scale: 2 })

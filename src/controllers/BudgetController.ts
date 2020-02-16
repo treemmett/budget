@@ -5,6 +5,7 @@ import Allocation from '../entities/Allocation';
 import Budget from '../entities/Budget';
 import CategoryGroup from '../entities/CategoryGroup';
 import HttpException from '../utils/HttpException';
+import Transaction from '../entities/Transaction';
 import TransactionCategory from '../entities/TransactionCategory';
 import User from '../entities/User';
 import { getManager } from 'typeorm';
@@ -472,6 +473,37 @@ export default class BudgetController {
     tax.status = status || tax.status;
     await getManager().save(tax);
     return tax;
+  }
+
+  // transaction
+  public async createTransaction(
+    accountId: string,
+    amount: number,
+    categoryId: string,
+    date: Date,
+    description: string
+  ): Promise<Transaction> {
+    const [account, category] = await Promise.all([
+      this.getAccounts(accountId),
+      this.getCategories(categoryId)
+    ]);
+    const transaction = new Transaction();
+    transaction.account = account;
+    transaction.amount = amount;
+    transaction.category = category;
+    transaction.budget = this.budget;
+    transaction.date = date;
+    transaction.description = description;
+    await getManager().save(transaction);
+    return transaction;
+  }
+
+  public getTransactions(): Promise<Transaction[]> {
+    return getManager()
+      .createQueryBuilder(Transaction, 'transaction')
+      .leftJoin('transaction.budget', 'budget')
+      .where('budget.id = :budgetId', { budgetId: this.budget.id })
+      .getMany();
   }
 
   // user management

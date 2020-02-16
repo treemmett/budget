@@ -14,6 +14,7 @@ import CategoryGroup from '../entities/CategoryGroup';
 import { Context } from '.';
 import IncomeSource from '../entities/IncomeSource';
 import Tax from '../entities/Tax';
+import Transaction from '../entities/Transaction';
 import TransactionCategory from '../entities/TransactionCategory';
 import User from '../entities/User';
 import requireAuth from '../utils/requireAuth';
@@ -77,6 +78,11 @@ export default class BudgetResolver {
   @FieldResolver(() => Tax)
   public tax(@Root() parent: Budget): Promise<Tax> {
     return new BudgetController(parent).getTax();
+  }
+
+  @FieldResolver(() => [Transaction])
+  public transactions(@Root() parent: Budget): Promise<Transaction[]> {
+    return new BudgetController(parent).getTransactions();
   }
 
   @FieldResolver(() => User)

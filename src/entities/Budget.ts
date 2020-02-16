@@ -12,6 +12,7 @@ import Account from './Account';
 import CategoryGroup from './CategoryGroup';
 import IncomeSource from './IncomeSource';
 import Tax from './Tax';
+import Transaction from './Transaction';
 import TransactionCategory from './TransactionCategory';
 import User from './User';
 
@@ -60,6 +61,13 @@ export default class Budget {
     account => account.budget
   )
   public accounts: Account[];
+
+  @Field(() => [Transaction], { description: 'All transactions in the budget' })
+  @OneToMany(
+    () => Transaction,
+    transaction => transaction.budget
+  )
+  public transactions: Transaction[];
 
   @Field(() => Account, { description: 'Bank account in the budget' })
   public account: Account;
