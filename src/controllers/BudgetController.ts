@@ -498,12 +498,91 @@ export default class BudgetController {
     return transaction;
   }
 
-  public getTransactions(): Promise<Transaction[]> {
-    return getManager()
+  public getTransactions(filters?: {
+    accountId?: string;
+    categoryId?: string;
+    from?: Date;
+    to?: Date;
+  }): Promise<Transaction[]> {
+    const toDate = ((): Date => {
+      if (filters && filters.to) {
+        return filters.to;
+      }
+
+      const now = new Date();
+      now.setMonth(now.getMonth() + 1);
+      now.setDate(1);
+      now.setHours(23, 59, 59, 999);
+      return now;
+    })();
+
+    const fromDate = ((): Date => {
+      if (filters && filters.from) {
+        return filters.from;
+      }
+
+      const now = new Date();
+      now.setDate(1);
+      now.setHours(0, 0, 0, 0);
+      return now;
+    })();
+
+    if (fromDate > toDate) {
+      throw new HttpException({
+        error: 'invalid_request',
+        message: '"From date" cannot be after "to date"',
+        status: 400
+      });
+    }
+
+    const toUTC = Date.UTC(
+      toDate.getFullYear(),
+      toDate.getMonth(),
+      toDate.getDate()
+    );
+    const fromUTC = Date.UTC(
+      fromDate.getFullYear(),
+      fromDate.getMonth(),
+      fromDate.getDate()
+    );
+
+    const diff = Math.floor(toUTC - fromUTC);
+
+    if (diff > 366 * 24 * 60 * 60 * 1000) {
+      throw new HttpException({
+        error: 'invalid_request',
+        message:
+          'Difference between the "from date" and "to date" cannot be greater than 366 days',
+        status: 400
+      });
+    }
+
+    const query = getManager()
       .createQueryBuilder(Transaction, 'transaction')
       .leftJoin('transaction.budget', 'budget')
       .where('budget.id = :budgetId', { budgetId: this.budget.id })
-      .getMany();
+      .andWhere('transaction.date <= :toDate', { toDate })
+      .andWhere('transaction.date >= :fromDate', { fromDate });
+
+    if (!filters) {
+      return query.getMany();
+    }
+
+    if (filters.accountId) {
+      query
+        .leftJoin('transaction.account', 'account')
+        .andWhere('account.id = :accountId', { accountId: filters.accountId });
+    }
+
+    if (filters.categoryId) {
+      query
+        .leftJoin('transaction.category', 'category')
+        .andWhere('category.id = :categoryId', {
+          categoryId: filters.categoryId
+        });
+    }
+
+    return query.getMany();
   }
 
   // user management

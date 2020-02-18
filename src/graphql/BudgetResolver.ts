@@ -12,6 +12,7 @@ import Budget from '../entities/Budget';
 import BudgetController from '../controllers/BudgetController';
 import CategoryGroup from '../entities/CategoryGroup';
 import { Context } from '.';
+import DateScalar from './scalars/Date';
 import IncomeSource from '../entities/IncomeSource';
 import Tax from '../entities/Tax';
 import Transaction from '../entities/Transaction';
@@ -81,8 +82,37 @@ export default class BudgetResolver {
   }
 
   @FieldResolver(() => [Transaction])
-  public transactions(@Root() parent: Budget): Promise<Transaction[]> {
-    return new BudgetController(parent).getTransactions();
+  public transactions(
+    @Root() parent: Budget,
+    @Arg('accountId', { nullable: true }) accountId?: string,
+    @Arg('categoryId', { nullable: true }) categoryId?: string,
+    @Arg('from', () => DateScalar, {
+      defaultValue: new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        1
+      ),
+      description:
+        'Minimum date of the transactions. Defaults to the first day of the current month. Cannot be more than 366 days less than "to".'
+    })
+    from?: Date,
+    @Arg('to', () => DateScalar, {
+      defaultValue: new Date(
+        new Date().getFullYear(),
+        new Date().getMonth() + 1,
+        0
+      ),
+      description:
+        'Maximum date of the transactions. Defaults to the last day of the current month. Cannot be more than 366 days more than "from".'
+    })
+    to?: Date
+  ): Promise<Transaction[]> {
+    return new BudgetController(parent).getTransactions({
+      accountId,
+      categoryId,
+      from,
+      to
+    });
   }
 
   @FieldResolver(() => User)
