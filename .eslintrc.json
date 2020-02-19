@@ -1,3 +1,11 @@
 {
-  "extends": "zyehex"
+  "extends": "zyehex",
+  "overrides": [
+    {
+      "files": ["jest.setup.ts", "**/*.test.[jt]s"],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
 }
