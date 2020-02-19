@@ -3,16 +3,21 @@ import Budget from '../entities/Budget';
 import BudgetController from './BudgetController';
 import User from '../entities/User';
 import UserController from './UserController';
+import { getManager } from 'typeorm';
 
 let user: User;
 
 beforeEach(async () => {
   user = await UserController.createUser(
-    'testing@email.com',
+    'testing@budget.com',
     'Bobby',
     'Testing',
     'mySecretPassword'
   );
+});
+
+afterEach(async () => {
+  await getManager().remove(user);
 });
 
 describe('Budget controller > budgets', () => {
@@ -53,7 +58,7 @@ describe('Budget controller > budgets', () => {
 
   it('should not return any budgets of another user', async () => {
     const secondUser = await UserController.createUser(
-      'other@email.com',
+      'other@budget.com',
       'John',
       'Doe',
       'myPass'
@@ -99,6 +104,10 @@ describe('Budget controller > accounts', () => {
   beforeEach(async () => {
     budget = await BudgetController.createBudget('My Budget', user);
     controller = new BudgetController(budget);
+  });
+
+  afterEach(async () => {
+    await getManager().remove(budget);
   });
 
   it('should create a checking account', async () => {

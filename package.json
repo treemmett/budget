@@ -8,7 +8,7 @@
     "test": "run-p test:*",
     "test:lint": "eslint src/ --ext js,ts",
     "test:typing": "tsc --noEmit",
-    "test:unit": "jest -i",
+    "test:unit": "jest",
     "build": "tsc"
   },
   "dependencies": {
