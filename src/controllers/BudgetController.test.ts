@@ -3,6 +3,7 @@ import Budget from '../entities/Budget';
 import BudgetController from './BudgetController';
 import CategoryGroup from '../entities/CategoryGroup';
 import HttpException from '../utils/HttpException';
+import TransactionCategory from '../entities/TransactionCategory';
 import User from '../entities/User';
 import UserController from './UserController';
 import { getManager } from 'typeorm';
@@ -303,5 +304,154 @@ describe('Budget controller > category groups', () => {
       expect(e.message).toBe('Unable to delete group that contains categories');
       expect(e.status).toBe(409);
     }
+  });
+});
+
+describe('Budget controller > categories', () => {
+  let budget: Budget;
+  let controller: BudgetController;
+  let group: CategoryGroup;
+
+  beforeEach(async () => {
+    budget = await BudgetController.createBudget('My Budget', user);
+    controller = new BudgetController(budget);
+    group = await controller.createCategoryGroup('My Group');
+  });
+
+  afterEach(async () => {
+    await getManager().remove(budget);
+  });
+
+  it('should create a new category', async () => {
+    const category = await controller.createCategory('My Category', group.id);
+
+    expect(category).toBeInstanceOf(TransactionCategory);
+    expect(category.id).toBeDefined();
+  });
+
+  it('should return all categories', async () => {
+    await controller.createCategory('My Category', group.id);
+    const categories = await controller.getCategories();
+
+    expect(categories).toBeInstanceOf(Array);
+    expect(categories[0]).toBeInstanceOf(TransactionCategory);
+    expect(categories.length).toBe(18); // 17 default + 1 created
+  });
+
+  it('should return a specific category', async () => {
+    const category = await controller.createCategory('My Category', group.id);
+    const foundCategory = await controller.getCategories(category.id);
+
+    expect(foundCategory).toBeInstanceOf(TransactionCategory);
+    expect(foundCategory.id).toBe(category.id);
+  });
+
+  it('should return the categories in a group', async () => {
+    await Promise.all(
+      new Array(4)
+        .fill(null)
+        .map((_, i) => controller.createCategory(`Category ${i}`, group.id))
+    );
+
+    const categories = await controller.getCategoriesInGroup(group.id);
+
+    expect(categories).toBeInstanceOf(Array);
+    expect(categories.length).toBe(4);
+    expect(categories[0]).toBeInstanceOf(TransactionCategory);
+  });
+
+  it('should create the default categories', async () => {
+    const defaultGroups = [
+      {
+        name: 'Housing',
+        categories: ['Rent', 'Insurance', 'Power', 'Gas', 'Internet']
+      },
+      {
+        name: 'Transportation',
+        categories: ['Auto Loan', 'Fuel', 'Insurance', 'Parking', 'Maintenance']
+      },
+      {
+        name: 'Food',
+        categories: ['Groceries', 'Dining']
+      },
+      {
+        name: 'Personal Care',
+        categories: ['Haircut', 'Medical']
+      },
+      {
+        name: 'Quality of Life',
+        categories: ['Entertainment', 'Clothing', 'Vacation']
+      }
+    ];
+
+    const groups = await controller.getCategoryGroups();
+
+    await Promise.all(
+      defaultGroups.map(async defaultGroup => {
+        const actualDefaultGroup = groups.find(
+          g => g.name === defaultGroup.name
+        ) as CategoryGroup;
+
+        expect(actualDefaultGroup).toBeDefined();
+
+        const defaultGroupCategories = await controller.getCategoriesInGroup(
+          actualDefaultGroup.id
+        );
+
+        expect(defaultGroupCategories.length).toBe(
+          defaultGroup.categories.length
+        );
+
+        expect(
+          defaultGroupCategories.every(g =>
+            defaultGroup.categories.includes(g.name)
+          )
+        ).toBe(true);
+      })
+    );
+  });
+
+  it('should rename a category', async () => {
+    let category = await controller.createCategory('Original Name', group.id);
+    expect(category.name).toBe('Original Name');
+
+    await controller.renameCategory(category.id, 'Revised Name');
+    category = await controller.getCategories(category.id);
+    expect(category.name).toBe('Revised Name');
+  });
+
+  it('should delete a category', async () => {
+    const category = await controller.createCategory('My Category', group.id);
+    let categories = await controller.getCategories();
+    expect(categories.map(c => c.id)).toContain(category.id);
+    await expect(controller.getCategories(category.id)).resolves.toBeInstanceOf(
+      TransactionCategory
+    );
+
+    await controller.deleteCategory(category.id);
+    categories = await controller.getCategories();
+    expect(categories.map(c => c.id)).not.toContain(category.id);
+    await expect(controller.getCategories(category.id)).rejects.toThrow();
+  });
+
+  it('should change category groups', async () => {
+    const otherGroup = await controller.createCategoryGroup('Other Group');
+    const category = await controller.createCategory('My Category', group.id);
+
+    let groupCategories = await controller.getCategoriesInGroup(group.id);
+    let otherGroupCategories = await controller.getCategoriesInGroup(
+      otherGroup.id
+    );
+
+    expect(groupCategories.map(g => g.id)).toContain(category.id);
+    expect(otherGroupCategories.map(g => g.id)).not.toContain(category.id);
+
+    await controller.setCategoryGroup(category.id, otherGroup.id);
+
+    groupCategories = await controller.getCategoriesInGroup(group.id);
+    otherGroupCategories = await controller.getCategoriesInGroup(otherGroup.id);
+
+    expect(groupCategories.map(g => g.id)).not.toContain(category.id);
+    expect(otherGroupCategories.map(g => g.id)).toContain(category.id);
   });
 });
