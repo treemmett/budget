@@ -1,6 +1,8 @@
 import Account, { AccountType } from '../entities/Account';
 import Budget from '../entities/Budget';
 import BudgetController from './BudgetController';
+import CategoryGroup from '../entities/CategoryGroup';
+import HttpException from '../utils/HttpException';
 import User from '../entities/User';
 import UserController from './UserController';
 import { getManager } from 'typeorm';
@@ -228,5 +230,78 @@ describe('Budget controller > accounts', () => {
     await controller.updateAccount(account.id, 'My New Name');
     account = await controller.getAccounts(account.id);
     expect(account.name).toBe('My New Name');
+  });
+});
+
+describe('Budget controller > category groups', () => {
+  let budget: Budget;
+  let controller: BudgetController;
+
+  beforeEach(async () => {
+    budget = await BudgetController.createBudget('My Budget', user);
+    controller = new BudgetController(budget);
+  });
+
+  afterEach(async () => {
+    await getManager().remove(budget);
+  });
+
+  it('should create the default groups', async () => {
+    const groups = await controller.getCategoryGroups();
+    const groupNames = groups.map(g => g.name);
+
+    expect(groups[0]).toBeInstanceOf(CategoryGroup);
+    expect(groupNames).toContain('Housing');
+    expect(groupNames).toContain('Transportation');
+    expect(groupNames).toContain('Food');
+    expect(groupNames).toContain('Personal Care');
+    expect(groupNames).toContain('Quality of Life');
+  });
+
+  it('should create a new group', async () => {
+    const group = await controller.createCategoryGroup('My New Group');
+
+    expect(group).toBeInstanceOf(CategoryGroup);
+    expect(group.id).toBeDefined();
+    expect(group.name).toBe('My New Group');
+  });
+
+  it('should return a list of all groups', async () => {
+    const groups = await controller.getCategoryGroups();
+
+    expect(groups).toBeInstanceOf(Array);
+    expect(groups.length).toBe(5);
+    expect(groups[0]).toBeInstanceOf(CategoryGroup);
+  });
+
+  it('should return a specific group', async () => {
+    const allGroups = await controller.getCategoryGroups();
+    const group = await controller.getCategoryGroups(allGroups[0].id);
+    expect(group).toBeInstanceOf(CategoryGroup);
+    expect(group.id).toBe(allGroups[0].id);
+  });
+
+  it('should delete a group', async () => {
+    const group = await controller.createCategoryGroup('My New Category');
+    let allGroups = await controller.getCategoryGroups();
+    expect(allGroups.length).toBe(6);
+
+    await controller.deleteCategoryGroup(group.id);
+
+    allGroups = await controller.getCategoryGroups();
+    expect(allGroups.length).toBe(5);
+  });
+
+  it('should not delete a group that contains categories', async () => {
+    const groups = await controller.getCategoryGroups();
+
+    try {
+      await controller.deleteCategoryGroup(groups[0].id);
+      expect(true).toBe(false);
+    } catch (e) {
+      expect(e).toBeInstanceOf(HttpException);
+      expect(e.message).toBe('Unable to delete group that contains categories');
+      expect(e.status).toBe(409);
+    }
   });
 });
