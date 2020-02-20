@@ -76,4 +76,12 @@ describe('User controller > account access', () => {
     const loggedIn = await UserController.verifyToken(forgedToken);
     expect(loggedIn).toBeUndefined();
   });
+
+  it('should not verify an empty token', async () => {
+    let loggedIn = await UserController.verifyToken();
+    expect(loggedIn).toBeUndefined();
+
+    loggedIn = await UserController.verifyToken('');
+    expect(loggedIn).toBeUndefined();
+  });
 });
