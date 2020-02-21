@@ -1,4 +1,5 @@
 import Account, { AccountType } from '../entities/Account';
+import Allocation from '../entities/Allocation';
 import Budget from '../entities/Budget';
 import BudgetController from './BudgetController';
 import CategoryGroup from '../entities/CategoryGroup';
@@ -453,5 +454,99 @@ describe('Budget controller > categories', () => {
 
     expect(groupCategories.map(g => g.id)).not.toContain(category.id);
     expect(otherGroupCategories.map(g => g.id)).toContain(category.id);
+  });
+});
+
+describe('Budget controller > allocations', () => {
+  let budget: Budget;
+  let controller: BudgetController;
+  let group: CategoryGroup;
+  let category: TransactionCategory;
+
+  beforeEach(async () => {
+    budget = await BudgetController.createBudget('My Budget', user);
+    controller = new BudgetController(budget);
+    group = await controller.createCategoryGroup('My Group');
+    category = await controller.createCategory('My Category', group.id);
+  });
+
+  afterEach(async () => {
+    await getManager().remove(budget);
+  });
+
+  it('should set an allocation', async () => {
+    const allocation = await controller.setAllocation(
+      category.id,
+      new Date(2020, 0),
+      400
+    );
+
+    expect(allocation).toBeInstanceOf(Allocation);
+    expect(allocation.id).toBeDefined();
+    expect(allocation.amount).toBe(400);
+  });
+
+  it('should return the allocation for a month', async () => {
+    const allocation = await controller.setAllocation(
+      category.id,
+      new Date(2020, 5, 17),
+      500
+    );
+
+    const foundAllocation = await controller.getAllocation(
+      category.id,
+      new Date(2020, 5, 3)
+    );
+    expect(foundAllocation.id).toBe(allocation.id);
+    expect(foundAllocation.amount).toBe(500);
+  });
+
+  it('should replace the allocation for the same month', async () => {
+    await controller.setAllocation(category.id, new Date(2018, 4, 6), 100);
+    let alloc = await controller.getAllocation(
+      category.id,
+      new Date(2018, 4, 21)
+    );
+    expect(alloc.amount).toBe(100);
+
+    await controller.setAllocation(category.id, new Date(2018, 4, 25), 500);
+    alloc = await controller.getAllocation(category.id, new Date(2018, 4, 3));
+    expect(alloc.amount).toBe(500);
+  });
+
+  it('should set separate allocations for different months', async () => {
+    await controller.setAllocation(category.id, new Date(2019, 3, 1), 100);
+    await controller.setAllocation(category.id, new Date(2019, 8, 30), 250);
+
+    const alloc1 = await controller.getAllocation(
+      category.id,
+      new Date(2019, 3, 4)
+    );
+    const alloc2 = await controller.getAllocation(
+      category.id,
+      new Date(2019, 8, 14)
+    );
+
+    expect(alloc1.amount).toBe(100);
+    expect(alloc2.amount).toBe(250);
+  });
+
+  it('should set multiple categories in the same month', async () => {
+    const category2 = await controller.createCategory('Category 2', group.id);
+
+    await controller.setAllocation(category.id, new Date(2019, 3, 1), 100);
+    await controller.setAllocation(category2.id, new Date(2019, 3, 1), 500);
+
+    const alloc1 = await controller.getAllocation(
+      category.id,
+      new Date(2019, 3, 1)
+    );
+    const alloc2 = await controller.getAllocation(
+      category2.id,
+      new Date(2019, 3, 1)
+    );
+
+    expect(alloc1.amount).toBe(100);
+    expect(alloc2.amount).toBe(500);
   });
 });

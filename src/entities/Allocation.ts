@@ -26,7 +26,15 @@ export default class Allocation {
   public category: TransactionCategory;
 
   @Field({ description: 'Amount of the allocation' })
-  @Column({ type: 'numeric', precision: 13, scale: 2 })
+  @Column({
+    type: 'numeric',
+    precision: 13,
+    scale: 2,
+    transformer: {
+      from: (data: string): number => parseFloat(data),
+      to: (data: number): number => data
+    }
+  })
   public amount: number;
 
   @Field(() => String, {
