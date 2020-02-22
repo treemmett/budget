@@ -4,6 +4,7 @@ import Budget from '../entities/Budget';
 import BudgetController from './BudgetController';
 import CategoryGroup from '../entities/CategoryGroup';
 import HttpException from '../utils/HttpException';
+import Transaction from '../entities/Transaction';
 import TransactionCategory from '../entities/TransactionCategory';
 import User from '../entities/User';
 import UserController from './UserController';
@@ -548,5 +549,233 @@ describe('Budget controller > allocations', () => {
 
     expect(alloc1.amount).toBe(100);
     expect(alloc2.amount).toBe(500);
+  });
+});
+
+describe('Budget controller > transactions', () => {
+  let budget: Budget;
+  let controller: BudgetController;
+  let group: CategoryGroup;
+  let category: TransactionCategory;
+  let account: Account;
+
+  beforeEach(async () => {
+    budget = await BudgetController.createBudget('My Budget', user);
+    controller = new BudgetController(budget);
+    [group, account] = await Promise.all([
+      controller.createCategoryGroup('My Group'),
+      controller.createAccount('Account', AccountType.checking)
+    ]);
+    category = await controller.createCategory('My Category', group.id);
+  });
+
+  afterEach(async () => {
+    await getManager().remove(budget);
+  });
+
+  it('should create a new transaction', async () => {
+    const transaction = await controller.createTransaction(
+      account.id,
+      100,
+      category.id,
+      new Date(2020, 5, 2),
+      'Groceries'
+    );
+
+    expect(transaction).toBeInstanceOf(Transaction);
+    expect(transaction.id).toBeDefined();
+  });
+
+  it('should get transactions in current month', async () => {
+    await Promise.all(
+      new Array(5)
+        .fill(null)
+        .map(async () =>
+          controller.createTransaction(
+            account.id,
+            10,
+            category.id,
+            new Date(),
+            'Something today'
+          )
+        )
+    );
+
+    await Promise.all(
+      new Array(2)
+        .fill(null)
+        .map(async () =>
+          controller.createTransaction(
+            account.id,
+            10,
+            category.id,
+            new Date(2019, 1, 1),
+            'Something in the past'
+          )
+        )
+    );
+
+    const transactions = await controller.getTransactions();
+
+    expect(transactions).toBeInstanceOf(Array);
+    expect(transactions.length).toBe(5);
+    expect(transactions[0]).toBeInstanceOf(Transaction);
+  });
+
+  it('should get transactions within the date filter', async () => {
+    await Promise.all(
+      new Array(12)
+        .fill(null)
+        .map(async (_, i) =>
+          controller.createTransaction(
+            account.id,
+            10,
+            category.id,
+            new Date(2019, i, 1),
+            'January'
+          )
+        )
+    );
+
+    const transactions = await controller.getTransactions({
+      from: new Date(2019, 4, 1),
+      to: new Date(2019, 8, 1)
+    });
+    expect(transactions.length).toBe(5);
+  });
+
+  it('should return transactions within a category', async () => {
+    const wrongCategory = await controller.createCategory(
+      'Wrong category',
+      group.id
+    );
+    await Promise.all(
+      new Array(4)
+        .fill(null)
+        .map(() =>
+          controller.createTransaction(
+            account.id,
+            100,
+            category.id,
+            new Date(),
+            'Foo'
+          )
+        )
+    );
+    await Promise.all(
+      new Array(3)
+        .fill(null)
+        .map(() =>
+          controller.createTransaction(
+            account.id,
+            100,
+            wrongCategory.id,
+            new Date(),
+            'Foo'
+          )
+        )
+    );
+    const transactions = await controller.getTransactions({
+      categoryId: category.id
+    });
+
+    expect(transactions.length).toBe(4);
+  });
+
+  it('should return transactions within an account', async () => {
+    const wrongAccount = await controller.createAccount(
+      'Wrong account',
+      AccountType.checking
+    );
+
+    await Promise.all(
+      new Array(7)
+        .fill(null)
+        .map(() =>
+          controller.createTransaction(
+            account.id,
+            100,
+            category.id,
+            new Date(),
+            'Foo'
+          )
+        )
+    );
+    await Promise.all(
+      new Array(4)
+        .fill(null)
+        .map(() =>
+          controller.createTransaction(
+            wrongAccount.id,
+            100,
+            category.id,
+            new Date(),
+            'Foo'
+          )
+        )
+    );
+    const transactions = await controller.getTransactions({
+      accountId: account.id
+    });
+
+    expect(transactions.length).toBe(7);
+  });
+
+  it('should return transactions within a certain account, category, and date range', async () => {
+    const wrongAccount = await controller.createAccount(
+      'Wrong account',
+      AccountType.checking
+    );
+    const wrongCategory = await controller.createCategory(
+      'Wrong category',
+      group.id
+    );
+
+    await Promise.all([
+      controller.createTransaction(
+        account.id,
+        100,
+        category.id,
+        new Date(2020, 1, 4),
+        'The right transaction'
+      ),
+      controller.createTransaction(
+        wrongAccount.id,
+        100,
+        category.id,
+        new Date(2020, 1, 4),
+        'The wrong account'
+      ),
+      controller.createTransaction(
+        account.id,
+        100,
+        wrongCategory.id,
+        new Date(2020, 1, 4),
+        'The wrong category'
+      ),
+      controller.createTransaction(
+        account.id,
+        100,
+        category.id,
+        new Date(2020, 2, 4),
+        'Future date'
+      ),
+      controller.createTransaction(
+        account.id,
+        100,
+        category.id,
+        new Date(2020, 0, 4),
+        'Past date'
+      )
+    ]);
+
+    const transactions = await controller.getTransactions({
+      categoryId: category.id,
+      accountId: account.id,
+      from: new Date(2020, 1, 1),
+      to: new Date(2020, 2, 0)
+    });
+
+    expect(transactions.length).toBe(1);
   });
 });
