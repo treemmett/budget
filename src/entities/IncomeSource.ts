@@ -6,8 +6,7 @@ export enum PayScale {
   yearly,
   monthly,
   weekly,
-  hourly,
-  fixed
+  hourly
 }
 
 registerEnumType(PayScale, {

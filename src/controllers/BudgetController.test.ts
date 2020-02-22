@@ -1,4 +1,5 @@
 import Account, { AccountType } from '../entities/Account';
+import IncomeSource, { PayScale } from '../entities/IncomeSource';
 import Allocation from '../entities/Allocation';
 import Budget from '../entities/Budget';
 import BudgetController from './BudgetController';
@@ -426,14 +427,14 @@ describe('Budget controller > categories', () => {
     const category = await controller.createCategory('My Category', group.id);
     let categories = await controller.getCategories();
     expect(categories.map(c => c.id)).toContain(category.id);
-    await expect(controller.getCategories(category.id)).resolves.toBeInstanceOf(
+    expect(controller.getCategories(category.id)).resolves.toBeInstanceOf(
       TransactionCategory
     );
 
     await controller.deleteCategory(category.id);
     categories = await controller.getCategories();
     expect(categories.map(c => c.id)).not.toContain(category.id);
-    await expect(controller.getCategories(category.id)).rejects.toThrow();
+    expect(controller.getCategories(category.id)).rejects.toThrow();
   });
 
   it('should change category groups', async () => {
@@ -777,5 +778,187 @@ describe('Budget controller > transactions', () => {
     });
 
     expect(transactions.length).toBe(1);
+  });
+});
+
+describe('Budget controller > income sources', () => {
+  let budget: Budget;
+  let controller: BudgetController;
+
+  beforeEach(async () => {
+    budget = await BudgetController.createBudget('My Budget', user);
+    controller = new BudgetController(budget);
+  });
+
+  it('should create an hourly income source', async () => {
+    const source = await controller.createIncomeSource(
+      'My Income Source',
+      14,
+      PayScale.hourly,
+      40
+    );
+
+    expect(source).toBeInstanceOf(IncomeSource);
+    expect(source.id).toBeDefined();
+
+    const income = await controller.getIncomeSource(source.id);
+
+    expect(income.name).toBe('My Income Source');
+    expect(income.rate).toBe(14);
+    expect(income.hours).toBe(40);
+    expect(income.scale).toBe(PayScale.hourly);
+  });
+
+  it('should create a weekly income source', async () => {
+    const source = await controller.createIncomeSource(
+      'My Weekly Income',
+      140,
+      PayScale.weekly
+    );
+
+    expect(source).toBeInstanceOf(IncomeSource);
+    expect(source.id).toBeDefined();
+
+    const income = await controller.getIncomeSource(source.id);
+
+    expect(income.name).toBe('My Weekly Income');
+    expect(income.rate).toBe(140);
+    expect(income.hours).toBeNull();
+    expect(income.scale).toBe(PayScale.weekly);
+  });
+
+  it('should create a monthly income source', async () => {
+    const source = await controller.createIncomeSource(
+      'My Monthly Income',
+      500,
+      PayScale.monthly
+    );
+
+    expect(source).toBeInstanceOf(IncomeSource);
+    expect(source.id).toBeDefined();
+
+    const income = await controller.getIncomeSource(source.id);
+
+    expect(income.name).toBe('My Monthly Income');
+    expect(income.rate).toBe(500);
+    expect(income.hours).toBeNull();
+    expect(income.scale).toBe(PayScale.monthly);
+  });
+
+  it('should create a yearly income source', async () => {
+    const source = await controller.createIncomeSource(
+      'My Annual Income',
+      40000,
+      PayScale.yearly
+    );
+
+    expect(source).toBeInstanceOf(IncomeSource);
+    expect(source.id).toBeDefined();
+
+    const income = await controller.getIncomeSource(source.id);
+
+    expect(income.name).toBe('My Annual Income');
+    expect(income.rate).toBe(40000);
+    expect(income.hours).toBeNull();
+    expect(income.scale).toBe(PayScale.yearly);
+  });
+
+  it('should delete an income source', async () => {
+    const source = await controller.createIncomeSource(
+      'My Annual Income',
+      40000,
+      PayScale.yearly
+    );
+
+    expect(controller.getIncomeSource(source.id)).resolves.toBeInstanceOf(
+      IncomeSource
+    );
+
+    await controller.deleteIncomeSource(source.id);
+
+    expect(controller.getIncomeSource(source.id)).rejects.toThrow(
+      HttpException
+    );
+  });
+
+  it('should return all income sources', async () => {
+    await Promise.all(
+      new Array(7)
+        .fill(null)
+        .map(() =>
+          controller.createIncomeSource('Source', 14, PayScale.monthly)
+        )
+    );
+
+    const sources = await controller.getIncomeSource();
+
+    expect(sources).toBeInstanceOf(Array);
+    expect(sources[0]).toBeInstanceOf(IncomeSource);
+    expect(sources.length).toBe(7);
+  });
+
+  it('should return a specific income source', async () => {
+    await controller.createIncomeSource('Source', 14, PayScale.monthly);
+    const source = await controller.createIncomeSource(
+      'My Source',
+      22,
+      PayScale.yearly
+    );
+    await controller.createIncomeSource('Source', 14, PayScale.monthly);
+
+    const foundSource = await controller.getIncomeSource(source.id);
+    expect(foundSource).toBeInstanceOf(IncomeSource);
+    expect(foundSource.id).toBe(source.id);
+  });
+
+  it('should calculate the income for an hourly source', async () => {
+    const source = await controller.createIncomeSource(
+      'Source',
+      12,
+      PayScale.hourly,
+      20
+    );
+
+    expect(controller.calculateIncome(source.id)).resolves.toBe(12 * 20 * 52);
+  });
+
+  it('should calculate the income for a monthly source', async () => {
+    const source = await controller.createIncomeSource(
+      'Source',
+      2000,
+      PayScale.monthly
+    );
+
+    expect(controller.calculateIncome(source.id)).resolves.toBe(2000 * 12);
+  });
+
+  it('should calculate the income for a weekly source', async () => {
+    const source = await controller.createIncomeSource(
+      'Source',
+      500,
+      PayScale.weekly
+    );
+
+    expect(controller.calculateIncome(source.id)).resolves.toBe(500 * 52);
+  });
+
+  it('should calculate the income for an yearly source', async () => {
+    const source = await controller.createIncomeSource(
+      'Source',
+      45000,
+      PayScale.yearly
+    );
+
+    expect(controller.calculateIncome(source.id)).resolves.toBe(45000);
+  });
+
+  it('should calculate the income for all income sources', async () => {
+    await controller.createIncomeSource('Source', 45000, PayScale.yearly);
+    await controller.createIncomeSource('Source', 2000, PayScale.monthly);
+    await controller.createIncomeSource('Source', 15, PayScale.hourly, 25);
+
+    expect(controller.calculateIncome()).resolves.toBe(
+      45000 + 2000 * 12 + 15 * 25 * 52
+    );
   });
 });
