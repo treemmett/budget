@@ -1097,3 +1097,33 @@ describe('Budget controller > tax', () => {
     expect(tax.status).toBe(FilingStatus.single);
   });
 });
+
+describe('Budget controller > users', () => {
+  let budget: Budget;
+  let controller: BudgetController;
+
+  beforeEach(async () => {
+    budget = await BudgetController.createBudget('My Budget', user);
+    controller = new BudgetController(budget);
+  });
+
+  it('should return the user attached to the budget', async () => {
+    const foundUser = await controller.getUser();
+
+    expect(foundUser).toBeInstanceOf(User);
+    expect(foundUser.id).toBe(user.id);
+  });
+
+  it('should error if there is no user on the budget', async () => {
+    const fakeBudget = new Budget();
+    const fakeController = new BudgetController(fakeBudget);
+
+    try {
+      await fakeController.getUser();
+      expect(true).toBe(false);
+    } catch (e) {
+      expect(e).toBeInstanceOf(HttpException);
+      expect(e.message).toBe('User not found');
+    }
+  });
+});

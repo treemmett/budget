@@ -576,7 +576,7 @@ export default class BudgetController {
     if (!budget) {
       throw new HttpException({
         error: 'invalid_request',
-        message: 'Budget not found',
+        message: 'User not found',
         status: 404
       });
     }
