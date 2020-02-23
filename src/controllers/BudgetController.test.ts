@@ -1,5 +1,6 @@
 import Account, { AccountType } from '../entities/Account';
 import IncomeSource, { PayScale } from '../entities/IncomeSource';
+import Tax, { FilingStatus, State } from '../entities/Tax';
 import Allocation from '../entities/Allocation';
 import Budget from '../entities/Budget';
 import BudgetController from './BudgetController';
@@ -997,5 +998,48 @@ describe('Budget controller > income sources', () => {
     );
 
     expect(controller.calculateIncome(source.id)).resolves.toBe(0);
+  });
+});
+
+describe('Budget controller > tax', () => {
+  let budget: Budget;
+  let controller: BudgetController;
+
+  beforeEach(async () => {
+    budget = await BudgetController.createBudget('My Budget', user);
+    controller = new BudgetController(budget);
+  });
+
+  it('should set a tax setting', async () => {
+    const tax = await await controller.setTax({
+      state: State.Florida,
+      status: FilingStatus.married
+    });
+
+    expect(tax).toBeInstanceOf(Tax);
+    expect(tax.id).toBeDefined();
+    expect(tax.state).toBe(State.Florida);
+    expect(tax.status).toBe(FilingStatus.married);
+  });
+
+  it('should return the set tax setting', async () => {
+    await await controller.setTax({
+      state: State.Massachusetts,
+      status: FilingStatus.single
+    });
+
+    const tax = await controller.getTax();
+
+    expect(tax).toBeInstanceOf(Tax);
+    expect(tax.state).toBe(State.Massachusetts);
+    expect(tax.status).toBe(FilingStatus.single);
+  });
+
+  it('should set and return a default tax setting if not set', async () => {
+    const tax = await controller.getTax();
+
+    expect(tax).toBeInstanceOf(Tax);
+    expect(tax.state).toBe(State.Alabama);
+    expect(tax.status).toBe(FilingStatus.single);
   });
 });
