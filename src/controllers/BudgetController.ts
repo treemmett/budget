@@ -388,6 +388,7 @@ export default class BudgetController {
 
   public async calculateIncome(incomeSourceId?: string): Promise<number> {
     function parseIncomeSource(source: IncomeSource): number {
+      // eslint-disable-next-line default-case
       switch (PayScale[source.scale]) {
         case 'yearly':
           return source.rate;
@@ -399,14 +400,13 @@ export default class BudgetController {
           return source.rate * 52;
 
         case 'hourly':
-          if (!source.hours) {
-            return 0;
+          if (source.hours) {
+            return source.rate * 52 * source.hours;
           }
-          return source.rate * 52 * source.hours;
-
-        default:
-          return 0;
+          break;
       }
+
+      return 0;
     }
 
     if (incomeSourceId) {
@@ -417,27 +417,7 @@ export default class BudgetController {
 
     const incomeSources = await this.getIncomeSource();
 
-    return incomeSources.reduce((acc, cur) => {
-      switch (PayScale[cur.scale]) {
-        case 'yearly':
-          return acc + cur.rate;
-
-        case 'monthly':
-          return acc + cur.rate * 12;
-
-        case 'weekly':
-          return acc + cur.rate * 52;
-
-        case 'hourly':
-          if (!cur.hours) {
-            return acc;
-          }
-          return acc + cur.rate * 52 * cur.hours;
-
-        default:
-          return acc;
-      }
-    }, 0);
+    return incomeSources.reduce((acc, cur) => acc + parseIncomeSource(cur), 0);
   }
 
   // tax
