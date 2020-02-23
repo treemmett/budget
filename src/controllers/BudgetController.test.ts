@@ -804,6 +804,60 @@ describe('Budget controller > transactions', () => {
 
     expect(transactions.length).toBe(1);
   });
+
+  it('should not allow the "from date" to be after the "to date"', async () => {
+    try {
+      await controller.getTransactions({
+        from: new Date(2020, 2, 1),
+        to: new Date(2020, 1, 1)
+      });
+      expect(true).toBe(false);
+    } catch (e) {
+      expect(e).toBeInstanceOf(HttpException);
+      expect(e.message).toBe('"From date" cannot be after "to date"');
+    }
+  });
+
+  it('should not allow the "from" and "to" date to exceed 366 days', async () => {
+    expect(
+      controller.getTransactions({
+        from: new Date(2017, 0, 1),
+        to: new Date(2018, 0, 2)
+      })
+    ).resolves.not.toThrow();
+    expect(
+      controller.getTransactions({
+        from: new Date(2020, 0, 1),
+        to: new Date(2021, 0, 1)
+      })
+    ).resolves.not.toThrow();
+
+    try {
+      await controller.getTransactions({
+        from: new Date(2017, 0, 1),
+        to: new Date(2018, 0, 3)
+      });
+      expect(true).toBe(false);
+    } catch (e) {
+      expect(e).toBeInstanceOf(HttpException);
+      expect(e.message).toBe(
+        'Difference between the "from date" and "to date" cannot be greater than 366 days'
+      );
+    }
+
+    try {
+      await controller.getTransactions({
+        from: new Date(2020, 0, 1),
+        to: new Date(2021, 0, 2)
+      });
+      expect(true).toBe(false);
+    } catch (e) {
+      expect(e).toBeInstanceOf(HttpException);
+      expect(e.message).toBe(
+        'Difference between the "from date" and "to date" cannot be greater than 366 days'
+      );
+    }
+  });
 });
 
 describe('Budget controller > income sources', () => {
