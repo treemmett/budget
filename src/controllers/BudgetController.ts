@@ -449,8 +449,8 @@ export default class BudgetController {
     status?: FilingStatus;
   }): Promise<Tax> {
     const tax = await this.getTax();
-    tax.state = state || tax.state;
-    tax.status = status || tax.status;
+    tax.state = typeof state === 'undefined' ? tax.state : state;
+    tax.status = typeof status === 'undefined' ? tax.status : status;
     await getManager().save(tax);
     return tax;
   }

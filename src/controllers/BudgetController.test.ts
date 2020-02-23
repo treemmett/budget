@@ -1096,6 +1096,54 @@ describe('Budget controller > tax', () => {
     expect(tax.state).toBe(State.Alabama);
     expect(tax.status).toBe(FilingStatus.single);
   });
+
+  it('should change the state setting', async () => {
+    await controller.setTax({
+      state: State.Colorado,
+      status: FilingStatus.separate
+    });
+
+    let tax = await controller.getTax();
+    expect(tax.state).toBe(State.Colorado);
+    expect(tax.status).toBe(FilingStatus.separate);
+
+    await controller.setTax({ state: State.Utah });
+    tax = await controller.getTax();
+    expect(tax.state).toBe(State.Utah);
+    expect(tax.status).toBe(FilingStatus.separate);
+  });
+
+  it('should change the status setting', async () => {
+    await controller.setTax({
+      state: State.Nevada,
+      status: FilingStatus.head
+    });
+
+    let tax = await controller.getTax();
+    expect(tax.state).toBe(State.Nevada);
+    expect(tax.status).toBe(FilingStatus.head);
+
+    await controller.setTax({ status: FilingStatus.single });
+    tax = await controller.getTax();
+    // expect(tax.state).toBe(State.Nevada);
+    expect(tax.status).toBe(FilingStatus.single);
+  });
+
+  it('should not change any setting if an empty object is passed', async () => {
+    await controller.setTax({
+      state: State.New_York,
+      status: FilingStatus.single
+    });
+
+    let tax = await controller.getTax();
+    expect(tax.state).toBe(State.New_York);
+    expect(tax.status).toBe(FilingStatus.single);
+
+    await controller.setTax({});
+    tax = await controller.getTax();
+    expect(tax.state).toBe(State.New_York);
+    expect(tax.status).toBe(FilingStatus.single);
+  });
 });
 
 describe('Budget controller > users', () => {
