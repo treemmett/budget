@@ -62,6 +62,14 @@ describe('Budget controller > budgets', () => {
     expect(foundBudget.id).toBe(budget.id);
   });
 
+  it('should throw if a non-existent budget is requested', async () => {
+    await BudgetController.createBudget('My Budget', user);
+
+    expect(
+      BudgetController.getBudgets(user, '9c2cb8de-03c4-4f69-afab-dbdab33b30ba')
+    ).rejects.toThrow(HttpException);
+  });
+
   it('should not return any budgets of another user', async () => {
     const secondUser = await UserController.createUser(
       'other@budget.com',
@@ -181,6 +189,14 @@ describe('Budget controller > accounts', () => {
     expect(account.id).toBe(accounts[1].id);
   });
 
+  it('should throw if a non-existent account is requested', async () => {
+    await controller.createAccount('Some account', AccountType.checking);
+
+    expect(
+      controller.getAccounts('b027c4a8-6010-495b-b42d-5afd0e43b332')
+    ).rejects.toThrow(HttpException);
+  });
+
   it('should not return accounts in another budget', async () => {
     const rightAccount = await controller.createAccount(
       'Right account',
@@ -283,6 +299,14 @@ describe('Budget controller > category groups', () => {
     const group = await controller.getCategoryGroups(allGroups[0].id);
     expect(group).toBeInstanceOf(CategoryGroup);
     expect(group.id).toBe(allGroups[0].id);
+  });
+
+  it('should throw if a non-existent group is requested', async () => {
+    await controller.createCategoryGroup('My Group');
+
+    expect(
+      controller.getCategoryGroups('3ab8543e-7da8-4736-9ac6-ed5557e346f7')
+    ).rejects.toThrow(HttpException);
   });
 
   it('should delete a group', async () => {
@@ -955,10 +979,23 @@ describe('Budget controller > income sources', () => {
   it('should calculate the income for all income sources', async () => {
     await controller.createIncomeSource('Source', 45000, PayScale.yearly);
     await controller.createIncomeSource('Source', 2000, PayScale.monthly);
+    await controller.createIncomeSource('Source', 500, PayScale.weekly);
     await controller.createIncomeSource('Source', 15, PayScale.hourly, 25);
+    await controller.createIncomeSource('Source', 15, PayScale.hourly, 0);
 
     expect(controller.calculateIncome()).resolves.toBe(
-      45000 + 2000 * 12 + 15 * 25 * 52
+      45000 + 2000 * 12 + 500 * 52 + 15 * 25 * 52
     );
+  });
+
+  it('should calculate an income of 0 if no hours are defined', async () => {
+    const source = await controller.createIncomeSource(
+      'My Job',
+      14,
+      PayScale.hourly,
+      0
+    );
+
+    expect(controller.calculateIncome(source.id)).resolves.toBe(0);
   });
 });
