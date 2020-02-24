@@ -10,21 +10,17 @@ import Transaction from '../entities/Transaction';
 import TransactionCategory from '../entities/TransactionCategory';
 import User from '../entities/User';
 import UserController from './UserController';
-import { getManager } from 'typeorm';
+import faker from 'faker';
 
 let user: User;
 
 beforeEach(async () => {
   user = await UserController.createUser(
-    'testing@budget.com',
-    'Bobby',
-    'Testing',
-    'mySecretPassword'
+    faker.internet.email(),
+    faker.name.firstName(),
+    faker.name.lastName(),
+    faker.internet.password()
   );
-});
-
-afterEach(async () => {
-  await getManager().remove(user);
 });
 
 describe('Budget controller > budgets', () => {
@@ -73,10 +69,10 @@ describe('Budget controller > budgets', () => {
 
   it('should not return any budgets of another user', async () => {
     const secondUser = await UserController.createUser(
-      'other@budget.com',
-      'John',
-      'Doe',
-      'myPass'
+      faker.internet.email(),
+      faker.name.firstName(),
+      faker.name.lastName(),
+      faker.internet.password()
     );
 
     await Promise.all([
@@ -119,10 +115,6 @@ describe('Budget controller > accounts', () => {
   beforeEach(async () => {
     budget = await BudgetController.createBudget('My Budget', user);
     controller = new BudgetController(budget);
-  });
-
-  afterEach(async () => {
-    await getManager().remove(budget);
   });
 
   it('should create a checking account', async () => {
@@ -263,10 +255,6 @@ describe('Budget controller > category groups', () => {
     controller = new BudgetController(budget);
   });
 
-  afterEach(async () => {
-    await getManager().remove(budget);
-  });
-
   it('should create the default groups', async () => {
     const groups = await controller.getCategoryGroups();
     const groupNames = groups.map(g => g.name);
@@ -344,10 +332,6 @@ describe('Budget controller > categories', () => {
     budget = await BudgetController.createBudget('My Budget', user);
     controller = new BudgetController(budget);
     group = await controller.createCategoryGroup('My Group');
-  });
-
-  afterEach(async () => {
-    await getManager().remove(budget);
   });
 
   it('should create a new category', async () => {
@@ -497,10 +481,6 @@ describe('Budget controller > allocations', () => {
     category = await controller.createCategory('My Category', group.id);
   });
 
-  afterEach(async () => {
-    await getManager().remove(budget);
-  });
-
   it('should set an allocation', async () => {
     const allocation = await controller.setAllocation(
       category.id,
@@ -593,10 +573,6 @@ describe('Budget controller > transactions', () => {
       controller.createAccount('Account', AccountType.checking)
     ]);
     category = await controller.createCategory('My Category', group.id);
-  });
-
-  afterEach(async () => {
-    await getManager().remove(budget);
   });
 
   it('should create a new transaction', async () => {

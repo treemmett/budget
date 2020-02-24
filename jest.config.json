@@ -5,5 +5,5 @@
   },
   "testRegex": "\\.test\\.[jt]s$",
   "moduleFileExtensions": ["ts", "js"],
-  "setupFilesAfterEnv": ["<rootDir>/jest.setup.ts"]
+  "setupFilesAfterEnv": ["<rootDir>/src/tests/setup.ts"]
 }

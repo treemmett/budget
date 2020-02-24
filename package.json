@@ -8,7 +8,7 @@
     "test": "run-p test:*",
     "test:lint": "eslint src/ --ext js,ts",
     "test:typing": "tsc --noEmit",
-    "test:unit": "jest",
+    "test:unit": "ts-node src/tests/prepDb && jest",
     "build": "tsc"
   },
   "dependencies": {
@@ -32,6 +32,7 @@
     "@types/bcryptjs": "^2.4.2",
     "@types/body-parser": "^1.17.1",
     "@types/express": "^4.17.1",
+    "@types/faker": "^4.1.9",
     "@types/graphql": "^14.5.0",
     "@types/helmet": "^0.0.44",
     "@types/jest": "^25.1.2",
@@ -40,6 +41,7 @@
     "@types/uuid": "^3.4.5",
     "eslint": "6.1.0",
     "eslint-config-zyehex": "0.1.2",
+    "faker": "^4.1.0",
     "husky": "^3.0.9",
     "jest": "^25.1.0",
     "nodemon": "^1.19.4",

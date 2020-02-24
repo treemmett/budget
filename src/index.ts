@@ -7,9 +7,9 @@ import generateGQL from './graphql';
 import helmet from 'helmet';
 import logger from './utils/logger';
 
-const { API_PORT } = config;
+const { API_PORT, DEVELOPMENT } = config;
 
-createSqlConnection()
+createSqlConnection({ synchronize: DEVELOPMENT })
   .then(async () => {
     const app = express();
     app.use(helmet());

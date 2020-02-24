@@ -2,9 +2,15 @@
   "extends": "zyehex",
   "overrides": [
     {
-      "files": ["jest.setup.ts", "**/*.test.[jt]s"],
+      "files": ["src/tests/**/*", "**/*.test.[jt]s"],
       "env": {
         "jest": true
+      },
+      "rules": {
+        "import/no-extraneous-dependencies": [
+          2,
+          { "devDependencies": ["**/*.test.ts"] }
+        ]
       }
     }
   ]

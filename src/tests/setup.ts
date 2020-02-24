@@ -1,12 +1,11 @@
 import 'reflect-metadata';
-import createSqlConnection, { purgeDatabase } from './src/server/sql';
 import { Connection } from 'typeorm';
+import createSqlConnection from '../server/sql';
 
 let conn: Connection;
 
 beforeAll(async () => {
-  conn = await createSqlConnection();
-  await purgeDatabase();
+  conn = await createSqlConnection({ suffix: '-test' });
 });
 
 afterAll(async () => {

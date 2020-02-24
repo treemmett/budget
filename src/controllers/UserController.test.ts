@@ -1,41 +1,41 @@
 import HttpException from '../utils/HttpException';
 import User from '../entities/User';
 import UserController from './UserController';
-import { getManager } from 'typeorm';
+import faker from 'faker';
 
 let user: User;
-const userEmail = 'test@user.com';
+let email: string;
+let password: string;
+let firstName: string;
+let lastName: string;
 
 beforeEach(async () => {
-  user = await UserController.createUser(
-    userEmail,
-    'Bobby',
-    'Testing',
-    'mySecretPassword'
-  );
-});
+  email = faker.internet.email();
+  password = faker.internet.password();
+  firstName = faker.name.firstName();
+  lastName = faker.name.lastName();
 
-afterEach(async () => {
-  await getManager().remove(user);
+  user = await UserController.createUser(email, firstName, lastName, password);
 });
 
 describe('User controller > account access', () => {
   it('should create a new user', async () => {
-    expect(user.email).toBe(userEmail);
-    expect(user.firstName).toBe('Bobby');
-    expect(user.lastName).toBe('Testing');
+    expect(user.id).toBeDefined();
+    expect(user.email).toBe(email);
+    expect(user.firstName).toBe(firstName);
+    expect(user.lastName).toBe(lastName);
     expect(user.hash).toBeInstanceOf(Buffer);
   });
 
   it('should create a new user and login', async () => {
-    const { jwt } = await UserController.login(userEmail, 'mySecretPassword');
+    const { jwt } = await UserController.login(email, password);
 
     expect(jwt).toBeTruthy();
   });
 
   it('should not login if the password is incorrect', async () => {
     try {
-      await UserController.login(userEmail, 'myWrongPassword');
+      await UserController.login(email, 'myWrongPassword');
       expect(true).toBe(false);
     } catch (e) {
       expect(e).toBeInstanceOf(HttpException);
@@ -46,7 +46,7 @@ describe('User controller > account access', () => {
 
   it("should not login if the email doesn't exist", async () => {
     try {
-      await UserController.login('fake@user.com', 'mySecretPass');
+      await UserController.login('fake@user.com', password);
       expect(true).toBe(false);
     } catch (e) {
       expect(e).toBeInstanceOf(HttpException);
@@ -56,16 +56,16 @@ describe('User controller > account access', () => {
   });
 
   it('should login and verify the access token', async () => {
-    const { jwt } = await UserController.login(userEmail, 'mySecretPassword');
+    const { jwt } = await UserController.login(email, password);
 
     const loggedIn = (await UserController.verifyToken(jwt)) as User;
 
     expect(loggedIn).toBeDefined();
-    expect(loggedIn.email).toBe(userEmail);
+    expect(loggedIn.email).toBe(email);
   });
 
   it('should deny a forged access token', async () => {
-    const { jwt } = await UserController.login(userEmail, 'mySecretPassword');
+    const { jwt } = await UserController.login(email, password);
 
     const tokenParts = jwt.split('.');
     const payload = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString());
