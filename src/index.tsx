@@ -3,9 +3,11 @@ import React, { FC } from 'react';
 import { ApolloClient } from 'apollo-client';
 import { ApolloLink } from 'apollo-link';
 import { ApolloProvider } from '@apollo/react-hooks';
+import Budget from './views/Budgets/Budgets';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import Login from './views/Login/Login';
+import { Router } from '@reach/router';
 import { onError } from 'apollo-link-error';
 import { render } from 'react-dom';
 
@@ -35,7 +37,7 @@ const client = new ApolloClient({
       }
     }),
     new HttpLink({
-      uri: `${window.location.href}api/graphql`,
+      uri: `${window.location.origin}/api/graphql`,
       credentials: 'same-origin'
     })
   ]),
@@ -44,7 +46,10 @@ const client = new ApolloClient({
 
 const App: FC = () => (
   <ApolloProvider client={client}>
-    <Login />
+    <Router>
+      <Budget path="/" />
+      <Login path="/login" />
+    </Router>
   </ApolloProvider>
 );
 

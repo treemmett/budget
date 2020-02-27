@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
-import Input from '../../components/Input';
+import Input from '../../components/Input/Input';
+import { RouteComponentProps } from '@reach/router';
 import cx from 'classnames';
 import gql from 'graphql-tag';
 import styles from './Login.scss';
@@ -17,7 +18,7 @@ interface LoginResponse {
   jwt: string;
 }
 
-const Login: FC = () => {
+const Login: FC<RouteComponentProps> = () => {
   const [login] = useMutation<
     { login: LoginResponse },
     { email: string; password: string }
