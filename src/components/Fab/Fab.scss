@@ -1,0 +1,39 @@
+@import '../../global';
+
+.fab {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  bottom: 0;
+  right: 0;
+  margin: 1.5rem;
+  background: linear-gradient($greenLight 0%, $green 85%);
+  min-width: 4.5rem;
+  min-height: 4.5rem;
+  line-height: 4.5rem;
+  border-radius: 4.5rem;
+  user-select: none;
+  color: #fff;
+  font-size: 2rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba($green, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: none;
+  padding: 0;
+  outline: none;
+  cursor: pointer;
+  transition: box-shadow 0.2s cubic-bezier(0.65, 0.29, 0.26, 0.48),
+    transform 0.2s cubic-bezier(0.65, 0.29, 0.26, 0.48);
+
+  &:focus,
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 14px rgba($green, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 6px 12px -2px rgba($green, 0.25),
+      0 3px 7px -3px rgba(0, 0, 0, 0.3);
+  }
+}
