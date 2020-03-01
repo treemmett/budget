@@ -49,6 +49,7 @@ const App: FC = () => (
     <Router>
       <Budget path="/" />
       <Login path="/login" />
+      <Login path="/register" />
     </Router>
   </ApolloProvider>
 );

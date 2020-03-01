@@ -18,6 +18,15 @@ $green: #1ec965;
   background-color: #fff;
 }
 
+.splitInput {
+  display: flex;
+  justify-content: space-between;
+
+  .input {
+    width: calc(50% - 0.5rem);
+  }
+}
+
 .input {
   display: block !important;
   margin-bottom: 1rem;

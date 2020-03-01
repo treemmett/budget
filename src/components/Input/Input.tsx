@@ -3,6 +3,8 @@ import cx from 'classnames';
 import styles from './Input.scss';
 
 export interface InputProps {
+  /** Automatically set focus on the input */
+  autoFocus?: boolean;
   /** Class name concatenated to input wrapper */
   className?: string;
   /** ID of the input */
@@ -28,6 +30,7 @@ export interface InputProps {
 }
 
 const Input: FC<InputProps> = ({
+  autoFocus,
   className,
   id,
   label,
@@ -85,6 +88,7 @@ const Input: FC<InputProps> = ({
         <input
           id={realId}
           name={name}
+          autoFocus={autoFocus}
           onBlur={blurHandler}
           onChange={onChange}
           onFocus={focusHandler}
