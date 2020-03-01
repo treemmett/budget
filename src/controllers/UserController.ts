@@ -29,7 +29,18 @@ export default class UserController {
     const hash = await bcrypt.hash(password, 10);
     user.hash = Buffer.from(hash);
 
-    await getManager().save(user);
+    try {
+      await getManager().save(user);
+    } catch (e) {
+      if (e.code && e.code === '23505') {
+        throw new HttpException({
+          error: 'validation_error',
+          message: 'This email is already registered.',
+          status: 409
+        });
+      }
+      throw e;
+    }
 
     return user;
   }

@@ -27,6 +27,16 @@ describe('User controller > account access', () => {
     expect(user.hash).toBeInstanceOf(Buffer);
   });
 
+  it('should not create two users with the same email', async () => {
+    try {
+      await UserController.createUser(email, firstName, lastName, password);
+      expect(true).toBe(false);
+    } catch (e) {
+      expect(e).toBeInstanceOf(HttpException);
+      expect(e.message).toBe('This email is already registered.');
+    }
+  });
+
   it('should create a new user and login', async () => {
     const { jwt } = await UserController.login(email, password);
 

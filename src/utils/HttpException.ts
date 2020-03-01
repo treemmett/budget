@@ -8,7 +8,8 @@ export type HttpErrorType =
   | 'invalid_request'
   | 'request_failed'
   | 'server_error'
-  | 'unauthorized_request';
+  | 'unauthorized_request'
+  | 'validation_error';
 
 export default class HttpException extends Error {
   public status: number;
