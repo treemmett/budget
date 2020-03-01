@@ -2,7 +2,8 @@
   "baseUrl": "http://localhost:3000",
   "integrationFolder": "test/spec",
   "pluginsFile": "test/plugin.js",
-  "supportFile": false,
+  "supportFile": "test/commands/index.ts",
   "videosFolder": "test/videos",
-  "screenshotsFolder": "test/screenshots"
+  "screenshotsFolder": "test/screenshots",
+  "fixturesFolder": false
 }

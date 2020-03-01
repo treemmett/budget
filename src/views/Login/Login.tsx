@@ -27,7 +27,7 @@ interface LoginResponse {
   jwt: string;
 }
 
-const Login: FC<RouteComponentProps> = ({ path }) => {
+const Login: FC<RouteComponentProps> = ({ navigate, path }) => {
   const [login] = useMutation<
     { login: LoginResponse },
     { email: string; password: string }
@@ -60,6 +60,7 @@ const Login: FC<RouteComponentProps> = ({ path }) => {
     const response = await login({ variables: { email, password } });
 
     localStorage.setItem('token', response.data.login.jwt);
+    navigate('/');
   }
 
   async function onRegister(
@@ -91,6 +92,7 @@ const Login: FC<RouteComponentProps> = ({ path }) => {
     });
 
     localStorage.setItem('token', loginResponse.data.login.jwt);
+    navigate('/');
   }
 
   return (
