@@ -1,0 +1,24 @@
+{
+  "plugins": ["cypress", "chai-friendly"],
+  "rules": {
+    "chai-friendly/no-unused-expressions": 2,
+    "cypress/no-assigning-return-values": "error",
+    "cypress/no-unnecessary-waiting": "error",
+    "cypress/assertion-before-screenshot": "warn",
+    "cypress/no-force": "warn",
+    "import/no-extraneous-dependencies": [2, { "devDependencies": true }],
+    "no-unused-expressions": 0
+  },
+  "env": {
+    "node": true,
+    "cypress/globals": true
+  },
+  "overrides": [
+    {
+      "files": "integration/**/*",
+      "env": {
+        "node": false
+      }
+    }
+  ]
+}

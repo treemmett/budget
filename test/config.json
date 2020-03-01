@@ -1,0 +1,8 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "integrationFolder": "test/spec",
+  "pluginsFile": "test/plugin.js",
+  "supportFile": false,
+  "videosFolder": "test/videos",
+  "screenshotsFolder": "test/screenshots"
+}

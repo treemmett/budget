@@ -1,3 +1,4 @@
+const autoprefixer = require('autoprefixer');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -31,7 +32,7 @@ module.exports = {
           {
             loader: require.resolve('postcss-loader'),
             options: {
-              plugins: [require('autoprefixer')]
+              plugins: [autoprefixer]
             }
           },
           'sass-loader'
@@ -54,6 +55,7 @@ module.exports = {
   ],
   devServer: {
     historyApiFallback: true,
+    port: 3000,
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
