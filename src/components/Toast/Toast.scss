@@ -1,0 +1,87 @@
+@import '../../global';
+
+.toaster {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 1000000;
+}
+
+.toast {
+  @include card;
+  position: relative;
+  padding: 1rem 3rem 1rem 2rem;
+  background-color: #fff;
+  margin: 1rem;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 5px;
+    background: linear-gradient($blueLight 0%, $blue 85%);
+  }
+
+  &.error {
+    .title {
+      color: $red;
+    }
+
+    &::before {
+      background: linear-gradient($orange 0%, $red 85%);
+    }
+  }
+
+  &:hover .close {
+    opacity: 1;
+  }
+}
+
+.title {
+  font-weight: 500;
+  font-weight: 14px;
+  color: $blueText;
+}
+
+.message {
+  font-weight: 300;
+  font-size: 13px;
+}
+
+.close {
+  position: absolute;
+  background: radial-gradient(#fff 30%, #fff0);
+  border: unset;
+  padding: 0.75rem;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 1.3rem;
+  height: 1.3rem;
+  box-sizing: content-box;
+  opacity: 0;
+  fill: #d6d6d6;
+  transition: opacity 0.2s cubic-bezier(0.65, 0.29, 0.26, 0.48),
+    fill 0.2s cubic-bezier(0.65, 0.29, 0.26, 0.48);
+  outline: none;
+  cursor: pointer;
+
+  &:hover {
+    fill: #c4c4c4;
+  }
+
+  &:active,
+  &:focus {
+    opacity: 1;
+    fill: #999;
+  }
+
+  svg {
+    display: block;
+    height: 100%;
+    width: 100%;
+  }
+}

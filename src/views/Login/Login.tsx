@@ -5,6 +5,7 @@ import cx from 'classnames';
 import gql from 'graphql-tag';
 import styles from './Login.scss';
 import { useMutation } from '@apollo/react-hooks';
+import { useToasts } from '../../components/Toast/Toast';
 
 const LOGIN = gql`
   mutation Login($email: String!, $password: String!) {
@@ -28,6 +29,8 @@ interface LoginResponse {
 }
 
 const Login: FC<RouteComponentProps> = ({ navigate, path }) => {
+  const { addToast } = useToasts();
+
   const [login] = useMutation<
     { login: LoginResponse },
     { email: string; password: string }
@@ -97,6 +100,21 @@ const Login: FC<RouteComponentProps> = ({ navigate, path }) => {
 
   return (
     <div className={styles.login}>
+      <button
+        type="button"
+        onClick={() => {
+          addToast({
+            // eslint-disable-next-line no-alert
+            title: window.prompt('Toast title'),
+            // eslint-disable-next-line no-alert
+            message: window.prompt('Toast message'),
+            // eslint-disable-next-line no-alert
+            status: window.confirm('Error?') ? 'error' : 'info'
+          });
+        }}
+      >
+        Toast
+      </button>
       <h1 className={styles.brand}>Rudget</h1>
       {path === '/login' ? (
         <form className={styles.form} onSubmit={onLogin}>

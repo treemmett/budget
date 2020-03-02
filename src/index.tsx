@@ -8,6 +8,7 @@ import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import Login from './views/Login/Login';
 import { Router } from '@reach/router';
+import { Toaster } from './components/Toast/Toast';
 import { onError } from 'apollo-link-error';
 import { render } from 'react-dom';
 
@@ -45,13 +46,15 @@ const client = new ApolloClient({
 });
 
 const App: FC = () => (
-  <ApolloProvider client={client}>
-    <Router>
-      <Budget path="/" />
-      <Login path="/login" />
-      <Login path="/register" />
-    </Router>
-  </ApolloProvider>
+  <Toaster>
+    <ApolloProvider client={client}>
+      <Router>
+        <Budget path="/" />
+        <Login path="/login" />
+        <Login path="/register" />
+      </Router>
+    </ApolloProvider>
+  </Toaster>
 );
 
 render(<App />, document.getElementById('root'));
