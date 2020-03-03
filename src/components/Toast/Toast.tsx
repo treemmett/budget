@@ -1,4 +1,5 @@
 import React, { FC, createContext, useContext, useState } from 'react';
+import { animated, useTransition } from 'react-spring';
 import X from '../../assets/icons/x.svg';
 import cx from 'classnames';
 import styles from './Toast.scss';
@@ -9,13 +10,14 @@ type RemoveToastFn = (id: string) => void;
 type ToastStatus = 'info' | 'error';
 
 interface ToastOptions {
-  status: ToastStatus;
+  status?: ToastStatus;
   message: string;
   title?: string;
 }
 
 export interface ToastData extends ToastOptions {
   id: string;
+  status: ToastStatus;
 }
 
 export interface UseToasts {
@@ -26,20 +28,41 @@ export interface UseToasts {
 const ToastContext = createContext<UseToasts>(null);
 
 export const Toaster: FC = ({ children }) => {
-  const [toasts, setToasts] = useState<ToastData[]>([
-    { message: 'hi', id: 'f', status: 'error', title: 'My Title' }
-  ]);
-
-  const addToast: AddToastFn = function addToast(toast) {
-    if (typeof toast === 'string') {
-      setToasts(t => [...t, { message: toast, id: uuid(), status: 'info' }]);
-    } else {
-      setToasts(t => [...t, { ...toast, id: uuid() }]);
+  const [toasts, setToasts] = useState<ToastData[]>([]);
+  const transitions = useTransition(toasts, t => t.id, {
+    from: { opacity: 0, transform: 'translate(0, 50%)' },
+    leave: {
+      opacity: 0,
+      height: '0rem',
+      marginBottom: '0rem',
+      transform: 'translate(100%, 0)'
+    },
+    enter: {
+      opacity: 1,
+      height: '4.5rem',
+      transform: 'translateY(0, 0)',
+      marginBottom: '1rem'
     }
-  };
+  });
 
   const removeToast: RemoveToastFn = function removeToast(id) {
     setToasts(t => t.filter(toast => toast.id !== id));
+  };
+
+  const addToast: AddToastFn = function addToast(toast) {
+    const id = uuid();
+
+    setToasts(t => [
+      ...t,
+      {
+        message: typeof toast === 'string' ? toast : toast.message,
+        title: typeof toast === 'string' ? undefined : toast.title,
+        status: typeof toast === 'string' ? 'info' : toast.status || 'info',
+        id
+      }
+    ]);
+
+    setTimeout(removeToast, 5500, id);
   };
 
   return (
@@ -47,23 +70,26 @@ export const Toaster: FC = ({ children }) => {
       {children}
 
       <div className={styles.toaster}>
-        {toasts.map(t => (
-          <div
+        {transitions.map(({ item, props, key, state }) => (
+          <animated.div
             className={cx(styles.toast, {
-              [styles.error]: t.status === 'error'
+              [styles.error]: item.status === 'error'
             })}
-            key={t.id}
+            key={key}
+            style={props}
           >
-            {t.title && <div className={styles.title}>{t.title}</div>}
-            <div className={styles.message}>{t.message}</div>
+            {item.title && <div className={styles.title}>{item.title}</div>}
+            <div className={styles.message}>{item.message}</div>
             <button
-              className={styles.close}
+              className={cx(styles.close, {
+                [styles.leaving]: state === 'leave'
+              })}
               type="button"
-              onClick={() => removeToast(t.id)}
+              onClick={() => removeToast(item.id)}
             >
               <X />
             </button>
-          </div>
+          </animated.div>
         ))}
       </div>
     </ToastContext.Provider>
