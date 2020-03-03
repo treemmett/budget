@@ -1,8 +1,9 @@
-const autoprefixer = require('autoprefixer');
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+import { Configuration } from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import autoprefixer from 'autoprefixer';
+import path from 'path';
 
-module.exports = {
+const config: Configuration = {
   entry: './src/index.tsx',
   resolve: {
     extensions: ['.ts', '.tsx', '.js']
@@ -70,3 +71,5 @@ module.exports = {
     }
   }
 };
+
+export default config;

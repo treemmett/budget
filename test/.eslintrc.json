@@ -19,6 +19,12 @@
       "env": {
         "node": false
       }
+    },
+    {
+      "files": "index.ts",
+      "env": {
+        "cypress/globals": false
+      }
     }
   ]
 }

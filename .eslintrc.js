@@ -11,6 +11,9 @@ module.exports = {
       files: '!src/**/*',
       env: {
         node: true
+      },
+      rules: {
+        'import/no-extraneous-dependencies': [2, { devDependencies: true }]
       }
     }
   ]
