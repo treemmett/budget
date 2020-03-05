@@ -5,7 +5,7 @@ import cx from 'classnames';
 import styles from './Toast.scss';
 import uuid from '../../utils/uuid';
 
-type AddToastFn = (toast: ToastOptions | string) => void;
+type AddToastFn = (toast: ToastOptions | string) => string;
 type RemoveToastFn = (id: string) => void;
 type ToastStatus = 'info' | 'error';
 
@@ -25,7 +25,7 @@ export interface UseToasts {
   removeToast: RemoveToastFn;
 }
 
-const ToastContext = createContext<UseToasts>(null);
+export const ToastContext = createContext<UseToasts>(null);
 
 export const Toaster: FC = ({ children }) => {
   const [toasts, setToasts] = useState<ToastData[]>([]);
@@ -63,6 +63,8 @@ export const Toaster: FC = ({ children }) => {
     ]);
 
     setTimeout(removeToast, 5500, id);
+
+    return id;
   };
 
   return (

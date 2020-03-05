@@ -2,6 +2,7 @@ import { Configuration } from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import autoprefixer from 'autoprefixer';
 import path from 'path';
+import sass from 'sass';
 
 const config: Configuration = {
   entry: './src/index.tsx',
@@ -36,7 +37,12 @@ const config: Configuration = {
               plugins: [autoprefixer]
             }
           },
-          'sass-loader'
+          {
+            loader: 'sass-loader',
+            options: {
+              implementation: sass
+            }
+          }
         ]
       },
       {
