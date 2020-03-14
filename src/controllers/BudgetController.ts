@@ -18,6 +18,14 @@ export default class BudgetController {
   }
 
   public static async createBudget(name: string, user: User): Promise<Budget> {
+    if (!name) {
+      throw new HttpException({
+        status: 404,
+        error: 'invalid_request',
+        message: 'Name cannot be empty.'
+      });
+    }
+
     const budget = new Budget();
     budget.name = name;
     budget.user = user;
