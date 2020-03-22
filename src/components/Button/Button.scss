@@ -1,0 +1,44 @@
+@import '../../global';
+
+@mixin buttonColor($color: $blueText) {
+  color: $color;
+
+  &:focus,
+  &:hover {
+    background-color: rgba($color, 0.05);
+  }
+
+  &:active {
+    background-color: rgba($color, 0.1);
+  }
+}
+
+.button {
+  appearance: none;
+  background: unset;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  text-transform: uppercase;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s cubic-bezier(0.65, 0.29, 0.26, 0.48);
+  font-size: 0.8rem;
+  border-radius: 0.5rem;
+}
+
+.blue {
+  @include buttonColor();
+}
+
+.green {
+  @include buttonColor($green);
+}
+
+.orange {
+  @include buttonColor($orange);
+}
+
+.red {
+  @include buttonColor($red);
+}
