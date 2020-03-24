@@ -13,7 +13,7 @@ const Button: FC<ButtonProps> = ({ children, color, onClick }) => (
   <button
     type="button"
     className={cx(styles.button, {
-      [styles.blue]: !color || color === 'blue',
+      [styles.blue]: color === 'blue',
       [styles.green]: color === 'green',
       [styles.orange]: color === 'orange',
       [styles.red]: color === 'red'
