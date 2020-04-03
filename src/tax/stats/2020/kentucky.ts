@@ -1,62 +1,62 @@
 import { Jurisdiction } from '../..';
 
 const kentucky: Jurisdiction = {
-  single: {
-    deductions: [
-      {
-        amount: 2650,
-        name: 'Standard Deduction (Single)'
-      }
-    ],
+  headOfHousehold: {
     brackets: [
       {
         bracket: 0,
-        rate: 5
-      }
-    ]
+        rate: 5,
+      },
+    ],
+    deductions: [
+      {
+        amount: 2650,
+        name: 'Standard Deduction (Head Of Household)',
+      },
+    ],
   },
   married: {
-    deductions: [
-      {
-        amount: 2650,
-        name: 'Standard Deduction (Married)'
-      }
-    ],
     brackets: [
       {
         bracket: 0,
-        rate: 5
-      }
-    ]
+        rate: 5,
+      },
+    ],
+    deductions: [
+      {
+        amount: 2650,
+        name: 'Standard Deduction (Married)',
+      },
+    ],
   },
   marriedSeparately: {
-    deductions: [
-      {
-        amount: 2650,
-        name: 'Standard Deduction (Married Separately)'
-      }
-    ],
     brackets: [
       {
         bracket: 0,
-        rate: 5
-      }
-    ]
+        rate: 5,
+      },
+    ],
+    deductions: [
+      {
+        amount: 2650,
+        name: 'Standard Deduction (Married Separately)',
+      },
+    ],
   },
-  headOfHousehold: {
-    deductions: [
-      {
-        amount: 2650,
-        name: 'Standard Deduction (Head Of Household)'
-      }
-    ],
+  single: {
     brackets: [
       {
         bracket: 0,
-        rate: 5
-      }
-    ]
-  }
+        rate: 5,
+      },
+    ],
+    deductions: [
+      {
+        amount: 2650,
+        name: 'Standard Deduction (Single)',
+      },
+    ],
+  },
 };
 
 export default kentucky;

@@ -1,62 +1,62 @@
 import { Jurisdiction } from '../..';
 
 const northCarolina: Jurisdiction = {
-  single: {
-    deductions: [
-      {
-        amount: 10000,
-        name: 'Standard Deduction (Single)'
-      }
-    ],
+  headOfHousehold: {
     brackets: [
       {
         bracket: 0,
-        rate: 5.499
-      }
-    ]
+        rate: 5.499,
+      },
+    ],
+    deductions: [
+      {
+        amount: 20000,
+        name: 'Standard Deduction (Head Of Household)',
+      },
+    ],
   },
   married: {
-    deductions: [
-      {
-        amount: 20000,
-        name: 'Standard Deduction (Married)'
-      }
-    ],
     brackets: [
       {
         bracket: 0,
-        rate: 5.499
-      }
-    ]
+        rate: 5.499,
+      },
+    ],
+    deductions: [
+      {
+        amount: 20000,
+        name: 'Standard Deduction (Married)',
+      },
+    ],
   },
   marriedSeparately: {
+    brackets: [
+      {
+        bracket: 0,
+        rate: 5.499,
+      },
+    ],
     deductions: [
       {
         amount: 10000,
-        name: 'Standard Deduction (Married Separately)'
-      }
+        name: 'Standard Deduction (Married Separately)',
+      },
     ],
+  },
+  single: {
     brackets: [
       {
         bracket: 0,
-        rate: 5.499
-      }
-    ]
-  },
-  headOfHousehold: {
+        rate: 5.499,
+      },
+    ],
     deductions: [
       {
-        amount: 20000,
-        name: 'Standard Deduction (Head Of Household)'
-      }
+        amount: 10000,
+        name: 'Standard Deduction (Single)',
+      },
     ],
-    brackets: [
-      {
-        bracket: 0,
-        rate: 5.499
-      }
-    ]
-  }
+  },
 };
 
 export default northCarolina;

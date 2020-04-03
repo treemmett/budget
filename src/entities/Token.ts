@@ -5,7 +5,7 @@ import {
   Index,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
 import User from './User';
@@ -35,10 +35,9 @@ export default class Token {
   public lastUsed: Date;
 
   @Field(() => User, { description: 'The tokens owning user' })
-  @ManyToOne(
-    () => User,
-    user => user.tokens,
-    { onDelete: 'CASCADE', nullable: false }
-  )
+  @ManyToOne(() => User, user => user.tokens, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   public user: User;
 }

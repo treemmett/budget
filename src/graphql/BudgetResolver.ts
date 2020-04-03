@@ -5,7 +5,7 @@ import {
   Mutation,
   Query,
   Resolver,
-  Root
+  Root,
 } from 'type-graphql';
 import Account from '../entities/Account';
 import Budget from '../entities/Budget';
@@ -93,7 +93,7 @@ export default class BudgetResolver {
         1
       ),
       description:
-        'Minimum date of the transactions. Defaults to the first day of the current month. Cannot be more than 366 days less than "to".'
+        'Minimum date of the transactions. Defaults to the first day of the current month. Cannot be more than 366 days less than "to".',
     })
     from?: Date,
     @Arg('to', () => DateScalar, {
@@ -103,7 +103,7 @@ export default class BudgetResolver {
         0
       ),
       description:
-        'Maximum date of the transactions. Defaults to the last day of the current month. Cannot be more than 366 days more than "from".'
+        'Maximum date of the transactions. Defaults to the last day of the current month. Cannot be more than 366 days more than "from".',
     })
     to?: Date
   ): Promise<Transaction[]> {
@@ -111,7 +111,7 @@ export default class BudgetResolver {
       accountId,
       categoryId,
       from,
-      to
+      to,
     });
   }
 

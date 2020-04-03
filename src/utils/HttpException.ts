@@ -18,11 +18,11 @@ export default class HttpException extends Error {
 
   public constructor(error?: HttpError, stack?: string) {
     super();
-    const e = error || {};
-    this.error = e.error || 'server_error';
-    this.message = e.message || 'An unknown error occured.';
+    const e = error ?? {};
+    this.error = e.error ?? 'server_error';
+    this.message = e.message ?? 'An unknown error occured.';
     this.name = 'HttpException';
-    this.stack = stack || this.stack;
-    this.status = e.status || 500;
+    this.stack = stack ?? this.stack;
+    this.status = e.status ?? 500;
   }
 }

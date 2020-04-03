@@ -3,7 +3,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Field, ID, ObjectType, registerEnumType } from 'type-graphql';
 import Budget from './Budget';
@@ -12,12 +12,12 @@ import Transaction from './Transaction';
 export enum AccountType {
   checking,
   savings,
-  creditCard
+  creditCard,
 }
 
 registerEnumType(AccountType, {
+  description: 'Bank account type',
   name: 'AccountType',
-  description: 'Bank account type'
 });
 
 @ObjectType({ description: 'Bank account' })
@@ -32,21 +32,17 @@ export default class Account {
   public name: string;
 
   @Field(() => AccountType, { description: 'Bank account type' })
-  @Column({ type: 'enum', enum: AccountType })
+  @Column({ enum: AccountType, type: 'enum' })
   public type: AccountType;
 
   @Field(() => Budget)
-  @ManyToOne(
-    () => Budget,
-    budget => budget.accounts,
-    { onDelete: 'CASCADE', nullable: false }
-  )
+  @ManyToOne(() => Budget, budget => budget.accounts, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   public budget: Budget;
 
   @Field(() => [Transaction])
-  @OneToMany(
-    () => Transaction,
-    transaction => transaction.account
-  )
+  @OneToMany(() => Transaction, transaction => transaction.account)
   public transactions: Transaction[];
 }

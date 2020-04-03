@@ -3,7 +3,7 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Unique
+  Unique,
 } from 'typeorm';
 import { Field, Int, ObjectType } from 'type-graphql';
 import TransactionCategory from './TransactionCategory';
@@ -16,38 +16,32 @@ export default class Allocation {
   public id: string;
 
   @Field(() => TransactionCategory, {
-    description: 'Category of the allocation'
+    description: 'Category of the allocation',
   })
-  @ManyToOne(
-    () => TransactionCategory,
-    category => category.allocations,
-    { onDelete: 'CASCADE', nullable: false }
-  )
+  @ManyToOne(() => TransactionCategory, category => category.allocations, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   public category: TransactionCategory;
 
   @Field({ description: 'Amount of the allocation' })
   @Column({
-    type: 'numeric',
     precision: 13,
     scale: 2,
     transformer: {
       from: (data: string): number => parseFloat(data),
-      to: (data: number): number => data
-    }
+      to: (data: number): number => data,
+    },
+    type: 'numeric',
   })
   public amount: number;
 
   @Field(() => String, {
     description:
-      'ISO 8601 date string of the allocation. Date will be set to the first.'
+      'ISO 8601 date string of the allocation. Date will be set to the first.',
   })
   @Column({
-    type: 'date',
     transformer: {
-      to: (entityValue: Date): Date => {
-        entityValue.setDate(1);
-        return entityValue;
-      },
       from: (databaseValue: string): Date => {
         const [year, month] = databaseValue.split('-');
         const d = new Date();
@@ -55,8 +49,13 @@ export default class Allocation {
         d.setMonth(parseInt(month, 10) - 1);
         d.setDate(1);
         return d;
-      }
-    }
+      },
+      to: (entityValue: Date): Date => {
+        entityValue.setDate(1);
+        return entityValue;
+      },
+    },
+    type: 'date',
   })
   public date: Date;
 
@@ -65,7 +64,7 @@ export default class Allocation {
 
   @Field(() => Int, {
     description:
-      'Month of the allocation. 0 based (January is 0, December is 11)'
+      'Month of the allocation. 0 based (January is 0, December is 11)',
   })
   public month: number;
 }

@@ -3,7 +3,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
 import Allocation from './Allocation';
@@ -23,34 +23,26 @@ export default class TransactionCategory {
   public name: string;
 
   @Field(() => Budget, { description: 'Budget the transaction is attached to' })
-  @ManyToOne(
-    () => Budget,
-    budget => budget.categories,
-    { onDelete: 'CASCADE', nullable: false }
-  )
+  @ManyToOne(() => Budget, budget => budget.categories, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   public budget: Budget;
 
   @Field(() => CategoryGroup, { description: 'The group the category is in' })
-  @ManyToOne(
-    () => CategoryGroup,
-    group => group.categories,
-    { onDelete: 'CASCADE', nullable: false }
-  )
+  @ManyToOne(() => CategoryGroup, group => group.categories, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   public group: CategoryGroup;
 
   @Field(() => [Transaction], {
-    description: 'List of transactions within the category'
+    description: 'List of transactions within the category',
   })
-  @OneToMany(
-    () => Transaction,
-    transaction => transaction.category
-  )
+  @OneToMany(() => Transaction, transaction => transaction.category)
   public transactions: Transaction[];
 
-  @OneToMany(
-    () => Allocation,
-    allocation => allocation.category
-  )
+  @OneToMany(() => Allocation, allocation => allocation.category)
   public allocations: Allocation[];
 
   @Field(() => Allocation, { description: 'Allocation for the category' })

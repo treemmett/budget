@@ -3,7 +3,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
 import Budget from './Budget';
@@ -21,19 +21,15 @@ export default class CategoryGroup {
   public name: string;
 
   @Field(() => Budget, { description: 'The budget of the group' })
-  @ManyToOne(
-    () => Budget,
-    budget => budget.categoryGroups,
-    { onDelete: 'CASCADE', nullable: false }
-  )
+  @ManyToOne(() => Budget, budget => budget.categoryGroups, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   public budget: Budget;
 
   @Field(() => [TransactionCategory], {
-    description: 'List of categories within the group'
+    description: 'List of categories within the group',
   })
-  @OneToMany(
-    () => TransactionCategory,
-    category => category.group
-  )
+  @OneToMany(() => TransactionCategory, category => category.group)
   public categories: TransactionCategory[];
 }

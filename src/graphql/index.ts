@@ -14,24 +14,24 @@ async function generateGQL(): Promise<ApolloServer> {
   const schema = await buildSchema({
     resolvers: [
       path.join(__dirname, '/**/*Resolver.ts'),
-      path.join(__dirname, '/**/*Resolver.js')
-    ]
+      path.join(__dirname, '/**/*Resolver.js'),
+    ],
   });
 
   const apollo = new ApolloServer({
-    schema,
-    playground: config.DEVELOPMENT,
     context: async ({ req }: { req: Request }): Promise<Context> => {
       const [user] = await Promise.all([
-        UserController.verifyToken(req.get('authorization'))
+        UserController.verifyToken(req.get('authorization')),
       ]);
 
       const ctx: Context = {
-        user: user || undefined
+        user: user || undefined,
       };
 
       return ctx;
-    }
+    },
+    playground: config.DEVELOPMENT,
+    schema,
   });
 
   return apollo;

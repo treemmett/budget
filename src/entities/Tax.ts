@@ -3,7 +3,7 @@ import {
   Entity,
   JoinColumn,
   OneToOne,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Field, ObjectType, registerEnumType } from 'type-graphql';
 import Budget from './Budget';
@@ -58,19 +58,19 @@ export enum State {
   'Washington' = 'wa',
   'West_Virginia' = 'wv',
   'Wisconsin' = 'wi',
-  'Wyoming' = 'wy'
+  'Wyoming' = 'wy',
 }
 
 registerEnumType(State, {
+  description: 'Abbreviation of the state',
   name: 'State',
-  description: 'Abbreviation of the state'
 });
 
 export enum FilingStatus {
   single,
   married,
   separate,
-  head
+  head,
 }
 
 registerEnumType(FilingStatus, { name: 'FilingStatus' });
@@ -81,19 +81,18 @@ export default class Tax {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
-  @OneToOne(
-    () => Budget,
-    budget => budget.tax,
-    { onDelete: 'CASCADE', nullable: false }
-  )
+  @OneToOne(() => Budget, budget => budget.tax, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   public budget: Budget;
 
   @Field(() => State, { description: 'Filing state for income tax' })
-  @Column({ type: 'enum', enum: State })
+  @Column({ enum: State, type: 'enum' })
   public state: State;
 
   @Field(() => FilingStatus, { description: 'Filing status for income tax' })
-  @Column({ type: 'enum', enum: FilingStatus })
+  @Column({ enum: FilingStatus, type: 'enum' })
   public status: FilingStatus;
 }

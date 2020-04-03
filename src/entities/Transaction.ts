@@ -3,7 +3,7 @@ import {
   Entity,
   Index,
   ManyToOne,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Field, Float, ID, ObjectType } from 'type-graphql';
 import Account from './Account';
@@ -27,32 +27,28 @@ export default class Transaction {
   public description: string;
 
   @Field(() => DateScalar, {
-    description: 'Date the transaction occurred'
+    description: 'Date the transaction occurred',
   })
   @Column({ type: 'date' })
   public date: Date;
 
   @Field(() => Float, { description: 'Amount of the transaction' })
-  @Column({ type: 'decimal', precision: 13, scale: 2 })
+  @Column({ precision: 13, scale: 2, type: 'decimal' })
   public amount: number;
 
   @Field(() => TransactionCategory, {
-    description: 'Category of the transaction'
+    description: 'Category of the transaction',
   })
   @Index()
-  @ManyToOne(
-    () => TransactionCategory,
-    category => category.transactions,
-    { onDelete: 'CASCADE', nullable: false }
-  )
+  @ManyToOne(() => TransactionCategory, category => category.transactions, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   public category: TransactionCategory;
 
   @Field(() => Account, {
-    description: 'The bank account the transaction was charged from'
+    description: 'The bank account the transaction was charged from',
   })
-  @ManyToOne(
-    () => Account,
-    account => account.transactions
-  )
+  @ManyToOne(() => Account, account => account.transactions)
   public account: Account;
 }

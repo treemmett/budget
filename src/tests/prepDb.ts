@@ -1,7 +1,11 @@
 import createSqlConnection from '../server/sql';
 
 createSqlConnection({
-  suffix: '-test',
   drop: true,
-  synchronize: true
-}).then(() => process.exit());
+  suffix: '-test',
+  synchronize: true,
+})
+  .then(conn => conn.close())
+  .catch(() => {
+    throw new Error('Could not purge test database');
+  });

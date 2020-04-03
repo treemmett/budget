@@ -1,62 +1,62 @@
 import { Jurisdiction } from '../..';
 
 const newHampshire: Jurisdiction = {
-  single: {
-    deductions: [
-      {
-        amount: 2400,
-        name: 'Standard Deduction (Single)'
-      }
-    ],
+  headOfHousehold: {
     brackets: [
       {
         bracket: 0,
-        rate: 5
-      }
-    ]
+        rate: 0,
+      },
+    ],
+    deductions: [
+      {
+        amount: 2400,
+        name: 'Standard Deduction (Head of Household)',
+      },
+    ],
   },
   married: {
+    brackets: [
+      {
+        bracket: 0,
+        rate: 5,
+      },
+    ],
     deductions: [
       {
         amount: 4800,
-        name: 'Standard Deduction (Married)'
-      }
+        name: 'Standard Deduction (Married)',
+      },
     ],
-    brackets: [
-      {
-        bracket: 0,
-        rate: 5
-      }
-    ]
   },
   marriedSeparately: {
-    deductions: [
-      {
-        amount: 2400,
-        name: 'Standard Deduction (Married Separately)'
-      }
-    ],
     brackets: [
       {
         bracket: 0,
-        rate: 5
-      }
-    ]
+        rate: 5,
+      },
+    ],
+    deductions: [
+      {
+        amount: 2400,
+        name: 'Standard Deduction (Married Separately)',
+      },
+    ],
   },
-  headOfHousehold: {
-    deductions: [
-      {
-        amount: 2400,
-        name: 'Standard Deduction (Head of Household)'
-      }
-    ],
+  single: {
     brackets: [
       {
         bracket: 0,
-        rate: 0
-      }
-    ]
-  }
+        rate: 5,
+      },
+    ],
+    deductions: [
+      {
+        amount: 2400,
+        name: 'Standard Deduction (Single)',
+      },
+    ],
+  },
 };
 
 export default newHampshire;

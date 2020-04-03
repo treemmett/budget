@@ -37,8 +37,18 @@ function parseLocalDate(dateString: unknown): Date {
 }
 
 const DateScalar = new GraphQLScalarType({
-  name: 'Date',
   description: 'ISO 8601 representation of a date without time',
+  name: 'Date',
+  parseLiteral(ast): Date {
+    if (ast.kind === Kind.STRING) {
+      return parseLocalDate(ast.value);
+    }
+
+    throw new Error('Invalid ISO 8601 date');
+  },
+  parseValue(value): Date {
+    return parseLocalDate(value);
+  },
   serialize(value: Date | string): string {
     if (value instanceof Date) {
       return [value.getFullYear(), value.getMonth() + 1, value.getDate()]
@@ -46,7 +56,7 @@ const DateScalar = new GraphQLScalarType({
         .join('-');
     }
 
-    const match = value.match(/(\d{4})-(\d{2})-(\d{2})/);
+    const match = /(\d{4})-(\d{2})-(\d{2})/.exec(value);
 
     if (match) {
       const [, year, month, date] = match;
@@ -57,21 +67,11 @@ const DateScalar = new GraphQLScalarType({
     return [
       parsedValue.getFullYear(),
       parsedValue.getMonth() + 1,
-      parsedValue.getDate()
+      parsedValue.getDate(),
     ]
       .map(a => a.toString().padStart(2, '0'))
       .join('-');
   },
-  parseLiteral(ast): Date {
-    if (ast.kind === Kind.STRING) {
-      return parseLocalDate(ast.value);
-    }
-
-    throw new Error('Invalid ISO 8601 date');
-  },
-  parseValue(value): Date {
-    return parseLocalDate(value);
-  }
 });
 
 export default DateScalar;

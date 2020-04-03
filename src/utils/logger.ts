@@ -6,13 +6,13 @@ const logger = createLogger();
 if (config.DEVELOPMENT) {
   logger.add(
     new transports.Console({
-      format: format.combine(format.colorize(), format.simple())
+      format: format.combine(format.colorize(), format.simple()),
     })
   );
 } else {
   logger.add(
     new transports.Console({
-      format: format.json()
+      format: format.json(),
     })
   );
 }

@@ -17,8 +17,8 @@ export default class TokenResolver {
     if (!user) {
       throw new HttpException({
         error: 'invalid_request',
+        message: 'User not found.',
         status: 404,
-        message: 'User not found.'
       });
     }
 

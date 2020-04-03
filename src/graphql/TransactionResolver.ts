@@ -4,7 +4,7 @@ import {
   FieldResolver,
   Mutation,
   Resolver,
-  Root
+  Root,
 } from 'type-graphql';
 import Account from '../entities/Account';
 import BudgetController from '../controllers/BudgetController';
@@ -30,7 +30,7 @@ export default class TransactionResolver {
       throw new HttpException({
         error: 'invalid_request',
         message: 'No account found for transaction',
-        status: 404
+        status: 404,
       });
     }
 
@@ -51,7 +51,7 @@ export default class TransactionResolver {
       throw new HttpException({
         error: 'invalid_request',
         message: 'No category found for transaction',
-        status: 404
+        status: 404,
       });
     }
 

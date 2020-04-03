@@ -6,7 +6,7 @@ import {
   Mutation,
   ObjectType,
   Resolver,
-  Root
+  Root,
 } from 'type-graphql';
 import { IsEmail } from 'class-validator';
 import Token from '../entities/Token';

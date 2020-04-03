@@ -1,4 +1,3 @@
-import HttpException from '../utils/HttpException';
 import User from '../entities/User';
 import UserController from './UserController';
 import faker from 'faker';
@@ -19,7 +18,7 @@ beforeEach(async () => {
 });
 
 describe('User controller > account access', () => {
-  it('should create a new user', async () => {
+  it('should create a new user', () => {
     expect(user.id).toBeDefined();
     expect(user.email).toBe(email);
     expect(user.firstName).toBe(firstName);
@@ -28,13 +27,12 @@ describe('User controller > account access', () => {
   });
 
   it('should not create two users with the same email', async () => {
-    try {
-      await UserController.createUser(email, firstName, lastName, password);
-      expect(true).toBe(false);
-    } catch (e) {
-      expect(e).toBeInstanceOf(HttpException);
-      expect(e.message).toBe('This email is already registered.');
-    }
+    await expect(
+      UserController.createUser(email, firstName, lastName, password)
+    ).rejects.toFail({
+      message: 'This email is already registered.',
+      status: 409,
+    });
   });
 
   it('should create a new user and login', async () => {
@@ -44,25 +42,15 @@ describe('User controller > account access', () => {
   });
 
   it('should not login if the password is incorrect', async () => {
-    try {
-      await UserController.login(email, 'myWrongPassword');
-      expect(true).toBe(false);
-    } catch (e) {
-      expect(e).toBeInstanceOf(HttpException);
-      expect(e.message).toBe('Incorrect password.');
-      expect(e.status).toBe(401);
-    }
+    await expect(
+      UserController.login(email, 'myWrongPassword')
+    ).rejects.toFail({ message: 'Incorrect password.', status: 401 });
   });
 
   it("should not login if the email doesn't exist", async () => {
-    try {
-      await UserController.login('fake@user.com', password);
-      expect(true).toBe(false);
-    } catch (e) {
-      expect(e).toBeInstanceOf(HttpException);
-      expect(e.message).toBe('Email not registered');
-      expect(e.status).toBe(401);
-    }
+    await expect(
+      UserController.login('fake@user.com', password)
+    ).rejects.toFail({ message: 'Email not registered', status: 401 });
   });
 
   it('should login and verify the access token', async () => {

@@ -1,42 +1,42 @@
 import { Jurisdiction } from '../..';
 
 const indiana: Jurisdiction = {
-  single: {
-    deductions: [],
+  headOfHousehold: {
     brackets: [
       {
         bracket: 0,
-        rate: 3.23
-      }
-    ]
+        rate: 3.23,
+      },
+    ],
+    deductions: [],
   },
   married: {
-    deductions: [],
     brackets: [
       {
         bracket: 0,
-        rate: 3.23
-      }
-    ]
+        rate: 3.23,
+      },
+    ],
+    deductions: [],
   },
   marriedSeparately: {
-    deductions: [],
     brackets: [
       {
         bracket: 0,
-        rate: 3.23
-      }
-    ]
+        rate: 3.23,
+      },
+    ],
+    deductions: [],
   },
-  headOfHousehold: {
-    deductions: [],
+  single: {
     brackets: [
       {
         bracket: 0,
-        rate: 3.23
-      }
-    ]
-  }
+        rate: 3.23,
+      },
+    ],
+    deductions: [],
+  },
 };
 
 export default indiana;

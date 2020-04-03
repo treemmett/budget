@@ -82,7 +82,7 @@ interface TaxRates {
 }
 
 const taxRates: TaxRates = {
-  2020: y2020
+  2020: y2020,
 };
 
 export default taxRates;

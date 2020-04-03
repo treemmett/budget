@@ -4,7 +4,7 @@ import {
   FieldResolver,
   Mutation,
   Resolver,
-  Root
+  Root,
 } from 'type-graphql';
 import Budget from '../entities/Budget';
 import BudgetController from '../controllers/BudgetController';
@@ -28,8 +28,8 @@ export default class CategoryGroupResolver {
     if (!budget) {
       throw new HttpException({
         error: 'invalid_request',
+        message: 'Budget not found.',
         status: 404,
-        message: 'Budget not found.'
       });
     }
 

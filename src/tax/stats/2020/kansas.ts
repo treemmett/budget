@@ -1,94 +1,94 @@
 import { Jurisdiction } from '../..';
 
 const kansas: Jurisdiction = {
-  single: {
-    deductions: [
-      {
-        amount: 3000,
-        name: 'Standard Deduction (Single)'
-      }
-    ],
+  headOfHousehold: {
     brackets: [
       {
         bracket: 0,
-        rate: 3.1
+        rate: 3.1,
       },
       {
         bracket: 15000,
-        rate: 5.25
+        rate: 5.25,
       },
       {
         bracket: 30000,
-        rate: 5.7
-      }
-    ]
-  },
-  married: {
+        rate: 5.7,
+      },
+    ],
     deductions: [
       {
-        amount: 7500,
-        name: 'Standard Deduction (Married)'
-      }
+        amount: 3000,
+        name: 'Standard Deduction (Head Of Household)',
+      },
     ],
+  },
+  married: {
     brackets: [
       {
         bracket: 0,
-        rate: 3.1
+        rate: 3.1,
       },
       {
         bracket: 30000,
-        rate: 5.25
+        rate: 5.25,
       },
       {
         bracket: 60000,
-        rate: 5.7
-      }
-    ]
+        rate: 5.7,
+      },
+    ],
+    deductions: [
+      {
+        amount: 7500,
+        name: 'Standard Deduction (Married)',
+      },
+    ],
   },
   marriedSeparately: {
-    deductions: [
-      {
-        amount: 3000,
-        name: 'Standard Deduction (Married Separately)'
-      }
-    ],
     brackets: [
       {
         bracket: 0,
-        rate: 3.1
+        rate: 3.1,
       },
       {
         bracket: 15000,
-        rate: 5.25
+        rate: 5.25,
       },
       {
         bracket: 30000,
-        rate: 5.7
-      }
-    ]
+        rate: 5.7,
+      },
+    ],
+    deductions: [
+      {
+        amount: 3000,
+        name: 'Standard Deduction (Married Separately)',
+      },
+    ],
   },
-  headOfHousehold: {
-    deductions: [
-      {
-        amount: 3000,
-        name: 'Standard Deduction (Head Of Household)'
-      }
-    ],
+  single: {
     brackets: [
       {
         bracket: 0,
-        rate: 3.1
+        rate: 3.1,
       },
       {
         bracket: 15000,
-        rate: 5.25
+        rate: 5.25,
       },
       {
         bracket: 30000,
-        rate: 5.7
-      }
-    ]
-  }
+        rate: 5.7,
+      },
+    ],
+    deductions: [
+      {
+        amount: 3000,
+        name: 'Standard Deduction (Single)',
+      },
+    ],
+  },
 };
 
 export default kansas;

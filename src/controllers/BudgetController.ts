@@ -20,9 +20,9 @@ export default class BudgetController {
   public static async createBudget(name: string, user: User): Promise<Budget> {
     if (!name) {
       throw new HttpException({
-        status: 404,
         error: 'invalid_request',
-        message: 'Name cannot be empty.'
+        message: 'Name cannot be empty.',
+        status: 404,
       });
     }
 
@@ -33,25 +33,31 @@ export default class BudgetController {
 
     const defaultGroups = [
       {
+        categories: ['Rent', 'Insurance', 'Power', 'Gas', 'Internet'],
         name: 'Housing',
-        categories: ['Rent', 'Insurance', 'Power', 'Gas', 'Internet']
       },
       {
+        categories: [
+          'Auto Loan',
+          'Fuel',
+          'Insurance',
+          'Parking',
+          'Maintenance',
+        ],
         name: 'Transportation',
-        categories: ['Auto Loan', 'Fuel', 'Insurance', 'Parking', 'Maintenance']
       },
       {
+        categories: ['Groceries', 'Dining'],
         name: 'Food',
-        categories: ['Groceries', 'Dining']
       },
       {
+        categories: ['Haircut', 'Medical'],
         name: 'Personal Care',
-        categories: ['Haircut', 'Medical']
       },
       {
+        categories: ['Entertainment', 'Clothing', 'Vacation'],
         name: 'Quality of Life',
-        categories: ['Entertainment', 'Clothing', 'Vacation']
-      }
+      },
     ];
 
     const ctrl = new BudgetController(budget);
@@ -94,7 +100,7 @@ export default class BudgetController {
       throw new HttpException({
         error: 'invalid_request',
         message: 'Budget not found',
-        status: 404
+        status: 404,
       });
     }
 
@@ -156,7 +162,7 @@ export default class BudgetController {
       throw new HttpException({
         error: 'invalid_request',
         message: 'Account not found',
-        status: 404
+        status: 404,
       });
     }
 
@@ -191,10 +197,10 @@ export default class BudgetController {
       .where('category.id = :categoryId', { categoryId })
       .andWhere('budget.id = :budgetId', { budgetId: this.budget.id })
       .andWhere('EXTRACT(YEAR FROM allocation.date) = :year', {
-        year: date.getFullYear()
+        year: date.getFullYear(),
       })
       .andWhere('EXTRACT(MONTH FROM allocation.date) = :month', {
-        month: date.getMonth() + 1
+        month: date.getMonth() + 1,
       })
       .getOne();
 
@@ -259,7 +265,7 @@ export default class BudgetController {
       throw new HttpException({
         error: 'invalid_request',
         message: 'Category not found',
-        status: 404
+        status: 404,
       });
     }
 
@@ -272,7 +278,7 @@ export default class BudgetController {
   ): Promise<CategoryGroup> {
     const [category, group] = await Promise.all([
       this.getCategories(categoryId),
-      this.getCategoryGroups(categoryGroupId)
+      this.getCategoryGroups(categoryGroupId),
     ]);
 
     category.group = group;
@@ -293,14 +299,14 @@ export default class BudgetController {
   public async deleteCategoryGroup(groupId: string): Promise<true> {
     const [group, categoriesInGroup] = await Promise.all([
       this.getCategoryGroups(groupId),
-      this.getCategoriesInGroup(groupId)
+      this.getCategoriesInGroup(groupId),
     ]);
 
     if (categoriesInGroup.length) {
       throw new HttpException({
-        status: 409,
         error: 'request_failed',
-        message: 'Unable to delete group that contains categories'
+        message: 'Unable to delete group that contains categories',
+        status: 409,
       });
     }
 
@@ -327,7 +333,7 @@ export default class BudgetController {
       throw new HttpException({
         error: 'invalid_request',
         message: 'Category group not found',
-        status: 404
+        status: 404,
       });
     }
 
@@ -387,7 +393,7 @@ export default class BudgetController {
       throw new HttpException({
         error: 'invalid_request',
         message: 'Income source not found',
-        status: 404
+        status: 404,
       });
     }
 
@@ -451,7 +457,7 @@ export default class BudgetController {
 
   public async setTax({
     state,
-    status
+    status,
   }: {
     state?: State;
     status?: FilingStatus;
@@ -473,7 +479,7 @@ export default class BudgetController {
   ): Promise<Transaction> {
     const [account, category] = await Promise.all([
       this.getAccounts(accountId),
-      this.getCategories(categoryId)
+      this.getCategories(categoryId),
     ]);
     const transaction = new Transaction();
     transaction.account = account;
@@ -486,52 +492,32 @@ export default class BudgetController {
     return transaction;
   }
 
-  public getTransactions(filters?: {
+  public async getTransactions(filters?: {
     accountId?: string;
     categoryId?: string;
     from?: Date;
     to?: Date;
   }): Promise<Transaction[]> {
-    const toDate = ((): Date => {
-      if (filters && filters.to) {
-        return filters.to;
-      }
+    const opts = filters ?? {};
+    const t = new Date();
+    const {
+      from = new Date(t.getFullYear(), t.getMonth(), 1, 0, 0, 0, 0),
+      to = new Date(t.getFullYear(), t.getMonth() + 1, 0, 23, 59, 59, 999),
+    } = opts;
 
-      const now = new Date();
-      now.setMonth(now.getMonth() + 1);
-      now.setDate(1);
-      now.setHours(23, 59, 59, 999);
-      return now;
-    })();
-
-    const fromDate = ((): Date => {
-      if (filters && filters.from) {
-        return filters.from;
-      }
-
-      const now = new Date();
-      now.setDate(1);
-      now.setHours(0, 0, 0, 0);
-      return now;
-    })();
-
-    if (fromDate > toDate) {
+    if (from > to) {
       throw new HttpException({
         error: 'invalid_request',
         message: '"From date" cannot be after "to date"',
-        status: 400
+        status: 400,
       });
     }
 
-    const toUTC = Date.UTC(
-      toDate.getFullYear(),
-      toDate.getMonth(),
-      toDate.getDate()
-    );
+    const toUTC = Date.UTC(to.getFullYear(), to.getMonth(), to.getDate());
     const fromUTC = Date.UTC(
-      fromDate.getFullYear(),
-      fromDate.getMonth(),
-      fromDate.getDate()
+      from.getFullYear(),
+      from.getMonth(),
+      from.getDate()
     );
 
     const diff = Math.floor(toUTC - fromUTC);
@@ -541,7 +527,7 @@ export default class BudgetController {
         error: 'invalid_request',
         message:
           'Difference between the "from date" and "to date" cannot be greater than 366 days',
-        status: 400
+        status: 400,
       });
     }
 
@@ -549,8 +535,8 @@ export default class BudgetController {
       .createQueryBuilder(Transaction, 'transaction')
       .leftJoin('transaction.budget', 'budget')
       .where('budget.id = :budgetId', { budgetId: this.budget.id })
-      .andWhere('transaction.date <= :toDate', { toDate })
-      .andWhere('transaction.date >= :fromDate', { fromDate });
+      .andWhere('transaction.date <= :toDate', { toDate: to })
+      .andWhere('transaction.date >= :fromDate', { fromDate: from });
 
     if (!filters) {
       return query.getMany();
@@ -566,7 +552,7 @@ export default class BudgetController {
       query
         .leftJoin('transaction.category', 'category')
         .andWhere('category.id = :categoryId', {
-          categoryId: filters.categoryId
+          categoryId: filters.categoryId,
         });
     }
 
@@ -585,7 +571,7 @@ export default class BudgetController {
       throw new HttpException({
         error: 'invalid_request',
         message: 'User not found',
-        status: 404
+        status: 404,
       });
     }
 

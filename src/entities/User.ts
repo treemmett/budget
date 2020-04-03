@@ -4,7 +4,7 @@ import {
   Entity,
   Index,
   OneToMany,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
 import Token from './Token';
@@ -37,11 +37,8 @@ export default class User {
   public dateCreated: Date;
 
   @Field(() => [Token], {
-    description: 'List of access tokens assigned to the user'
+    description: 'List of access tokens assigned to the user',
   })
-  @OneToMany(
-    () => Token,
-    token => token.user
-  )
+  @OneToMany(() => Token, token => token.user)
   public tokens: Token[];
 }

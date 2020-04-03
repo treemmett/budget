@@ -5,7 +5,7 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryGeneratedColumn
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
 import Account from './Account';
@@ -28,66 +28,48 @@ export default class Budget {
   public name: string;
 
   @Field(() => User, { description: "Budget's owner" })
-  @ManyToOne(() => User, { onDelete: 'CASCADE', nullable: false })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @Index()
   public user: User;
 
   @Field(() => [TransactionCategory], {
-    description: 'Categories in the budget'
+    description: 'Categories in the budget',
   })
-  @OneToMany(
-    () => TransactionCategory,
-    category => category.budget
-  )
+  @OneToMany(() => TransactionCategory, category => category.budget)
   public categories: TransactionCategory[];
 
   @Field(() => TransactionCategory, { description: 'Category in the budget' })
   public category: TransactionCategory;
 
   @Field(() => [CategoryGroup], {
-    description: 'All category groups within the budget'
+    description: 'All category groups within the budget',
   })
-  @OneToMany(
-    () => CategoryGroup,
-    group => group.budget
-  )
+  @OneToMany(() => CategoryGroup, group => group.budget)
   public categoryGroups: CategoryGroup[];
 
   @Field(() => [Account], {
-    description: 'List of bank accounts in the budget'
+    description: 'List of bank accounts in the budget',
   })
-  @OneToMany(
-    () => Account,
-    account => account.budget
-  )
+  @OneToMany(() => Account, account => account.budget)
   public accounts: Account[];
 
   @Field(() => [Transaction], { description: 'All transactions in the budget' })
-  @OneToMany(
-    () => Transaction,
-    transaction => transaction.budget
-  )
+  @OneToMany(() => Transaction, transaction => transaction.budget)
   public transactions: Transaction[];
 
   @Field(() => Account, { description: 'Bank account in the budget' })
   public account: Account;
 
   @Field(() => [IncomeSource], {
-    description: 'List of income sources in the budget'
+    description: 'List of income sources in the budget',
   })
-  @OneToMany(
-    () => IncomeSource,
-    incomeSource => incomeSource.budget
-  )
+  @OneToMany(() => IncomeSource, incomeSource => incomeSource.budget)
   public incomeSources: IncomeSource[];
 
   @Field(() => IncomeSource, { description: 'Income source' })
   public incomeSource: IncomeSource;
 
-  @OneToOne(
-    () => Tax,
-    tax => tax.budget
-  )
+  @OneToOne(() => Tax, tax => tax.budget)
   @Field(() => Tax, { description: 'Tax details' })
   public tax: Tax;
 }

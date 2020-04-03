@@ -30,16 +30,17 @@ export default class UserController {
     user.hash = Buffer.from(hash);
 
     try {
-      await getManager().save(user);
+      await getManager().save(User, user);
     } catch (e) {
-      if (e.code && e.code === '23505') {
+      if (e.code === '23505') {
         throw new HttpException({
           error: 'validation_error',
           message: 'This email is already registered.',
-          status: 409
+          status: 409,
         });
+      } else {
+        throw e;
       }
-      throw e;
     }
 
     return user;
@@ -55,7 +56,7 @@ export default class UserController {
       throw new HttpException({
         error: 'unauthorized_request',
         message: 'Email not registered',
-        status: 401
+        status: 401,
       });
     }
 
@@ -65,7 +66,7 @@ export default class UserController {
       throw new HttpException({
         error: 'unauthorized_request',
         message: 'Incorrect password.',
-        status: 401
+        status: 401,
       });
     }
 
@@ -73,7 +74,7 @@ export default class UserController {
       user
     ).createToken();
 
-    return { token, jwt: jwtToken, user };
+    return { jwt: jwtToken, token, user };
   }
 
   public static async verifyToken(token?: string): Promise<User | void> {
@@ -84,7 +85,7 @@ export default class UserController {
 
       const jwtData = jwt.verify(token, Config.JWT_SECRET, {
         algorithms: ['HS256'],
-        maxAge: '24h'
+        maxAge: '24h',
       }) as {
         jti: string;
         sub: string;
@@ -93,8 +94,8 @@ export default class UserController {
       };
 
       const session = await getManager().findOneOrFail(Token, {
+        relations: ['user'],
         where: { jti: jwtData.jti },
-        relations: ['user']
       });
 
       return session.user;
@@ -114,12 +115,12 @@ export default class UserController {
 
     const signedToken = jwt.sign(
       {
-        exp: Math.floor(token.expires.getTime() / 1000)
+        exp: Math.floor(token.expires.getTime() / 1000),
       },
       Config.JWT_SECRET,
       {
         jwtid: token.jti,
-        subject: this.user.id
+        subject: this.user.id,
       }
     );
 
@@ -127,7 +128,7 @@ export default class UserController {
 
     return {
       jwt: signedToken,
-      token
+      token,
     };
   }
 }

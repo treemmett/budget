@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { Connection } from 'typeorm';
 import bodyParser from 'body-parser';
 import config from './utils/config';
 import createSqlConnection from './server/sql';
@@ -9,8 +10,11 @@ import logger from './utils/logger';
 
 const { API_PORT, DEVELOPMENT } = config;
 
+let sqlConnection: Connection;
+
 createSqlConnection({ synchronize: DEVELOPMENT })
-  .then(async () => {
+  .then(async conn => {
+    sqlConnection = conn;
     const app = express();
     app.use(helmet());
     app.use(bodyParser.json());
@@ -21,9 +25,12 @@ createSqlConnection({ synchronize: DEVELOPMENT })
 
     app.listen(API_PORT, () => logger.info(`API is up on port: ${API_PORT}`));
   })
-  .catch(err => {
+  .catch(async err => {
+    if (sqlConnection) {
+      await sqlConnection.close();
+    }
     logger.error('Error occurred while starting API.');
     // eslint-disable-next-line no-console
     console.log(err);
-    process.exit(1);
+    process.exitCode = 1;
   });

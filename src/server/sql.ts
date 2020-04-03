@@ -14,24 +14,24 @@ interface Options {
 export default function createSqlConnection(
   options?: Options
 ): Promise<Connection> {
-  const { prefix, suffix, synchronize, drop } = options || {};
+  const { prefix, suffix, synchronize, drop } = options ?? {};
 
   if (drop && !(prefix || suffix)) {
     throw new Error('Attempt to drop primary database failed.');
   }
 
   return createConnection({
+    database: `${prefix ?? ''}${DB_DATABASE}${suffix ?? ''}`,
+    dropSchema: drop,
     entities: [
       path.resolve(__dirname, '../entities/*.ts'),
-      path.resolve(__dirname, '../entities/*.js')
+      path.resolve(__dirname, '../entities/*.js'),
     ],
-    type: 'postgres',
     host: DB_HOST,
-    port: DB_PORT,
-    username: DB_USER,
     password: DB_PASS,
-    database: `${prefix || ''}${DB_DATABASE}${suffix || ''}`,
-    dropSchema: drop,
-    synchronize
+    port: DB_PORT,
+    synchronize,
+    type: 'postgres',
+    username: DB_USER,
   });
 }

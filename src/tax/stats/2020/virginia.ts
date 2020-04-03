@@ -1,110 +1,110 @@
 import { Jurisdiction } from '../..';
 
 const virginia: Jurisdiction = {
-  single: {
-    deductions: [
-      {
-        amount: 4500,
-        name: 'Standard Deduction (Single)'
-      }
-    ],
+  headOfHousehold: {
     brackets: [
       {
         bracket: 0,
-        rate: 2
+        rate: 2,
       },
       {
         bracket: 3000,
-        rate: 3
+        rate: 3,
       },
       {
         bracket: 5000,
-        rate: 5
+        rate: 5,
       },
       {
         bracket: 17000,
-        rate: 5.75
-      }
-    ]
+        rate: 5.75,
+      },
+    ],
+    deductions: [
+      {
+        amount: 4500,
+        name: 'Standard Deduction (Head Of Household)',
+      },
+    ],
   },
   married: {
+    brackets: [
+      {
+        bracket: 0,
+        rate: 2,
+      },
+      {
+        bracket: 3000,
+        rate: 3,
+      },
+      {
+        bracket: 5000,
+        rate: 5,
+      },
+      {
+        bracket: 17000,
+        rate: 5.75,
+      },
+    ],
     deductions: [
       {
         amount: 9000,
-        name: 'Standard Deduction (Married)'
-      }
+        name: 'Standard Deduction (Married)',
+      },
     ],
-    brackets: [
-      {
-        bracket: 0,
-        rate: 2
-      },
-      {
-        bracket: 3000,
-        rate: 3
-      },
-      {
-        bracket: 5000,
-        rate: 5
-      },
-      {
-        bracket: 17000,
-        rate: 5.75
-      }
-    ]
   },
   marriedSeparately: {
-    deductions: [
-      {
-        amount: 4500,
-        name: 'Standard Deduction (Married Separately)'
-      }
-    ],
     brackets: [
       {
         bracket: 0,
-        rate: 2
+        rate: 2,
       },
       {
         bracket: 3000,
-        rate: 3
+        rate: 3,
       },
       {
         bracket: 5000,
-        rate: 5
+        rate: 5,
       },
       {
         bracket: 17000,
-        rate: 5.75
-      }
-    ]
+        rate: 5.75,
+      },
+    ],
+    deductions: [
+      {
+        amount: 4500,
+        name: 'Standard Deduction (Married Separately)',
+      },
+    ],
   },
-  headOfHousehold: {
-    deductions: [
-      {
-        amount: 4500,
-        name: 'Standard Deduction (Head Of Household)'
-      }
-    ],
+  single: {
     brackets: [
       {
         bracket: 0,
-        rate: 2
+        rate: 2,
       },
       {
         bracket: 3000,
-        rate: 3
+        rate: 3,
       },
       {
         bracket: 5000,
-        rate: 5
+        rate: 5,
       },
       {
         bracket: 17000,
-        rate: 5.75
-      }
-    ]
-  }
+        rate: 5.75,
+      },
+    ],
+    deductions: [
+      {
+        amount: 4500,
+        name: 'Standard Deduction (Single)',
+      },
+    ],
+  },
 };
 
 export default virginia;

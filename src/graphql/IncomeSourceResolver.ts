@@ -6,7 +6,7 @@ import {
   Int,
   Mutation,
   Resolver,
-  Root
+  Root,
 } from 'type-graphql';
 import IncomeSource, { PayScale } from '../entities/IncomeSource';
 import Budget from '../entities/Budget';
@@ -29,8 +29,8 @@ export default class IncomeResolver {
     if (!budget) {
       throw new HttpException({
         error: 'invalid_request',
+        message: 'Budget not found.',
         status: 404,
-        message: 'Budget not found.'
       });
     }
 
@@ -48,8 +48,8 @@ export default class IncomeResolver {
     if (!budget) {
       throw new HttpException({
         error: 'invalid_request',
+        message: 'Budget not found.',
         status: 404,
-        message: 'Budget not found.'
       });
     }
 

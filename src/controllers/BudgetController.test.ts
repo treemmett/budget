@@ -5,7 +5,6 @@ import Allocation from '../entities/Allocation';
 import Budget from '../entities/Budget';
 import BudgetController from './BudgetController';
 import CategoryGroup from '../entities/CategoryGroup';
-import HttpException from '../utils/HttpException';
 import Transaction from '../entities/Transaction';
 import TransactionCategory from '../entities/TransactionCategory';
 import User from '../entities/User';
@@ -41,7 +40,7 @@ describe('Budget controller > budgets', () => {
     const budgets = await BudgetController.getBudgets(user);
 
     expect(budgets).toBeInstanceOf(Array);
-    expect(budgets.length).toBe(3);
+    expect(budgets).toHaveLength(3);
     budgetNames.forEach(name => {
       expect(budgets.map(b => b.name)).toContain(name);
     });
@@ -62,9 +61,9 @@ describe('Budget controller > budgets', () => {
   it('should throw if a non-existent budget is requested', async () => {
     await BudgetController.createBudget('My Budget', user);
 
-    expect(
+    await expect(
       BudgetController.getBudgets(user, '9c2cb8de-03c4-4f69-afab-dbdab33b30ba')
-    ).rejects.toThrow(HttpException);
+    ).rejects.toFail({ message: 'Budget not found', status: 404 });
   });
 
   it('should not return any budgets of another user', async () => {
@@ -85,12 +84,12 @@ describe('Budget controller > budgets', () => {
         ['Not my budget three', 'Not my budget three'].map(name =>
           BudgetController.createBudget(name, secondUser)
         )
-      )
+      ),
     ]);
 
     const myBudgets = await BudgetController.getBudgets(user);
 
-    expect(myBudgets.length).toBe(2);
+    expect(myBudgets).toHaveLength(2);
     expect(myBudgets.map(b => b.name)).toContain('My budget one');
     expect(myBudgets.map(b => b.name)).toContain('My budget two');
   });
@@ -166,7 +165,7 @@ describe('Budget controller > accounts', () => {
     const accounts = await controller.getAccounts();
 
     expect(accounts).toBeInstanceOf(Array);
-    expect(accounts.length).toBe(3);
+    expect(accounts).toHaveLength(3);
     expect(accounts[2]).toBeInstanceOf(Account);
   });
 
@@ -185,9 +184,9 @@ describe('Budget controller > accounts', () => {
   it('should throw if a non-existent account is requested', async () => {
     await controller.createAccount('Some account', AccountType.checking);
 
-    expect(
+    await expect(
       controller.getAccounts('b027c4a8-6010-495b-b42d-5afd0e43b332')
-    ).rejects.toThrow(HttpException);
+    ).rejects.toFail({ message: 'Account not found', status: 404 });
   });
 
   it('should not return accounts in another budget', async () => {
@@ -204,7 +203,7 @@ describe('Budget controller > accounts', () => {
     await wrongController.createAccount('Wrong account 2', AccountType.savings);
 
     const accounts = await controller.getAccounts();
-    expect(accounts.length).toBe(1);
+    expect(accounts).toHaveLength(1);
     expect(accounts[0].id).toBe(rightAccount.id);
   });
 
@@ -213,11 +212,11 @@ describe('Budget controller > accounts', () => {
     await controller.createAccount('Account Two', AccountType.checking);
 
     const accounts = await controller.getAccounts();
-    expect(accounts.length).toBe(2);
+    expect(accounts).toHaveLength(2);
 
     await controller.deleteAccount(accounts[0].id);
     const accountsAfterDeletion = await controller.getAccounts();
-    expect(accountsAfterDeletion.length).toBe(1);
+    expect(accountsAfterDeletion).toHaveLength(1);
     expect(accountsAfterDeletion[0].id).toBe(accounts[1].id);
   });
 
@@ -279,7 +278,7 @@ describe('Budget controller > category groups', () => {
     const groups = await controller.getCategoryGroups();
 
     expect(groups).toBeInstanceOf(Array);
-    expect(groups.length).toBe(5);
+    expect(groups).toHaveLength(5);
     expect(groups[0]).toBeInstanceOf(CategoryGroup);
   });
 
@@ -293,33 +292,32 @@ describe('Budget controller > category groups', () => {
   it('should throw if a non-existent group is requested', async () => {
     await controller.createCategoryGroup('My Group');
 
-    expect(
+    await expect(
       controller.getCategoryGroups('3ab8543e-7da8-4736-9ac6-ed5557e346f7')
-    ).rejects.toThrow(HttpException);
+    ).rejects.toFail({
+      message: 'Category group not found',
+      status: 404,
+    });
   });
 
   it('should delete a group', async () => {
     const group = await controller.createCategoryGroup('My New Category');
     let allGroups = await controller.getCategoryGroups();
-    expect(allGroups.length).toBe(6);
+    expect(allGroups).toHaveLength(6);
 
     await controller.deleteCategoryGroup(group.id);
 
     allGroups = await controller.getCategoryGroups();
-    expect(allGroups.length).toBe(5);
+    expect(allGroups).toHaveLength(5);
   });
 
   it('should not delete a group that contains categories', async () => {
     const groups = await controller.getCategoryGroups();
 
-    try {
-      await controller.deleteCategoryGroup(groups[0].id);
-      expect(true).toBe(false);
-    } catch (e) {
-      expect(e).toBeInstanceOf(HttpException);
-      expect(e.message).toBe('Unable to delete group that contains categories');
-      expect(e.status).toBe(409);
-    }
+    await expect(controller.deleteCategoryGroup(groups[0].id)).rejects.toFail({
+      message: 'Unable to delete group that contains categories',
+      status: 409,
+    });
   });
 });
 
@@ -347,7 +345,7 @@ describe('Budget controller > categories', () => {
 
     expect(categories).toBeInstanceOf(Array);
     expect(categories[0]).toBeInstanceOf(TransactionCategory);
-    expect(categories.length).toBe(18); // 17 default + 1 created
+    expect(categories).toHaveLength(18); // 17 default + 1 created
   });
 
   it('should return a specific category', async () => {
@@ -362,38 +360,44 @@ describe('Budget controller > categories', () => {
     await Promise.all(
       new Array(4)
         .fill(null)
-        .map((_, i) => controller.createCategory(`Category ${i}`, group.id))
+        .map((v, i) => controller.createCategory(`Category ${i}`, group.id))
     );
 
     const categories = await controller.getCategoriesInGroup(group.id);
 
     expect(categories).toBeInstanceOf(Array);
-    expect(categories.length).toBe(4);
+    expect(categories).toHaveLength(4);
     expect(categories[0]).toBeInstanceOf(TransactionCategory);
   });
 
   it('should create the default categories', async () => {
     const defaultGroups = [
       {
+        categories: ['Rent', 'Insurance', 'Power', 'Gas', 'Internet'],
         name: 'Housing',
-        categories: ['Rent', 'Insurance', 'Power', 'Gas', 'Internet']
       },
       {
+        categories: [
+          'Auto Loan',
+          'Fuel',
+          'Insurance',
+          'Parking',
+          'Maintenance',
+        ],
         name: 'Transportation',
-        categories: ['Auto Loan', 'Fuel', 'Insurance', 'Parking', 'Maintenance']
       },
       {
+        categories: ['Groceries', 'Dining'],
         name: 'Food',
-        categories: ['Groceries', 'Dining']
       },
       {
+        categories: ['Haircut', 'Medical'],
         name: 'Personal Care',
-        categories: ['Haircut', 'Medical']
       },
       {
+        categories: ['Entertainment', 'Clothing', 'Vacation'],
         name: 'Quality of Life',
-        categories: ['Entertainment', 'Clothing', 'Vacation']
-      }
+      },
     ];
 
     const groups = await controller.getCategoryGroups();
@@ -410,7 +414,7 @@ describe('Budget controller > categories', () => {
           actualDefaultGroup.id
         );
 
-        expect(defaultGroupCategories.length).toBe(
+        expect(defaultGroupCategories).toHaveLength(
           defaultGroup.categories.length
         );
 
@@ -436,14 +440,17 @@ describe('Budget controller > categories', () => {
     const category = await controller.createCategory('My Category', group.id);
     let categories = await controller.getCategories();
     expect(categories.map(c => c.id)).toContain(category.id);
-    expect(controller.getCategories(category.id)).resolves.toBeInstanceOf(
+    await expect(controller.getCategories(category.id)).resolves.toBeInstanceOf(
       TransactionCategory
     );
 
     await controller.deleteCategory(category.id);
     categories = await controller.getCategories();
     expect(categories.map(c => c.id)).not.toContain(category.id);
-    expect(controller.getCategories(category.id)).rejects.toThrow();
+    await expect(controller.getCategories(category.id)).rejects.toFail({
+      message: 'Category not found',
+      status: 404,
+    });
   });
 
   it('should change category groups', async () => {
@@ -570,7 +577,7 @@ describe('Budget controller > transactions', () => {
     controller = new BudgetController(budget);
     [group, account] = await Promise.all([
       controller.createCategoryGroup('My Group'),
-      controller.createAccount('Account', AccountType.checking)
+      controller.createAccount('Account', AccountType.checking),
     ]);
     category = await controller.createCategory('My Category', group.id);
   });
@@ -620,7 +627,7 @@ describe('Budget controller > transactions', () => {
     const transactions = await controller.getTransactions();
 
     expect(transactions).toBeInstanceOf(Array);
-    expect(transactions.length).toBe(5);
+    expect(transactions).toHaveLength(5);
     expect(transactions[0]).toBeInstanceOf(Transaction);
   });
 
@@ -628,7 +635,7 @@ describe('Budget controller > transactions', () => {
     await Promise.all(
       new Array(12)
         .fill(null)
-        .map(async (_, i) =>
+        .map(async (v, i) =>
           controller.createTransaction(
             account.id,
             10,
@@ -641,9 +648,9 @@ describe('Budget controller > transactions', () => {
 
     const transactions = await controller.getTransactions({
       from: new Date(2019, 4, 1),
-      to: new Date(2019, 8, 1)
+      to: new Date(2019, 8, 1),
     });
-    expect(transactions.length).toBe(5);
+    expect(transactions).toHaveLength(5);
   });
 
   it('should return transactions within a category', async () => {
@@ -678,10 +685,10 @@ describe('Budget controller > transactions', () => {
         )
     );
     const transactions = await controller.getTransactions({
-      categoryId: category.id
+      categoryId: category.id,
     });
 
-    expect(transactions.length).toBe(4);
+    expect(transactions).toHaveLength(4);
   });
 
   it('should return transactions within an account', async () => {
@@ -717,10 +724,10 @@ describe('Budget controller > transactions', () => {
         )
     );
     const transactions = await controller.getTransactions({
-      accountId: account.id
+      accountId: account.id,
     });
 
-    expect(transactions.length).toBe(7);
+    expect(transactions).toHaveLength(7);
   });
 
   it('should return transactions within a certain account, category, and date range', async () => {
@@ -768,71 +775,67 @@ describe('Budget controller > transactions', () => {
         category.id,
         new Date(2020, 0, 4),
         'Past date'
-      )
+      ),
     ]);
 
     const transactions = await controller.getTransactions({
-      categoryId: category.id,
       accountId: account.id,
+      categoryId: category.id,
       from: new Date(2020, 1, 1),
-      to: new Date(2020, 2, 0)
+      to: new Date(2020, 2, 0),
     });
 
-    expect(transactions.length).toBe(1);
+    expect(transactions).toHaveLength(1);
   });
 
   it('should not allow the "from date" to be after the "to date"', async () => {
-    try {
-      await controller.getTransactions({
+    await expect(
+      controller.getTransactions({
         from: new Date(2020, 2, 1),
-        to: new Date(2020, 1, 1)
-      });
-      expect(true).toBe(false);
-    } catch (e) {
-      expect(e).toBeInstanceOf(HttpException);
-      expect(e.message).toBe('"From date" cannot be after "to date"');
-    }
+        to: new Date(2020, 1, 1),
+      })
+    ).rejects.toFail({
+      message: '"From date" cannot be after "to date"',
+      status: 400,
+    });
   });
 
   it('should not allow the "from" and "to" date to exceed 366 days', async () => {
-    expect(
+    await expect(
       controller.getTransactions({
         from: new Date(2017, 0, 1),
-        to: new Date(2018, 0, 2)
+        to: new Date(2018, 0, 2),
       })
-    ).resolves.not.toThrow();
-    expect(
+    ).resolves.toBeDefined();
+
+    await expect(
       controller.getTransactions({
         from: new Date(2020, 0, 1),
-        to: new Date(2021, 0, 1)
+        to: new Date(2021, 0, 1),
       })
-    ).resolves.not.toThrow();
+    ).resolves.toBeDefined();
 
-    try {
-      await controller.getTransactions({
+    await expect(
+      controller.getTransactions({
         from: new Date(2017, 0, 1),
-        to: new Date(2018, 0, 3)
-      });
-      expect(true).toBe(false);
-    } catch (e) {
-      expect(e).toBeInstanceOf(HttpException);
-      expect(e.message).toBe(
-        'Difference between the "from date" and "to date" cannot be greater than 366 days'
-      );
-    }
+        to: new Date(2018, 0, 3),
+      })
+    ).rejects.toFail({
+      message:
+        'Difference between the "from date" and "to date" cannot be greater than 366 days',
+      status: 400,
+    });
 
-    try {
-      await controller.getTransactions({
+    await expect(
+      controller.getTransactions({
         from: new Date(2020, 0, 1),
-        to: new Date(2021, 0, 2)
-      });
-      expect(true).toBe(false);
-    } catch (e) {
-      expect(e).toBeInstanceOf(HttpException);
-      expect(e.message).toBe(
-        'Difference between the "from date" and "to date" cannot be greater than 366 days'
-      );
-    }
+        to: new Date(2021, 0, 2),
+      })
+    ).rejects.toFail({
+      message:
+        'Difference between the "from date" and "to date" cannot be greater than 366 days',
+      status: 400,
+    });
   });
 });
 
@@ -925,15 +928,16 @@ describe('Budget controller > income sources', () => {
       PayScale.yearly
     );
 
-    expect(controller.getIncomeSource(source.id)).resolves.toBeInstanceOf(
+    await expect(controller.getIncomeSource(source.id)).resolves.toBeInstanceOf(
       IncomeSource
     );
 
     await controller.deleteIncomeSource(source.id);
 
-    expect(controller.getIncomeSource(source.id)).rejects.toThrow(
-      HttpException
-    );
+    await expect(controller.getIncomeSource(source.id)).rejects.toFail({
+      message: 'Income source not found',
+      status: 404,
+    });
   });
 
   it('should return all income sources', async () => {
@@ -949,7 +953,7 @@ describe('Budget controller > income sources', () => {
 
     expect(sources).toBeInstanceOf(Array);
     expect(sources[0]).toBeInstanceOf(IncomeSource);
-    expect(sources.length).toBe(7);
+    expect(sources).toHaveLength(7);
   });
 
   it('should return a specific income source', async () => {
@@ -974,7 +978,9 @@ describe('Budget controller > income sources', () => {
       20
     );
 
-    expect(controller.calculateIncome(source.id)).resolves.toBe(12 * 20 * 52);
+    await expect(controller.calculateIncome(source.id)).resolves.toBe(
+      12 * 20 * 52
+    );
   });
 
   it('should calculate the income for a monthly source', async () => {
@@ -984,7 +990,9 @@ describe('Budget controller > income sources', () => {
       PayScale.monthly
     );
 
-    expect(controller.calculateIncome(source.id)).resolves.toBe(2000 * 12);
+    await expect(controller.calculateIncome(source.id)).resolves.toBe(
+      2000 * 12
+    );
   });
 
   it('should calculate the income for a weekly source', async () => {
@@ -994,7 +1002,7 @@ describe('Budget controller > income sources', () => {
       PayScale.weekly
     );
 
-    expect(controller.calculateIncome(source.id)).resolves.toBe(500 * 52);
+    await expect(controller.calculateIncome(source.id)).resolves.toBe(500 * 52);
   });
 
   it('should calculate the income for an yearly source', async () => {
@@ -1004,7 +1012,7 @@ describe('Budget controller > income sources', () => {
       PayScale.yearly
     );
 
-    expect(controller.calculateIncome(source.id)).resolves.toBe(45000);
+    await expect(controller.calculateIncome(source.id)).resolves.toBe(45000);
   });
 
   it('should calculate the income for all income sources', async () => {
@@ -1014,7 +1022,7 @@ describe('Budget controller > income sources', () => {
     await controller.createIncomeSource('Source', 15, PayScale.hourly, 25);
     await controller.createIncomeSource('Source', 15, PayScale.hourly, 0);
 
-    expect(controller.calculateIncome()).resolves.toBe(
+    await expect(controller.calculateIncome()).resolves.toBe(
       45000 + 2000 * 12 + 500 * 52 + 15 * 25 * 52
     );
   });
@@ -1027,7 +1035,7 @@ describe('Budget controller > income sources', () => {
       0
     );
 
-    expect(controller.calculateIncome(source.id)).resolves.toBe(0);
+    await expect(controller.calculateIncome(source.id)).resolves.toBe(0);
   });
 });
 
@@ -1041,9 +1049,9 @@ describe('Budget controller > tax', () => {
   });
 
   it('should set a tax setting', async () => {
-    const tax = await await controller.setTax({
+    const tax = await controller.setTax({
       state: State.Florida,
-      status: FilingStatus.married
+      status: FilingStatus.married,
     });
 
     expect(tax).toBeInstanceOf(Tax);
@@ -1053,9 +1061,9 @@ describe('Budget controller > tax', () => {
   });
 
   it('should return the set tax setting', async () => {
-    await await controller.setTax({
+    await controller.setTax({
       state: State.Massachusetts,
-      status: FilingStatus.single
+      status: FilingStatus.single,
     });
 
     const tax = await controller.getTax();
@@ -1076,7 +1084,7 @@ describe('Budget controller > tax', () => {
   it('should change the state setting', async () => {
     await controller.setTax({
       state: State.Colorado,
-      status: FilingStatus.separate
+      status: FilingStatus.separate,
     });
 
     let tax = await controller.getTax();
@@ -1092,7 +1100,7 @@ describe('Budget controller > tax', () => {
   it('should change the status setting', async () => {
     await controller.setTax({
       state: State.Nevada,
-      status: FilingStatus.head
+      status: FilingStatus.head,
     });
 
     let tax = await controller.getTax();
@@ -1108,7 +1116,7 @@ describe('Budget controller > tax', () => {
   it('should not change any setting if an empty object is passed', async () => {
     await controller.setTax({
       state: State.New_York,
-      status: FilingStatus.single
+      status: FilingStatus.single,
     });
 
     let tax = await controller.getTax();
@@ -1141,13 +1149,9 @@ describe('Budget controller > users', () => {
   it('should error if there is no user on the budget', async () => {
     const fakeBudget = new Budget();
     const fakeController = new BudgetController(fakeBudget);
-
-    try {
-      await fakeController.getUser();
-      expect(true).toBe(false);
-    } catch (e) {
-      expect(e).toBeInstanceOf(HttpException);
-      expect(e.message).toBe('User not found');
-    }
+    await expect(fakeController.getUser()).rejects.toFail({
+      message: 'User not found',
+      status: 404,
+    });
   });
 });
