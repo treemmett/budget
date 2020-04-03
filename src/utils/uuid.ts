@@ -27,14 +27,14 @@ function bytesToUuid(buf: Uint8Array): string {
     byteToHex[buf[(i += 1)]],
     byteToHex[buf[(i += 1)]],
     byteToHex[buf[(i += 1)]],
-    byteToHex[buf[(i += 1)]]
+    byteToHex[buf[(i += 1)]],
   ];
 
   return uuidBytes.join('');
 }
 
 function uuid(): string {
-  const rnds = crypto.getRandomValues(new Uint8Array(16));
+  const rnds = window.crypto.getRandomValues(new Uint8Array(16));
   rnds[6] = (rnds[6] & 0x0f) | 0x40;
   rnds[8] = (rnds[8] & 0x3f) | 0x80;
   return bytesToUuid(rnds);

@@ -9,27 +9,17 @@ describe('User registration', () => {
     cy.contains('Register').click();
     cy.location('pathname').should('eq', '/register');
 
-    cy.contains('First Name')
-      .siblings('input')
-      .type(faker.name.firstName());
+    cy.contains('First Name').siblings('input').type(faker.name.firstName());
 
-    cy.contains('Last Name')
-      .siblings('input')
-      .type(faker.name.lastName());
+    cy.contains('Last Name').siblings('input').type(faker.name.lastName());
 
-    cy.contains('Email')
-      .siblings('input')
-      .type(faker.internet.email());
+    cy.contains('Email').siblings('input').type(faker.internet.email());
 
     const pw = faker.internet.password();
 
-    cy.contains('Password')
-      .siblings('input')
-      .type(pw);
+    cy.contains('Password').siblings('input').type(pw);
 
-    cy.contains('Confirm Password')
-      .siblings('input')
-      .type(pw);
+    cy.contains('Confirm Password').siblings('input').type(pw);
 
     cy.contains('Register').click();
     cy.location('pathname').should('eq', '/');
@@ -44,27 +34,17 @@ describe('User registration', () => {
     cy.visit('/register');
     cy.location('pathname').should('eq', '/register');
 
-    cy.contains('First Name')
-      .siblings('input')
-      .type(faker.name.firstName());
+    cy.contains('First Name').siblings('input').type(faker.name.firstName());
 
-    cy.contains('Last Name')
-      .siblings('input')
-      .type(faker.name.lastName());
+    cy.contains('Last Name').siblings('input').type(faker.name.lastName());
 
-    cy.contains('Email')
-      .siblings('input')
-      .type(email);
+    cy.contains('Email').siblings('input').type(email);
 
     const pw = faker.internet.password();
 
-    cy.contains('Password')
-      .siblings('input')
-      .type(pw);
+    cy.contains('Password').siblings('input').type(pw);
 
-    cy.contains('Confirm Password')
-      .siblings('input')
-      .type(pw);
+    cy.contains('Confirm Password').siblings('input').type(pw);
 
     cy.contains('Register').click();
 
@@ -82,21 +62,13 @@ describe('User registration', () => {
   it(`should error if the confirmation password doesn't match`, () => {
     cy.visit('/register');
 
-    cy.contains('First Name')
-      .siblings('input')
-      .type(faker.name.firstName());
+    cy.contains('First Name').siblings('input').type(faker.name.firstName());
 
-    cy.contains('Last Name')
-      .siblings('input')
-      .type(faker.name.lastName());
+    cy.contains('Last Name').siblings('input').type(faker.name.lastName());
 
-    cy.contains('Email')
-      .siblings('input')
-      .type(faker.internet.email());
+    cy.contains('Email').siblings('input').type(faker.internet.email());
 
-    cy.contains('Password')
-      .siblings('input')
-      .type(faker.internet.password());
+    cy.contains('Password').siblings('input').type(faker.internet.password());
 
     cy.contains('Confirm Password')
       .siblings('input')
@@ -126,9 +98,7 @@ describe('User login', () => {
 
     cy.focused().type(email);
 
-    cy.contains('Password')
-      .siblings('input')
-      .type(pw);
+    cy.contains('Password').siblings('input').type(pw);
 
     cy.contains('Login').click();
 
@@ -145,9 +115,7 @@ describe('User login', () => {
     cy.visit('/login');
 
     cy.focused().type(email);
-    cy.contains('Password')
-      .siblings('input')
-      .type(faker.internet.password());
+    cy.contains('Password').siblings('input').type(faker.internet.password());
     cy.contains('Login').click();
 
     cy.get(`.${toastStyles.toast}`).should('have.class', toastStyles.error);
@@ -165,9 +133,7 @@ describe('User login', () => {
     cy.visit('/login');
 
     cy.focused().type(faker.internet.email());
-    cy.contains('Password')
-      .siblings('input')
-      .type(faker.internet.password());
+    cy.contains('Password').siblings('input').type(faker.internet.password());
     cy.contains('Login').click();
 
     cy.get(`.${toastStyles.toast}`).should('have.class', toastStyles.error);

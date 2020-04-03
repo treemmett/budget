@@ -21,17 +21,17 @@ const Menu: FC<MenuProps> = ({ className, items }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [rightAligned, setRightAligned] = useState(false);
   const transitions = useTransition(menuOpen, null, {
+    config: {
+      duration: 125,
+    },
+    enter: { height: `${items.length * 2.5}rem`, opacity: 1 },
     from: { height: '2.5rem', opacity: 0 },
     leave: { height: '2.5rem', opacity: 0 },
-    enter: { height: `${items.length * 2.5}rem`, opacity: 1 },
-    config: {
-      duration: 125
-    },
     onDestroyed: () => {
       if (!menuOpen) {
         setRightAligned(false);
       }
-    }
+    },
   });
 
   function handleClick(e: MouseEvent): void {
@@ -43,7 +43,7 @@ const Menu: FC<MenuProps> = ({ className, items }) => {
     setMenuOpen(false);
   }
 
-  // Effect for menu open/closing
+  // effect for menu open/closing
   useEffect(() => {
     if (!menuOpen) return;
 
@@ -52,7 +52,7 @@ const Menu: FC<MenuProps> = ({ className, items }) => {
     setRightAligned(ref.right > window.innerWidth);
   }, [menuOpen]);
 
-  // Effect for adding lifecycle events
+  // effect for adding lifecycle events
   useEffect(() => {
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
@@ -61,11 +61,11 @@ const Menu: FC<MenuProps> = ({ className, items }) => {
   return (
     <div
       className={cx(styles.menu, className)}
-      aria-haspopup
-      tabIndex={0}
-      role="button"
       onClick={() => setMenuOpen(true)}
       onKeyDown={onEnter(() => setMenuOpen(true))}
+      role="button"
+      tabIndex={0}
+      aria-haspopup
     >
       <More />
       {transitions.map(
@@ -73,16 +73,14 @@ const Menu: FC<MenuProps> = ({ className, items }) => {
           item && (
             <animated.div
               className={cx(styles.popup, { [styles.right]: rightAligned })}
-              role="menu"
-              ref={menuRef}
               key={key}
+              ref={menuRef}
+              role="menu"
               style={props}
             >
               {items.map(({ action, icon: Icon, text }) => (
                 <div
                   className={styles.item}
-                  role="menuitem"
-                  tabIndex={0}
                   key={text}
                   onClick={e => {
                     e.stopPropagation();
@@ -94,6 +92,8 @@ const Menu: FC<MenuProps> = ({ className, items }) => {
                     setMenuOpen(false);
                     action();
                   })}
+                  role="menuitem"
+                  tabIndex={0}
                 >
                   <div className={styles.icon}>{Icon && <Icon />}</div>
                   <div className={styles.text}>{text}</div>

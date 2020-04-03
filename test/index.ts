@@ -1,5 +1,6 @@
-/* eslint-disable no-await-in-loop */
 /* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable no-await-in-loop */
 import WebpackDevServer from 'webpack-dev-server';
 import cypress from 'cypress';
 import http from 'http';
@@ -14,7 +15,7 @@ function isServerUp(hostname: string, port: number): Promise<boolean> {
     const opt: http.RequestOptions = {
       hostname,
       port,
-      timeout: 5000
+      timeout: 5000,
     };
 
     const req = http.request(opt, res => {
@@ -52,7 +53,7 @@ async function startFrontend(): Promise<void> {
 async function startup(): Promise<void> {
   const [frontendUp, backendUp] = await Promise.all([
     isServerUp('localhost', 3000),
-    isServerUp('localhost', 8080)
+    isServerUp('localhost', 8080),
   ]);
 
   if (!backendUp) {
@@ -64,7 +65,7 @@ async function startup(): Promise<void> {
   }
 
   const results = await cypress.run({
-    configFile: 'test/config.json'
+    configFile: 'test/config.json',
   });
 
   if (frontEndServer) {
@@ -74,11 +75,11 @@ async function startup(): Promise<void> {
   if (results.totalFailed > 0) {
     process.exit(1);
   }
-
-  process.exit(0);
 }
 
-startup().catch(err => {
-  console.error(err.message);
-  process.exit(2);
-});
+startup()
+  .then(() => process.exit(0))
+  .catch(err => {
+    console.error(err.message);
+    process.exit(2);
+  });

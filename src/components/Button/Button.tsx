@@ -11,14 +11,14 @@ interface ButtonProps {
 
 const Button: FC<ButtonProps> = ({ children, color, onClick }) => (
   <button
-    type="button"
     className={cx(styles.button, {
       [styles.blue]: color === 'blue',
       [styles.green]: color === 'green',
       [styles.orange]: color === 'orange',
-      [styles.red]: color === 'red'
+      [styles.red]: color === 'red',
     })}
     onClick={onClick}
+    type="button"
   >
     {children}
   </button>

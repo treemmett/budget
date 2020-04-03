@@ -56,15 +56,15 @@ const Budget: FC<RouteComponentProps> = () => {
         update(cache, { data: updateData }) {
           const { budgets } = cache.readQuery<Budgets>({ query: GET_BUDGETS });
           cache.writeQuery<Budgets>({
-            query: GET_BUDGETS,
             data: {
-              budgets: [...budgets, updateData.createBudget]
-            }
+              budgets: [...budgets, updateData.createBudget],
+            },
+            query: GET_BUDGETS,
           });
         },
         variables: {
-          name
-        }
+          name,
+        },
       });
 
       setCreateNewBudget(false);
@@ -92,18 +92,19 @@ const Budget: FC<RouteComponentProps> = () => {
         <div className={styles.budget}>
           <input
             className={styles.name}
-            onKeyDown={e => {
-              if (e.key === 'Enter') createBudgetAction(e.currentTarget.value);
+            onChange={e => setNewBudgetName(e.currentTarget.value)}
+            onKeyDown={async e => {
+              if (e.key === 'Enter')
+                await createBudgetAction(e.currentTarget.value);
               if (e.key === 'Esc') setCreateNewBudget(false);
             }}
-            onChange={e => setNewBudgetName(e.currentTarget.value)}
             value={newBudgetName}
             autoFocus
           />
           <Button onClick={() => createBudgetAction(newBudgetName)}>
             Save
           </Button>
-          <Button onClick={() => setCreateNewBudget(false)} color="red">
+          <Button color="red" onClick={() => setCreateNewBudget(false)}>
             Cancel
           </Button>
         </div>

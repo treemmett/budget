@@ -5,19 +5,24 @@ import path from 'path';
 import sass from 'sass';
 
 const config: Configuration = {
+  devServer: {
+    historyApiFallback: true,
+    port: 3000,
+    proxy: {
+      '/api': {
+        pathRewrite: {
+          '^/api': '',
+        },
+        target: 'http://localhost:8080',
+      },
+    },
+  },
   entry: './src/index.tsx',
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js']
-  },
-  output: {
-    path: path.join(__dirname, '/dist'),
-    filename: 'main.[hash:6].js'
-  },
   module: {
     rules: [
       {
+        loader: 'awesome-typescript-loader',
         test: /\.tsx?$/,
-        loader: 'awesome-typescript-loader'
       },
       {
         test: /\.scss$/,
@@ -27,55 +32,51 @@ const config: Configuration = {
             loader: require.resolve('css-loader'),
             options: {
               modules: {
-                localIdentName: '[hash:base64:6]'
-              }
-            }
+                localIdentName: '[hash:base64:6]',
+              },
+            },
           },
           {
             loader: require.resolve('postcss-loader'),
             options: {
-              plugins: [autoprefixer]
-            }
+              plugins: [autoprefixer],
+            },
           },
           {
             loader: 'sass-loader',
             options: {
-              implementation: sass
-            }
-          }
-        ]
+              implementation: sass,
+            },
+          },
+        ],
       },
       {
         test: /\.svg$/,
-        use: ['@svgr/webpack']
-      }
-    ]
+        use: ['@svgr/webpack'],
+      },
+    ],
   },
+  output: {
+    filename: 'main.[hash:6].js',
+    path: path.join(__dirname, '/dist'),
+  },
+
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/index.html',
       minify: {
         collapseWhitespace: true,
         removeComments: true,
         removeRedundantAttributes: true,
         removeScriptTypeAttributes: true,
         removeStyleLinkTypeAttributes: true,
-        useShortDoctype: true
-      }
-    })
+        useShortDoctype: true,
+      },
+      template: './src/index.html',
+    }),
   ],
-  devServer: {
-    historyApiFallback: true,
-    port: 3000,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
-        pathRewrite: {
-          '^/api': ''
-        }
-      }
-    }
-  }
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js'],
+  },
 };
 
 export default config;

@@ -2,8 +2,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import faker from 'faker';
 
-export {};
-
 declare global {
   namespace Cypress {
     interface Chainable {
@@ -30,19 +28,16 @@ Cypress.Commands.add(
       }`,
       variables: {
         email,
-        password,
         f: firstName || faker.name.firstName(),
-        l: lastName || faker.name.lastName()
-      }
+        l: lastName || faker.name.lastName(),
+        password,
+      },
     });
   }
 );
 
 Cypress.Commands.add('checkAuth', () => {
-  cy.window()
-    .its('localStorage')
-    .its('token')
-    .should('not.be.undefined');
+  cy.window().its('localStorage').its('token').should('not.be.undefined');
 
   cy.should(() => {
     expect(localStorage.getItem('token')).match(
@@ -68,10 +63,10 @@ Cypress.Commands.add('setupUser', () => {
     }`,
     variables: {
       email,
-      password,
       f: faker.name.firstName(),
-      l: faker.name.lastName()
-    }
+      l: faker.name.lastName(),
+      password,
+    },
   }).then(() => {
     cy.request('POST', '/api/graphql', {
       query: `mutation ($email: String!, $password: String!) {
@@ -81,10 +76,12 @@ Cypress.Commands.add('setupUser', () => {
       }`,
       variables: {
         email,
-        password
-      }
-    }).then(resp => {
+        password,
+      },
+    }).then((resp: { body: { data: { login: { jwt: string } } } }) => {
       localStorage.setItem('token', resp.body.data.login.jwt);
     });
   });
 });
+
+export {};

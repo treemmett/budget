@@ -18,20 +18,20 @@ export default function useGraphQLError(
   function gqlErrorToToast(error: ApolloError | Error, title?: string): void {
     if (error instanceof ApolloError) {
       return error.graphQLErrors
-        .filter(err => err.message)
+        .filter(err => err.message.toString())
         .forEach(err =>
           ctx.addToast({
+            message: err.message.toString(),
+            status: 'error',
             title: typeof title === 'string' ? title : defaultTitle,
-            message: err.message,
-            status: 'error'
           })
         );
     }
 
     ctx.addToast({
-      title: typeof title === 'string' ? title : defaultTitle,
       message: error.message || 'An unknown error occurred',
-      status: 'error'
+      status: 'error',
+      title: typeof title === 'string' ? title : defaultTitle,
     });
   }
 

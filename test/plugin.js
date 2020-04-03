@@ -5,15 +5,12 @@ const wp = require('@cypress/webpack-preprocessor');
 module.exports = on => {
   const options = {
     webpackOptions: {
-      resolve: {
-        extensions: ['.ts', '.tsx', '.js']
-      },
       module: {
         rules: [
           {
-            test: /\.tsx?$/,
             loader: 'awesome-typescript-loader',
-            options: { transpileOnly: true }
+            options: { transpileOnly: true },
+            test: /\.tsx?$/,
           },
           {
             test: /\.scss$/,
@@ -23,27 +20,30 @@ module.exports = on => {
                 loader: require.resolve('css-loader'),
                 options: {
                   modules: {
-                    localIdentName: '[hash:base64:6]'
-                  }
-                }
+                    localIdentName: '[hash:base64:6]',
+                  },
+                },
               },
               {
                 loader: require.resolve('postcss-loader'),
                 options: {
-                  plugins: [autoprefixer]
-                }
+                  plugins: [autoprefixer],
+                },
               },
               {
                 loader: 'sass-loader',
                 options: {
-                  implementation: sass
-                }
-              }
-            ]
-          }
-        ]
-      }
-    }
+                  implementation: sass,
+                },
+              },
+            ],
+          },
+        ],
+      },
+      resolve: {
+        extensions: ['.ts', '.tsx', '.js'],
+      },
+    },
   };
 
   on('file:preprocessor', wp(options));

@@ -41,7 +41,7 @@ const Input: FC<InputProps> = ({
   readOnly,
   required,
   type,
-  value
+  value,
 }) => {
   const [labelActive, setLabelActive] = useState(false);
   const [realId, setId] = useState('');
@@ -72,33 +72,31 @@ const Input: FC<InputProps> = ({
   }
 
   return (
-    <>
-      <label
-        htmlFor={realId}
-        className={cx(className, styles.input, { [styles.hasLabel]: label })}
-      >
-        {label && (
-          <label
-            htmlFor={realId}
-            className={cx(styles.label, { [styles.inactive]: !labelActive })}
-          >
-            {label}
-          </label>
-        )}
-        <input
-          id={realId}
-          name={name}
-          autoFocus={autoFocus}
-          onBlur={blurHandler}
-          onChange={onChange}
-          onFocus={focusHandler}
-          readOnly={readOnly}
-          required={required}
-          type={type}
-          value={value}
-        />
-      </label>
-    </>
+    <label
+      className={cx(className, styles.input, { [styles.hasLabel]: label })}
+      htmlFor={realId}
+    >
+      {label && (
+        <label
+          className={cx(styles.label, { [styles.inactive]: !labelActive })}
+          htmlFor={realId}
+        >
+          {label}
+        </label>
+      )}
+      <input
+        autoFocus={autoFocus}
+        id={realId}
+        name={name}
+        onBlur={blurHandler}
+        onChange={onChange}
+        onFocus={focusHandler}
+        readOnly={readOnly}
+        required={required}
+        type={type}
+        value={value}
+      />
+    </label>
   );
 };
 

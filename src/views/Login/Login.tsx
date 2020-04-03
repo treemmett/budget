@@ -61,11 +61,11 @@ const Login: FC<RouteComponentProps> = ({ navigate, path }) => {
       ) as HTMLInputElement).value;
 
       const response = await login({
-        variables: { email, password }
+        variables: { email, password },
       });
 
       localStorage.setItem('token', response.data.login.jwt);
-      navigate('/');
+      await navigate('/');
     } catch (err) {
       gqlErrorToToast(err, 'Login failed');
     }
@@ -81,7 +81,7 @@ const Login: FC<RouteComponentProps> = ({ navigate, path }) => {
         'lastName',
         'email',
         'password',
-        'confirmPassword'
+        'confirmPassword',
       ].map(
         name =>
           (e.currentTarget.elements.namedItem(name) as HTMLInputElement).value
@@ -93,17 +93,17 @@ const Login: FC<RouteComponentProps> = ({ navigate, path }) => {
       }
 
       const registerResponse = await createUser({
-        variables: { data: { email, firstName, lastName, password } }
+        variables: { data: { email, firstName, lastName, password } },
       });
 
       if (!registerResponse) return;
 
       const loginResponse = await login({
-        variables: { email: registerResponse.data.createUser.email, password }
+        variables: { email: registerResponse.data.createUser.email, password },
       });
 
       localStorage.setItem('token', loginResponse.data.login.jwt);
-      navigate('/');
+      await navigate('/');
     } catch (err) {
       gqlErrorToToast(err, 'User creation failed');
     }
@@ -115,18 +115,18 @@ const Login: FC<RouteComponentProps> = ({ navigate, path }) => {
       {path === '/login' ? (
         <form className={styles.form} onSubmit={onLogin}>
           <Input
-            name="email"
-            label="Email"
-            type="email"
             className={styles.input}
-            required
+            label="Email"
+            name="email"
+            type="email"
             autoFocus
+            required
           />
           <Input
-            name="password"
-            label="Password"
-            type="password"
             className={styles.input}
+            label="Password"
+            name="password"
+            type="password"
             required
           />
           <div className={styles.buttons}>
@@ -145,38 +145,38 @@ const Login: FC<RouteComponentProps> = ({ navigate, path }) => {
         <form className={styles.form} onSubmit={onRegister}>
           <div className={styles.splitInput}>
             <Input
-              name="firstName"
-              label="First Name"
               className={styles.input}
-              required
+              label="First Name"
+              name="firstName"
               autoFocus
+              required
             />
             <Input
-              name="lastName"
-              label="Last Name"
               className={styles.input}
+              label="Last Name"
+              name="lastName"
               required
             />
           </div>
           <Input
-            name="email"
+            className={styles.input}
             label="Email"
+            name="email"
             type="email"
-            className={styles.input}
             required
           />
           <Input
-            name="password"
+            className={styles.input}
             label="Password"
+            name="password"
             type="password"
-            className={styles.input}
             required
           />
           <Input
-            name="confirmPassword"
-            label="Confirm Password"
-            type="password"
             className={styles.input}
+            label="Confirm Password"
+            name="confirmPassword"
+            type="password"
             required
           />
           <div className={styles.buttons}>

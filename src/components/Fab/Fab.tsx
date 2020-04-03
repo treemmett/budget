@@ -7,7 +7,7 @@ interface FabProps {
 
 const Fab: FC<FabProps> = ({ children, onClick }) => {
   return (
-    <button className={styles.fab} type="button" onClick={onClick}>
+    <button className={styles.fab} onClick={onClick} type="button">
       {children}
     </button>
   );

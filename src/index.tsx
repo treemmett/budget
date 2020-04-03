@@ -12,23 +12,23 @@ import { Toaster } from './components/Toast/Toast';
 import { render } from 'react-dom';
 
 const client = new ApolloClient({
+  cache: new InMemoryCache(),
   link: ApolloLink.from([
     new ApolloLink((operation, forward) => {
       // add authorization
       operation.setContext({
         headers: {
-          Authorization: localStorage.getItem('token') || null
-        }
+          Authorization: localStorage.getItem('token') || null,
+        },
       });
 
       return forward(operation);
     }),
     new HttpLink({
+      credentials: 'same-origin',
       uri: `${window.location.origin}/api/graphql`,
-      credentials: 'same-origin'
-    })
+    }),
   ]),
-  cache: new InMemoryCache()
 });
 
 const App: FC = () => (
