@@ -1,8 +1,8 @@
+import { Link, RouteComponentProps } from '@reach/router';
 import React, { FC, useEffect, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import Button from '../../components/Button/Button';
 import Fab from '../../components/Fab/Fab';
-import { RouteComponentProps } from '@reach/router';
 import globalStyles from '../../index.scss';
 import gql from 'graphql-tag';
 import styles from './Budgets.scss';
@@ -36,7 +36,7 @@ const GET_BUDGETS = gql`
   }
 `;
 
-const Budget: FC<RouteComponentProps> = () => {
+const Budgets: FC<RouteComponentProps> = () => {
   const errorToToast = useGraphQLError();
   const [createBudget] = useMutation<
     { createBudget: Budget },
@@ -84,9 +84,9 @@ const Budget: FC<RouteComponentProps> = () => {
   return (
     <div className={globalStyles.view}>
       {data.budgets.map(budget => (
-        <div className={styles.budget} key={budget.id}>
+        <Link className={styles.budget} key={budget.id} to={`/${budget.id}`}>
           <span className={styles.name}>{budget.name}</span>
-        </div>
+        </Link>
       ))}
       {createNewBudget && (
         <div className={styles.budget}>
@@ -116,4 +116,4 @@ const Budget: FC<RouteComponentProps> = () => {
   );
 };
 
-export default Budget;
+export default Budgets;

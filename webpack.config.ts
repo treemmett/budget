@@ -59,6 +59,7 @@ const config: Configuration = {
   output: {
     filename: 'main.[hash:6].js',
     path: path.join(__dirname, '/dist'),
+    publicPath: '/',
   },
 
   plugins: [
