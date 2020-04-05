@@ -3,6 +3,7 @@
 .group {
   @include card;
   padding: 0;
+  overflow: hidden;
 
   &:last-child {
     margin-bottom: 0;
@@ -13,8 +14,8 @@
   }
 
   &.collapsed {
-    .header .title {
-      border-color: transparent;
+    .header .border {
+      opacity: 0;
     }
 
     .toggle {
@@ -26,17 +27,17 @@
 
 .header {
   position: relative;
-  padding: 0 1rem;
-
-  .title {
-    padding: 1rem 0;
-    border-bottom: 1px solid #ccc;
-    transition: border-color 0.25s ease;
-  }
+  padding: 1rem;
 }
 
-.categories {
-  overflow: hidden;
+.border {
+  position: absolute;
+  width: calc(100% - 2rem);
+  height: 1px;
+  background: radial-gradient(#ccc 30%, #fff);
+  transition: opacity 700ms ease;
+  left: 1rem;
+  top: 100%;
 }
 
 .category {

@@ -33,6 +33,7 @@ const Group: FC<GroupProps> = ({ group }) => {
     >
       <div className={styles.header}>
         <div className={styles.title}>{group.name}</div>
+        <div className={styles.border} />
         <button
           aria-label={`Collapse group ${group.name}`}
           className={styles.toggle}
