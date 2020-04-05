@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 import { BudgetProps } from '../Budget/Budget';
+import Group from './components/Group';
 import { RouteComponentProps } from '@reach/router';
 import globalStyles from '../../index.scss';
 import gql from 'graphql-tag';
-import styles from './Categories.scss';
 import useGraphQLError from '../../utils/useGraphQLError';
 import { useQuery } from '@apollo/react-hooks';
 
@@ -56,18 +56,7 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
   return (
     <div className={globalStyles.view}>
       {data.budget.categoryGroups.map(group => (
-        <div className={styles.group} key={group.id}>
-          <div className={styles.header}>
-            <div className={styles.title}>{group.name}</div>
-          </div>
-          <div className={styles.categories}>
-            {group.categories.map(category => (
-              <div className={styles.category} key={category.id}>
-                {category.name}
-              </div>
-            ))}
-          </div>
-        </div>
+        <Group group={group} key={group.id} />
       ))}
     </div>
   );

@@ -7,17 +7,64 @@
   &:last-child {
     margin-bottom: 0;
   }
+
+  &:hover .toggle {
+    opacity: 1;
+  }
+
+  &.collapsed {
+    .header .title {
+      border-color: transparent;
+    }
+
+    .toggle {
+      transform: translateY(-50%) rotate(90deg);
+      opacity: 1;
+    }
+  }
 }
 
 .header {
+  position: relative;
   padding: 0 1rem;
 
   .title {
     padding: 1rem 0;
     border-bottom: 1px solid #ccc;
+    transition: border-color 0.25s ease;
   }
 }
 
+.categories {
+  overflow: hidden;
+}
+
 .category {
-  padding: 1rem;
+  padding: 0 1rem;
+  height: 3.25rem;
+  line-height: 3.25rem;
+}
+
+.toggle {
+  @include button;
+  position: absolute;
+  right: 1rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  top: 50%;
+  padding: 0.25rem;
+  border-radius: 1.25rem;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease-in;
+  font-size: 16px;
+  color: #666;
+
+  &:focus {
+    opacity: 1;
+  }
+
+  svg {
+    display: block;
+  }
 }
