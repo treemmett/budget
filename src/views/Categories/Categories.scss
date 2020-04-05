@@ -1,0 +1,23 @@
+@import '../../global';
+
+.group {
+  @include card;
+  padding: 0;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.header {
+  padding: 0 1rem;
+
+  .title {
+    padding: 1rem 0;
+    border-bottom: 1px solid #ccc;
+  }
+}
+
+.category {
+  padding: 1rem;
+}
