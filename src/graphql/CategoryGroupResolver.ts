@@ -6,6 +6,8 @@ import {
   Resolver,
   Root,
 } from 'type-graphql';
+import Allocation from '../entities/Allocation';
+import AllocationFilterInput from './inputs/AllocationFilterInput';
 import Budget from '../entities/Budget';
 import BudgetController from '../controllers/BudgetController';
 import CategoryGroup from '../entities/CategoryGroup';
@@ -17,6 +19,21 @@ import requireAuth from '../utils/requireAuth';
 
 @Resolver(() => CategoryGroup)
 export default class CategoryGroupResolver {
+  @FieldResolver(() => Allocation)
+  public async allocation(
+    @Root() categoryGroup: CategoryGroup,
+    @Arg('date', { nullable: true }) input?: AllocationFilterInput
+  ): Promise<Allocation> {
+    const budget = await this.budget(categoryGroup);
+    const date = input ? new Date(input.year, input.month, 1) : new Date();
+    date.setDate(1);
+
+    return new BudgetController(budget).getCategoryGroupAllocation(
+      categoryGroup.id,
+      date
+    );
+  }
+
   @FieldResolver(() => Budget)
   public async budget(@Root() categoryGroup: CategoryGroup): Promise<Budget> {
     const budget = await getManager()

@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { Field, Int, ObjectType } from 'type-graphql';
+import { Field, Float, Int, ObjectType } from 'type-graphql';
 import TransactionCategory from './TransactionCategory';
 
 @ObjectType({ description: 'Category allocation for given month-year' })
@@ -15,16 +15,13 @@ export default class Allocation {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
-  @Field(() => TransactionCategory, {
-    description: 'Category of the allocation',
-  })
   @ManyToOne(() => TransactionCategory, category => category.allocations, {
     nullable: false,
     onDelete: 'CASCADE',
   })
   public category: TransactionCategory;
 
-  @Field({ description: 'Amount of the allocation' })
+  @Field(() => Float, { description: 'Amount of the allocation' })
   @Column({
     precision: 13,
     scale: 2,
@@ -35,6 +32,9 @@ export default class Allocation {
     type: 'numeric',
   })
   public amount: number;
+
+  // @Field(() => Float, { description: 'Total amount used' })
+  // public used: number;
 
   @Field(() => String, {
     description:

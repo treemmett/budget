@@ -319,6 +319,80 @@ describe('Budget controller > category groups', () => {
       status: 409,
     });
   });
+
+  it('should return a total for all allocations in the group', async () => {
+    const group1 = await controller.createCategoryGroup('Group 1');
+    const group2 = await controller.createCategoryGroup('Group 2');
+
+    const cat1 = await controller.createCategory('Category 1', group1.id);
+    const cat2 = await controller.createCategory('Category 2', group1.id);
+    const cat3 = await controller.createCategory('Category 3', group2.id);
+    const cat4 = await controller.createCategory('Category 4', group2.id);
+
+    const alloc1 = faker.random.number();
+    const alloc2 = faker.random.number();
+    const alloc3 = faker.random.number();
+    const alloc4 = faker.random.number();
+
+    await controller.setAllocation(cat1.id, new Date(), alloc1);
+    await controller.setAllocation(cat2.id, new Date(), alloc2);
+    await controller.setAllocation(cat3.id, new Date(), alloc3);
+    await controller.setAllocation(cat4.id, new Date(), alloc4);
+
+    await expect(
+      controller.getCategoryGroupAllocation(group1.id, new Date())
+    ).resolves.toMatchObject({ amount: alloc1 + alloc2 });
+    await expect(
+      controller.getCategoryGroupAllocation(group2.id, new Date())
+    ).resolves.toMatchObject({ amount: alloc3 + alloc4 });
+  });
+
+  it('should return group allocations for the correct date', async () => {
+    const group1 = await controller.createCategoryGroup('Group 1');
+    const group2 = await controller.createCategoryGroup('Group 2');
+
+    const cat1 = await controller.createCategory('Category 1', group1.id);
+    const cat2 = await controller.createCategory('Category 2', group1.id);
+    const cat3 = await controller.createCategory('Category 3', group2.id);
+    const cat4 = await controller.createCategory('Category 4', group2.id);
+
+    const alloc1 = faker.random.number();
+    const alloc2 = faker.random.number();
+    const alloc3 = faker.random.number();
+    const alloc4 = faker.random.number();
+    const alloc5 = faker.random.number();
+    const alloc6 = faker.random.number();
+
+    await controller.setAllocation(cat1.id, new Date(2020, 3, 6), alloc1);
+
+    await controller.setAllocation(cat1.id, new Date(2020, 4, 14), alloc2);
+    await controller.setAllocation(cat2.id, new Date(2020, 4, 23), alloc3);
+    await controller.setAllocation(cat3.id, new Date(2020, 4, 1), alloc4);
+
+    await controller.setAllocation(cat3.id, new Date(2020, 6, 25), alloc5);
+    await controller.setAllocation(cat4.id, new Date(2020, 6, 9), alloc6);
+
+    await expect(
+      controller.getCategoryGroupAllocation(group1.id, new Date(2020, 3, 1))
+    ).resolves.toMatchObject({ amount: alloc1 });
+    await expect(
+      controller.getCategoryGroupAllocation(group2.id, new Date(2020, 3, 1))
+    ).resolves.toMatchObject({ amount: 0 });
+
+    await expect(
+      controller.getCategoryGroupAllocation(group1.id, new Date(2020, 4, 1))
+    ).resolves.toMatchObject({ amount: alloc2 + alloc3 });
+    await expect(
+      controller.getCategoryGroupAllocation(group2.id, new Date(2020, 4, 1))
+    ).resolves.toMatchObject({ amount: alloc4 });
+
+    await expect(
+      controller.getCategoryGroupAllocation(group1.id, new Date(2020, 6, 1))
+    ).resolves.toMatchObject({ amount: 0 });
+    await expect(
+      controller.getCategoryGroupAllocation(group2.id, new Date(2020, 6, 1))
+    ).resolves.toMatchObject({ amount: alloc5 + alloc6 });
+  });
 });
 
 describe('Budget controller > categories', () => {

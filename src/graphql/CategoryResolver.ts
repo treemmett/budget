@@ -3,6 +3,7 @@ import {
   Ctx,
   Field,
   FieldResolver,
+  Float,
   InputType,
   Int,
   Mutation,
@@ -11,6 +12,7 @@ import {
 } from 'type-graphql';
 import { Max, Min } from 'class-validator';
 import Allocation from '../entities/Allocation';
+import AllocationFilterInput from './inputs/AllocationFilterInput';
 import Budget from '../entities/Budget';
 import BudgetController from '../controllers/BudgetController';
 import CategoryGroup from '../entities/CategoryGroup';
@@ -22,7 +24,13 @@ import { getManager } from 'typeorm';
 import requireAuth from '../utils/requireAuth';
 
 @InputType()
-class AllocationInput {
+class AllocateCategoryInput {
+  @Field()
+  public categoryId: string;
+
+  @Field()
+  public budgetId: string;
+
   @Field(() => Int, {
     defaultValue: new Date().getFullYear(),
     description:
@@ -39,6 +47,9 @@ class AllocationInput {
   @Max(11)
   @Min(0)
   public month: number;
+
+  @Field(() => Float)
+  public amount: number;
 }
 
 @Resolver(() => TransactionCategory)
@@ -46,7 +57,7 @@ export default class CategoryResolver {
   @FieldResolver()
   public async allocation(
     @Root() category: TransactionCategory,
-    @Arg('date', { nullable: true }) data?: AllocationInput
+    @Arg('date', { nullable: true }) data?: AllocationFilterInput
   ): Promise<Allocation> {
     const date = data ? new Date(data.year, data.month, 1) : new Date();
     date.setDate(1);
@@ -164,6 +175,22 @@ export default class CategoryResolver {
     return new BudgetController(budget).setCategoryGroup(
       categoryId,
       categoryGroupId
+    );
+  }
+
+  @Mutation(() => Allocation)
+  public async allocateCategory(
+    @Arg('input') input: AllocateCategoryInput,
+    @Ctx() ctx: Context
+  ): Promise<Allocation> {
+    const budget = await BudgetController.getBudgets(
+      requireAuth(ctx),
+      input.budgetId
+    );
+    return new BudgetController(budget).setAllocation(
+      input.categoryId,
+      new Date(input.year, input.month, 1),
+      input.amount
     );
   }
 }

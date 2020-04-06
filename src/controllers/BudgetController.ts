@@ -350,6 +350,21 @@ export default class BudgetController {
       .getMany();
   }
 
+  public async getCategoryGroupAllocation(
+    groupId: string,
+    date: Date
+  ): Promise<Allocation> {
+    const categories = await this.getCategoriesInGroup(groupId);
+    const allocations = await Promise.all(
+      categories.map(category => this.getAllocation(category.id, date))
+    );
+
+    const allocation = new Allocation();
+    allocation.date = date;
+    allocation.amount = allocations.reduce((acc, cur) => acc + cur.amount, 0);
+    return allocation;
+  }
+
   // income source
   public async createIncomeSource(
     name: string,
