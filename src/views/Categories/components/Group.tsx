@@ -2,17 +2,24 @@ import React, { FC, useState } from 'react';
 import { animated, useTransition } from 'react-spring';
 import ChevronDown from '../../../assets/icons/chevronDown.svg';
 import cx from 'classnames';
+import formatCurrency from '../../../utils/formatCurrency';
 import styles from '../Categories.scss';
+
+interface Allocation {
+  amount: number;
+}
 
 interface Category {
   id: string;
   name: string;
+  allocation: Allocation;
 }
 
 interface GroupProps {
   group: {
     id: string;
     name: string;
+    allocation: Allocation;
     categories: Category[];
   };
 }
@@ -33,6 +40,10 @@ const Group: FC<GroupProps> = ({ group }) => {
     >
       <div className={styles.header}>
         <div className={styles.title}>{group.name}</div>
+        <div className={styles.key}>Allocated</div>
+        <div className={styles.field}>
+          {formatCurrency(group.allocation.amount)}
+        </div>
         <div className={styles.border} />
         <button
           aria-label={`Collapse group ${group.name}`}
@@ -49,7 +60,10 @@ const Group: FC<GroupProps> = ({ group }) => {
             <animated.div className={styles.categories} key={key} style={props}>
               {group.categories.map(category => (
                 <div className={styles.category} key={category.id}>
-                  {category.name}
+                  <div className={styles.title}>{category.name}</div>
+                  <div className={styles.field}>
+                    {formatCurrency(category.allocation.amount)}
+                  </div>
                 </div>
               ))}
             </animated.div>

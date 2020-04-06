@@ -12,12 +12,18 @@ interface Categories {
     categoryGroups: {
       id: string;
       name: string;
+      allocation: Allocation;
       categories: {
         id: string;
         name: string;
+        allocation: Allocation;
       }[];
     }[];
   };
+}
+
+interface Allocation {
+  amount: number;
 }
 
 const GET_CATEGORIES = gql`
@@ -26,9 +32,15 @@ const GET_CATEGORIES = gql`
       categoryGroups {
         id
         name
+        allocation {
+          amount
+        }
         categories {
           id
           name
+          allocation {
+            amount
+          }
         }
       }
     }
@@ -50,7 +62,11 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
   }
 
   if (error) {
-    return <p>Something went wrong. Please try again later.</p>;
+    return (
+      <div className={globalStyles.view}>
+        Something went wrong. Please try again later.
+      </div>
+    );
   }
 
   return (

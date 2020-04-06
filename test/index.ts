@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable no-await-in-loop */
-import WebpackDevServer from 'webpack-dev-server';
+import WebpackDevServer, { Configuration } from 'webpack-dev-server';
 import cypress from 'cypress';
 import http from 'http';
 import process from 'process';
@@ -35,7 +35,7 @@ function timeout(ms: number): Promise<void> {
 }
 
 async function startFrontend(): Promise<void> {
-  const compiler = webpack(webpackConfig);
+  const compiler = webpack(webpackConfig as Configuration);
   frontEndServer = new WebpackDevServer(compiler);
   frontEndServer.listen(3000);
 
