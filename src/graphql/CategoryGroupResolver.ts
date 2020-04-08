@@ -2,7 +2,9 @@ import {
   Arg,
   Ctx,
   FieldResolver,
+  ID,
   Mutation,
+  Query,
   Resolver,
   Root,
 } from 'type-graphql';
@@ -19,6 +21,19 @@ import requireAuth from '../utils/requireAuth';
 
 @Resolver(() => CategoryGroup)
 export default class CategoryGroupResolver {
+  @Query(() => CategoryGroup)
+  public async categoryGroup(
+    @Arg('id', () => ID) id: string,
+    @Arg('budgetId', () => ID) budgetId: string,
+    @Ctx() ctx: Context
+  ): Promise<CategoryGroup> {
+    const budget = await BudgetController.getBudgets(
+      requireAuth(ctx),
+      budgetId
+    );
+    return new BudgetController(budget).getCategoryGroups(id);
+  }
+
   @FieldResolver(() => Allocation)
   public async allocation(
     @Root() categoryGroup: CategoryGroup,
