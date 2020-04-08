@@ -20,7 +20,7 @@ module.exports = on => {
                 loader: require.resolve('css-loader'),
                 options: {
                   modules: {
-                    localIdentName: '[hash:base64:6]',
+                    localIdentName: '[path][name]__[local]',
                   },
                 },
               },
