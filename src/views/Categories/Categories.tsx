@@ -71,7 +71,7 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
   return (
     <div className={globalStyles.view}>
       {data.budget.categoryGroups.map(group => (
-        <Group group={group} key={group.id} />
+        <Group budgetId={budgetId} id={group.id} key={group.id} />
       ))}
     </div>
   );

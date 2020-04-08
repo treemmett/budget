@@ -23,6 +23,11 @@
       opacity: 1;
     }
   }
+
+  &.primitive {
+    height: 2.25rem;
+    padding: 1rem 3rem;
+  }
 }
 
 .header,
