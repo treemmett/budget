@@ -1,3 +1,4 @@
+import { Allocation, CategoryGroup, TransactionCategory } from 'rudget';
 import React, { FC, useState } from 'react';
 import { animated, useTransition } from 'react-spring';
 import ChevronDown from '../../../assets/icons/chevronDown.svg';
@@ -5,23 +6,17 @@ import cx from 'classnames';
 import formatCurrency from '../../../utils/formatCurrency';
 import styles from '../Categories.scss';
 
-interface Allocation {
-  amount: number;
+type AllocationQuery = Pick<Allocation, 'amount'>;
+interface CategoryQuery extends Pick<TransactionCategory, 'id' | 'name'> {
+  allocation: AllocationQuery;
 }
-
-interface Category {
-  id: string;
-  name: string;
-  allocation: Allocation;
+interface GroupQuery extends Pick<CategoryGroup, 'id' | 'name'> {
+  allocation: AllocationQuery;
+  categories: CategoryQuery[];
 }
 
 interface GroupProps {
-  group: {
-    id: string;
-    name: string;
-    allocation: Allocation;
-    categories: Category[];
-  };
+  group: GroupQuery;
 }
 
 const Group: FC<GroupProps> = ({ group }) => {

@@ -15,7 +15,7 @@ import Transactions from './views/Transactions/Transcations';
 import { render } from 'react-dom';
 
 const client = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({ addTypename: false }),
   link: ApolloLink.from([
     new ApolloLink((operation, forward) => {
       // add authorization
