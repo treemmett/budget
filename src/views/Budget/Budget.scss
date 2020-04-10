@@ -9,6 +9,8 @@ $sidebarWidth: 14rem;
   position: fixed;
   height: 100vh;
   width: $sidebarWidth;
+  top: 0;
+  left: 0;
 }
 
 .brand {

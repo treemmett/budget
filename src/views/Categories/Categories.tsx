@@ -2,6 +2,7 @@ import { Allocation, CategoryGroup, TransactionCategory } from 'rudget';
 import React, { FC } from 'react';
 import { BudgetProps } from '../Budget/Budget';
 import Group from './components/Group';
+import Loader from '../../components/Loader/Loader';
 import { RouteComponentProps } from '@reach/router';
 import globalStyles from '../../index.scss';
 import gql from 'graphql-tag';
@@ -56,14 +57,18 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
     variables: { budgetId },
   });
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   if (error) {
     return (
       <div className={globalStyles.view}>
         Something went wrong. Please try again later.
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className={globalStyles.viewLoading}>
+        <Loader size="large" />
       </div>
     );
   }

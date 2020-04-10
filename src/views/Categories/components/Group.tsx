@@ -2,6 +2,7 @@ import { Allocation, CategoryGroup, TransactionCategory } from 'rudget';
 import React, { FC, useEffect, useState } from 'react';
 import { animated, useTransition } from 'react-spring';
 import ChevronDown from '../../../assets/icons/chevronDown.svg';
+import Loader from '../../../components/Loader/Loader';
 import cx from 'classnames';
 import formatCurrency from '../../../utils/formatCurrency';
 import gql from 'graphql-tag';
@@ -70,7 +71,11 @@ const Group: FC<GroupProps> = ({ budgetId, id }) => {
   }, [loading]);
 
   if (loading) {
-    return <div className={cx(styles.group, styles.primitive)}>loading...</div>;
+    return (
+      <div className={cx(styles.group, styles.primitive)}>
+        <Loader />
+      </div>
+    );
   }
 
   if (error) {

@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { BudgetProps } from '../Budget/Budget';
+import Loader from '../../components/Loader/Loader';
 import { RouteComponentProps } from '@reach/router';
 import globalStyles from '../../index.scss';
 import { useToasts } from '../../components/Toast/Toast';
@@ -22,7 +23,11 @@ const Transactions: FC<RouteComponentProps<BudgetProps>> = ({
     return;
   }
 
-  return <div className={globalStyles.view}>Transactions</div>;
+  return (
+    <div className={globalStyles.view}>
+      <Loader />
+    </div>
+  );
 };
 
 export default Transactions;

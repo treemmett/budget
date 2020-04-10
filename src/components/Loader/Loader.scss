@@ -1,0 +1,66 @@
+@import '../../global';
+
+$duration: 0.9s;
+
+@mixin loader($size, $gap) {
+  position: relative;
+  width: $size * 3 + $gap * 2;
+  height: $size;
+
+  .dot {
+    @include dot($orange, $size, $gap);
+
+    &.secondary {
+      @include dot($blue, $size, $gap);
+    }
+  }
+}
+
+@mixin dot($color, $size, $gap) {
+  $color: lighten($color, 10%);
+  $animation: unique-id();
+  position: absolute;
+  display: inline-block;
+  width: $size;
+  height: $size;
+  animation: #{$animation} $duration ease alternate infinite;
+  border-radius: 50%;
+  animation-delay: ($duration / 5) * 2;
+  top: -$size;
+
+  &:nth-child(1) {
+    left: 0;
+    animation-delay: ($duration / 5) * 1;
+  }
+
+  &:nth-child(2) {
+    left: $size + $gap;
+  }
+
+  &:nth-child(3) {
+    right: 0;
+    animation-delay: ($duration / 5) * 3;
+  }
+
+  @keyframes #{$animation} {
+    0% {
+      box-shadow: 0 $size 0 (-$size) $color;
+    }
+
+    100% {
+      box-shadow: 0 $size 0 $color;
+    }
+  }
+}
+
+.loader {
+  @include loader($size: 0.5rem, $gap: 0.7rem);
+
+  &.medium {
+    @include loader($size: 1rem, $gap: 0.725rem);
+  }
+
+  &.large {
+    @include loader($size: 1.5rem, $gap: 0.75rem);
+  }
+}

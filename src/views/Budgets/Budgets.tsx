@@ -4,6 +4,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 import { Budget } from 'rudget';
 import Button from '../../components/Button/Button';
 import Fab from '../../components/Fab/Fab';
+import Loader from '../../components/Loader/Loader';
 import globalStyles from '../../index.scss';
 import gql from 'graphql-tag';
 import styles from './Budgets.scss';
@@ -82,7 +83,11 @@ const Budgets: FC<RouteComponentProps> = () => {
   }
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className={globalStyles.view}>
+        <Loader />
+      </div>
+    );
   }
 
   if (error) {

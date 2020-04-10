@@ -25,6 +25,8 @@
   }
 
   &.primitive {
+    display: flex;
+    align-items: center;
     height: 2.25rem;
     padding: 1rem 3rem;
   }
