@@ -33,12 +33,14 @@ const GET_CATEGORIES = gql`
         id
         name
         allocation {
+          id
           amount
         }
         categories {
           id
           name
           allocation {
+            id
             amount
           }
         }

@@ -34,7 +34,6 @@
 
 .header,
 .category {
-  padding: 1rem 3rem;
   display: grid;
   position: relative;
   grid-template-columns: 1fr 5.5em;
@@ -43,6 +42,7 @@
 .header {
   grid-template-rows: 1em 1fr;
   grid-template-areas: 'title key' 'title field';
+  padding: 1rem 3rem;
 
   .title {
     font-weight: 500;
@@ -57,6 +57,7 @@
 .key,
 .field {
   justify-self: end;
+  text-align: right;
 }
 
 .key {
@@ -67,7 +68,10 @@
 }
 
 .field {
+  position: relative;
   grid-area: field;
+  display: inline-block;
+  width: 100%;
 }
 
 .border {
@@ -87,15 +91,37 @@
 .category {
   box-sizing: border-box;
   height: 3.25rem;
+  padding: 0 3rem;
   grid-gap: 1rem;
   grid-template-rows: 1fr;
   grid-template-areas: 'title field';
   align-items: center;
 
+  &:hover .input:not(:focus) {
+    border-color: #d8d8d8;
+  }
+
   &.primitive {
     display: flex;
     align-items: center;
     min-height: 1.25rem;
+  }
+}
+
+.input {
+  display: inline-block;
+  width: 100%;
+  font-size: 1rem;
+  padding: 0.125rem;
+  text-align: right;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  outline: none;
+  transition: border-color 0.15s ease;
+
+  &:focus,
+  &:active {
+    border-color: $blue;
   }
 }
 

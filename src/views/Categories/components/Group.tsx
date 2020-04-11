@@ -38,11 +38,9 @@ const GET_CATEGORY_GROUP = gql`
         id
         name
         allocation {
+          id
           amount
         }
-      }
-      allocation {
-        amount
       }
     }
   }
@@ -93,7 +91,12 @@ const Group: FC<GroupProps> = ({ budgetId, id }) => {
         <div className={styles.title}>{data.categoryGroup.name}</div>
         <div className={styles.key}>Allocated</div>
         <div className={styles.field}>
-          {formatCurrency(data.categoryGroup.allocation.amount ?? 0)}
+          {formatCurrency(
+            data.categoryGroup.categories.reduce(
+              (acc, cur) => acc + cur.allocation.amount,
+              0
+            )
+          )}
         </div>
         <div className={styles.border} />
         <button
