@@ -1,6 +1,7 @@
 import { Allocation, CategoryGroup, TransactionCategory } from 'rudget';
 import React, { FC, useEffect, useState } from 'react';
 import { animated, useTransition } from 'react-spring';
+import Category from './Category';
 import ChevronDown from '../../../assets/icons/chevronDown.svg';
 import Loader from '../../../components/Loader/Loader';
 import cx from 'classnames';
@@ -109,12 +110,7 @@ const Group: FC<GroupProps> = ({ budgetId, id }) => {
           item && (
             <animated.div className={styles.categories} key={key} style={props}>
               {data.categoryGroup.categories.map(category => (
-                <div className={styles.category} key={category.id}>
-                  <div className={styles.title}>{category.name}</div>
-                  <div className={styles.field}>
-                    {formatCurrency(category.allocation.amount)}
-                  </div>
-                </div>
+                <Category id={category.id} key={category.id} />
               ))}
             </animated.div>
           )

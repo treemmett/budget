@@ -91,6 +91,12 @@
   grid-template-rows: 1fr;
   grid-template-areas: 'title field';
   align-items: center;
+
+  &.primitive {
+    display: flex;
+    align-items: center;
+    min-height: 1.25rem;
+  }
 }
 
 .toggle {
