@@ -362,6 +362,7 @@ export default class BudgetController {
     const allocation = new Allocation();
     allocation.date = date;
     allocation.amount = allocations.reduce((acc, cur) => acc + cur.amount, 0);
+    allocation.id = `${date.getFullYear()}-${date.getMonth()}-${groupId}`;
     return allocation;
   }
 

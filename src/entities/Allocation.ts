@@ -5,13 +5,14 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { Field, Float, Int, ObjectType } from 'type-graphql';
+import { Field, Float, ID, Int, ObjectType } from 'type-graphql';
 import TransactionCategory from './TransactionCategory';
 
 @ObjectType({ description: 'Category allocation for given month-year' })
 @Entity({ name: 'allocations' })
 @Unique(['date', 'category'])
 export default class Allocation {
+  @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
