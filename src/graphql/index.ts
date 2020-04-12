@@ -12,6 +12,7 @@ export interface Context {
 
 async function generateGQL(): Promise<ApolloServer> {
   const schema = await buildSchema({
+    emitSchemaFile: true,
     resolvers: [
       path.join(__dirname, '/**/*Resolver.ts'),
       path.join(__dirname, '/**/*Resolver.js'),
