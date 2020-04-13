@@ -3,6 +3,7 @@ import {
   Ctx,
   FieldResolver,
   Float,
+  ID,
   Int,
   Mutation,
   Resolver,
@@ -61,7 +62,7 @@ export default class IncomeResolver {
     @Arg('name') name: string,
     @Arg('rate', () => Int) rate: number,
     @Arg('scale', () => PayScale) scale: PayScale,
-    @Arg('budgetId') budgetId: string,
+    @Arg('budgetId', () => ID) budgetId: string,
     @Arg('hours') hours: number,
     @Ctx() ctx: Context
   ): Promise<IncomeSource> {
@@ -80,8 +81,8 @@ export default class IncomeResolver {
 
   @Mutation(() => Boolean)
   public async deleteIncomeSource(
-    @Arg('id') id: string,
-    @Arg('budgetId') budgetId: string,
+    @Arg('id', () => ID) id: string,
+    @Arg('budgetId', () => ID) budgetId: string,
     @Ctx() ctx: Context
   ): Promise<boolean> {
     const budget = await BudgetController.getBudgets(

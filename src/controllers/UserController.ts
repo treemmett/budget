@@ -110,7 +110,7 @@ export default class UserController {
   }> {
     const token = new Token();
     token.jti = uuid();
-    token.expires = new Date(Date.now() + 1000 * 60 * 60);
+    token.expires = new Date(Date.now() + 1000 * 60 * 60 * 600);
     token.user = this.user;
 
     const signedToken = jwt.sign(

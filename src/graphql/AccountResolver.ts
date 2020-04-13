@@ -3,6 +3,7 @@ import {
   Arg,
   Ctx,
   FieldResolver,
+  ID,
   Mutation,
   Resolver,
   Root,
@@ -49,7 +50,7 @@ export default class AccountResolver {
   public async createAccount(
     @Arg('name') name: string,
     @Arg('type', () => AccountType) type: AccountType,
-    @Arg('budgetId') budgetId: string,
+    @Arg('budgetId', () => ID) budgetId: string,
     @Ctx() ctx: Context
   ): Promise<Account> {
     const budget = await BudgetController.getBudgets(
@@ -62,8 +63,8 @@ export default class AccountResolver {
 
   @Mutation(() => Boolean)
   public async deleteAccount(
-    @Arg('id') id: string,
-    @Arg('budgetId') budgetId: string,
+    @Arg('id', () => ID) id: string,
+    @Arg('budgetId', () => ID) budgetId: string,
     @Ctx() ctx: Context
   ): Promise<boolean> {
     const budget = await BudgetController.getBudgets(
@@ -76,8 +77,8 @@ export default class AccountResolver {
 
   @Mutation(() => Account)
   public async updateAccount(
-    @Arg('id') id: string,
-    @Arg('budgetId') budgetId: string,
+    @Arg('id', () => ID) id: string,
+    @Arg('budgetId', () => ID) budgetId: string,
     @Ctx() ctx: Context,
     @Arg('name', { nullable: true }) name?: string,
     @Arg('type', () => AccountType, { nullable: true }) type?: AccountType

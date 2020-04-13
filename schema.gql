@@ -24,8 +24,8 @@ enum AccountType {
 }
 
 input AllocateCategoryInput {
-  categoryId: String!
-  budgetId: String!
+  categoryId: ID!
+  budgetId: ID!
 
   """
   Year of the allocation. Can be set up to 10 years in the future, 5 years in the past.
@@ -78,7 +78,7 @@ type Budget {
   categories: [TransactionCategory!]!
 
   """Category in the budget"""
-  category(id: String!): TransactionCategory!
+  category(id: ID!): TransactionCategory!
 
   """All category groups within the budget"""
   categoryGroups: [CategoryGroup!]!
@@ -99,18 +99,18 @@ type Budget {
     month. Cannot be more than 366 days less than "to".
     """
     from: Date = "2020-04-01"
-    categoryId: String
-    accountId: String
+    categoryId: ID
+    accountId: ID
   ): [Transaction!]!
 
   """Bank account in the budget"""
-  account(id: String!): Account!
+  account(id: ID!): Account!
 
   """List of income sources in the budget"""
   incomeSources: [IncomeSource!]!
 
   """Income source"""
-  incomeSource(id: String!): IncomeSource!
+  incomeSource(id: ID!): IncomeSource!
 
   """Tax details"""
   tax: Tax!
@@ -192,22 +192,22 @@ type LoginToken {
 }
 
 type Mutation {
-  createAccount(budgetId: String!, type: AccountType!, name: String!): Account!
-  deleteAccount(budgetId: String!, id: String!): Boolean!
-  updateAccount(type: AccountType, name: String, budgetId: String!, id: String!): Account!
+  createAccount(budgetId: ID!, type: AccountType!, name: String!): Account!
+  deleteAccount(budgetId: ID!, id: ID!): Boolean!
+  updateAccount(type: AccountType, name: String, budgetId: ID!, id: ID!): Account!
   createBudget(name: String!): Budget!
-  renameBudget(id: String!, name: String!): Budget!
-  createCategoryGroup(name: String!, budgetId: String!): CategoryGroup!
-  deleteCategoryGroup(categoryGroupId: String!, budgetId: String!): Boolean!
-  createCategory(budgetId: String!, categoryGroupId: String!, name: String!): TransactionCategory!
-  deleteCategory(budgetId: String!, id: String!): Boolean!
-  renameCategory(budgetId: String!, newName: String!, id: String!): TransactionCategory!
-  setCategoryGroup(budgetId: String!, categoryId: String!, categoryGroupId: String!): CategoryGroup!
+  renameBudget(id: ID!, name: String!): Budget!
+  createCategoryGroup(name: String!, budgetId: ID!): CategoryGroup!
+  deleteCategoryGroup(categoryGroupId: ID!, budgetId: ID!): Boolean!
+  createCategory(budgetId: ID!, categoryGroupId: ID!, name: String!): TransactionCategory!
+  deleteCategory(budgetId: ID!, id: ID!): Boolean!
+  renameCategory(budgetId: ID!, newName: String!, id: ID!): TransactionCategory!
+  setCategoryGroup(budgetId: ID!, categoryId: ID!, categoryGroupId: ID!): CategoryGroup!
   allocateCategory(input: AllocateCategoryInput!): Allocation!
-  createIncomeSource(hours: Float!, budgetId: String!, scale: PayScale!, rate: Int!, name: String!): IncomeSource!
-  deleteIncomeSource(budgetId: String!, id: String!): Boolean!
-  setTax(status: FilingStatus, state: State, budgetId: String!): Tax!
-  createTransaction(budgetId: String!, description: String!, accountId: String!, categoryId: String!, date: Date!, amount: Float!): Transaction!
+  createIncomeSource(hours: Float!, budgetId: ID!, scale: PayScale!, rate: Int!, name: String!): IncomeSource!
+  deleteIncomeSource(budgetId: ID!, id: ID!): Boolean!
+  setTax(status: FilingStatus, state: State, budgetId: ID!): Tax!
+  createTransaction(budgetId: ID!, description: String!, accountId: ID!, categoryId: ID!, date: Date!, amount: Float!): Transaction!
   createUser(data: CreateUserInput!): User!
   login(password: String!, email: String!): LoginToken!
 }
@@ -221,7 +221,7 @@ enum PayScale {
 }
 
 type Query {
-  budget(id: String!): Budget!
+  budget(id: ID!): Budget!
   budgets: [Budget!]!
   categoryGroup(budgetId: ID!, id: ID!): CategoryGroup!
 }

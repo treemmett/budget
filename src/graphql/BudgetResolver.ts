@@ -2,6 +2,7 @@ import {
   Arg,
   Ctx,
   FieldResolver,
+  ID,
   Mutation,
   Query,
   Resolver,
@@ -23,7 +24,10 @@ import requireAuth from '../utils/requireAuth';
 @Resolver(() => Budget)
 export default class BudgetResolver {
   @Query(() => Budget)
-  public budget(@Arg('id') id: string, @Ctx() ctx: Context): Promise<Budget> {
+  public budget(
+    @Arg('id', () => ID) id: string,
+    @Ctx() ctx: Context
+  ): Promise<Budget> {
     return BudgetController.getBudgets(requireAuth(ctx), id);
   }
 
@@ -40,7 +44,7 @@ export default class BudgetResolver {
   @FieldResolver(() => Account)
   public account(
     @Root() parent: Budget,
-    @Arg('id') id: string
+    @Arg('id', () => ID) id: string
   ): Promise<Account> {
     return new BudgetController(parent).getAccounts(id);
   }
@@ -53,7 +57,7 @@ export default class BudgetResolver {
   @FieldResolver(() => TransactionCategory)
   public category(
     @Root() parent: Budget,
-    @Arg('id') id: string
+    @Arg('id', () => ID) id: string
   ): Promise<TransactionCategory> {
     return new BudgetController(parent).getCategories(id);
   }
@@ -71,7 +75,7 @@ export default class BudgetResolver {
   @FieldResolver(() => IncomeSource)
   public incomeSource(
     @Root() parent: Budget,
-    @Arg('id') id: string
+    @Arg('id', () => ID) id: string
   ): Promise<IncomeSource> {
     return new BudgetController(parent).getIncomeSource(id);
   }
@@ -84,8 +88,8 @@ export default class BudgetResolver {
   @FieldResolver(() => [Transaction])
   public transactions(
     @Root() parent: Budget,
-    @Arg('accountId', { nullable: true }) accountId?: string,
-    @Arg('categoryId', { nullable: true }) categoryId?: string,
+    @Arg('accountId', () => ID, { nullable: true }) accountId?: string,
+    @Arg('categoryId', () => ID, { nullable: true }) categoryId?: string,
     @Arg('from', () => DateScalar, {
       defaultValue: new Date(
         new Date().getFullYear(),
@@ -133,7 +137,7 @@ export default class BudgetResolver {
   @Mutation(() => Budget)
   public async renameBudget(
     @Arg('name') name: string,
-    @Arg('id') id: string,
+    @Arg('id', () => ID) id: string,
     @Ctx() ctx: Context
   ): Promise<Budget> {
     const budget = await BudgetController.getBudgets(requireAuth(ctx), id);

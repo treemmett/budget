@@ -4,6 +4,7 @@ import {
   Field,
   FieldResolver,
   Float,
+  ID,
   InputType,
   Int,
   Mutation,
@@ -25,10 +26,10 @@ import requireAuth from '../utils/requireAuth';
 
 @InputType()
 class AllocateCategoryInput {
-  @Field()
+  @Field(() => ID)
   public categoryId: string;
 
-  @Field()
+  @Field(() => ID)
   public budgetId: string;
 
   @Field(() => Int, {
@@ -122,8 +123,8 @@ export default class CategoryResolver {
   @Mutation(() => TransactionCategory)
   public async createCategory(
     @Arg('name') name: string,
-    @Arg('categoryGroupId') categoryGroupId: string,
-    @Arg('budgetId') budgetId: string,
+    @Arg('categoryGroupId', () => ID) categoryGroupId: string,
+    @Arg('budgetId', () => ID) budgetId: string,
     @Ctx() ctx: Context
   ): Promise<TransactionCategory> {
     const budget = await BudgetController.getBudgets(
@@ -136,8 +137,8 @@ export default class CategoryResolver {
 
   @Mutation(() => Boolean)
   public async deleteCategory(
-    @Arg('id') id: string,
-    @Arg('budgetId') budgetId: string,
+    @Arg('id', () => ID) id: string,
+    @Arg('budgetId', () => ID) budgetId: string,
     @Ctx() ctx: Context
   ): Promise<boolean> {
     const budget = await BudgetController.getBudgets(
@@ -149,9 +150,9 @@ export default class CategoryResolver {
 
   @Mutation(() => TransactionCategory)
   public async renameCategory(
-    @Arg('id') id: string,
+    @Arg('id', () => ID) id: string,
     @Arg('newName') newName: string,
-    @Arg('budgetId') budgetId: string,
+    @Arg('budgetId', () => ID) budgetId: string,
     @Ctx() ctx: Context
   ): Promise<TransactionCategory> {
     const budget = await BudgetController.getBudgets(
@@ -163,9 +164,9 @@ export default class CategoryResolver {
 
   @Mutation(() => CategoryGroup)
   public async setCategoryGroup(
-    @Arg('categoryGroupId') categoryGroupId: string,
-    @Arg('categoryId') categoryId: string,
-    @Arg('budgetId') budgetId: string,
+    @Arg('categoryGroupId', () => ID) categoryGroupId: string,
+    @Arg('categoryId', () => ID) categoryId: string,
+    @Arg('budgetId', () => ID) budgetId: string,
     @Ctx() ctx: Context
   ): Promise<CategoryGroup> {
     const budget = await BudgetController.getBudgets(

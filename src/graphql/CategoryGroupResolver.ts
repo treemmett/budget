@@ -79,7 +79,7 @@ export default class CategoryGroupResolver {
 
   @Mutation(() => CategoryGroup)
   public async createCategoryGroup(
-    @Arg('budgetId') budgetId: string,
+    @Arg('budgetId', () => ID) budgetId: string,
     @Arg('name') name: string,
     @Ctx() ctx: Context
   ): Promise<CategoryGroup> {
@@ -92,8 +92,8 @@ export default class CategoryGroupResolver {
 
   @Mutation(() => Boolean)
   public async deleteCategoryGroup(
-    @Arg('budgetId') budgetId: string,
-    @Arg('categoryGroupId') categoryGroupId: string,
+    @Arg('budgetId', () => ID) budgetId: string,
+    @Arg('categoryGroupId', () => ID) categoryGroupId: string,
     @Ctx() ctx: Context
   ): Promise<boolean> {
     const budget = await BudgetController.getBudgets(

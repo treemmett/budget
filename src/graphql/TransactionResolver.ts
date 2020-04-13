@@ -2,6 +2,7 @@ import {
   Arg,
   Ctx,
   FieldResolver,
+  ID,
   Mutation,
   Resolver,
   Root,
@@ -62,10 +63,10 @@ export default class TransactionResolver {
   public async createTransaction(
     @Arg('amount') amount: number,
     @Arg('date', () => DateScalar) date: Date,
-    @Arg('categoryId') categoryId: string,
-    @Arg('accountId') accountId: string,
+    @Arg('categoryId', () => ID) categoryId: string,
+    @Arg('accountId', () => ID) accountId: string,
     @Arg('description') description: string,
-    @Arg('budgetId') budgetId: string,
+    @Arg('budgetId', () => ID) budgetId: string,
     @Ctx() ctx: Context
   ): Promise<Transaction> {
     const budget = await BudgetController.getBudgets(
