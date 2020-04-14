@@ -27,15 +27,11 @@ interface GetCategoriesInput {
 }
 
 const GET_CATEGORIES = gql`
-  query GetCategories($budgetId: String!) {
+  query GetCategories($budgetId: ID!) {
     budget(id: $budgetId) {
       categoryGroups {
         id
         name
-        allocation {
-          id
-          amount
-        }
         categories {
           id
           name

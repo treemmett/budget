@@ -42,6 +42,18 @@ const GET_BUDGETS = gql`
     budgets {
       id
       name
+      categoryGroups {
+        name
+        id
+        categories {
+          id
+          name
+          allocation {
+            id
+            amount
+          }
+        }
+      }
     }
   }
 `;

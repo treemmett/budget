@@ -31,7 +31,7 @@ interface CategoryProps {
 }
 
 const GET_CATEGORY = gql`
-  query GetCategory($id: String!, $budgetId: String!) {
+  query GetCategory($id: ID!, $budgetId: ID!) {
     budget(id: $budgetId) {
       category(id: $id) {
         allocation {
