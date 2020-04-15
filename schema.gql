@@ -128,9 +128,6 @@ type CategoryGroup {
 
   """List of categories within the group"""
   categories: [TransactionCategory!]!
-
-  """Allocation for the category"""
-  allocation(date: AllocationFilterInput): Allocation!
 }
 
 """New user data"""
