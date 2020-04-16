@@ -3,6 +3,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { animated, useTransition } from 'react-spring';
 import Category from './Category';
 import ChevronDown from '../../../assets/icons/chevronDown.svg';
+import { Draggable } from 'react-beautiful-dnd';
 import Loader from '../../../components/Loader/Loader';
 import cx from 'classnames';
 import formatCurrency from '../../../utils/formatCurrency';
@@ -24,10 +25,16 @@ interface GroupCustom extends Pick<CategoryGroup, 'name'> {
 interface GroupProps {
   budgetId: string;
   id: string;
+  index: number;
 }
 
 interface GetCategoryGroup {
   categoryGroup: GroupCustom;
+}
+
+interface GetCategoryGroupInput {
+  budgetId: string;
+  id: string;
 }
 
 const GET_CATEGORY_GROUP = gql`
@@ -46,16 +53,16 @@ const GET_CATEGORY_GROUP = gql`
   }
 `;
 
-const Group: FC<GroupProps> = ({ budgetId, id }) => {
+const Group: FC<GroupProps> = ({ budgetId, id, index }) => {
   const [collapsed, setCollapsed] = useState(true);
   const graphError = useGraphQLError();
-  const { data, error, loading } = useQuery<GetCategoryGroup, GroupProps>(
-    GET_CATEGORY_GROUP,
-    {
-      onError: graphError,
-      variables: { budgetId, id },
-    }
-  );
+  const { data, error, loading } = useQuery<
+    GetCategoryGroup,
+    GetCategoryGroupInput
+  >(GET_CATEGORY_GROUP, {
+    onError: graphError,
+    variables: { budgetId, id },
+  });
   const transition = useTransition(!collapsed, null, {
     config: { clamp: true, friction: 51, mass: 1, tension: 268 },
     enter: {
@@ -86,39 +93,51 @@ const Group: FC<GroupProps> = ({ budgetId, id }) => {
   }
 
   return (
-    <div className={cx(styles.group, { [styles.collapsed]: collapsed })}>
-      <div className={styles.header}>
-        <div className={styles.title}>{data.categoryGroup.name}</div>
-        <div className={styles.key}>Allocated</div>
-        <div className={styles.field}>
-          {formatCurrency(
-            data.categoryGroup.categories.reduce(
-              (acc, cur) => acc + cur.allocation.amount,
-              0
-            )
+    <Draggable draggableId={id} index={index}>
+      {provided => (
+        <div
+          className={cx(styles.group, { [styles.collapsed]: collapsed })}
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+        >
+          <div className={styles.header} {...provided.dragHandleProps}>
+            <div className={styles.title}>{data.categoryGroup.name}</div>
+            <div className={styles.key}>Allocated</div>
+            <div className={styles.field}>
+              {formatCurrency(
+                data.categoryGroup.categories.reduce(
+                  (acc, cur) => acc + cur.allocation.amount,
+                  0
+                )
+              )}
+            </div>
+            <div className={styles.border} />
+            <button
+              aria-label={`Collapse group ${data.categoryGroup.name}`}
+              className={styles.toggle}
+              onClick={() => setCollapsed(s => !s)}
+              type="button"
+            >
+              <ChevronDown />
+            </button>
+          </div>
+          {transition.map(
+            ({ item, key, props }) =>
+              item && (
+                <animated.div
+                  className={styles.categories}
+                  key={key}
+                  style={props}
+                >
+                  {data.categoryGroup.categories.map(category => (
+                    <Category id={category.id} key={category.id} />
+                  ))}
+                </animated.div>
+              )
           )}
         </div>
-        <div className={styles.border} />
-        <button
-          aria-label={`Collapse group ${data.categoryGroup.name}`}
-          className={styles.toggle}
-          onClick={() => setCollapsed(s => !s)}
-          type="button"
-        >
-          <ChevronDown />
-        </button>
-      </div>
-      {transition.map(
-        ({ item, key, props }) =>
-          item && (
-            <animated.div className={styles.categories} key={key} style={props}>
-              {data.categoryGroup.categories.map(category => (
-                <Category id={category.id} key={category.id} />
-              ))}
-            </animated.div>
-          )
       )}
-    </div>
+    </Draggable>
   );
 };
 

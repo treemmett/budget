@@ -11,8 +11,6 @@ const client = new ApolloClient({
       Budget: {
         category: (root, args) =>
           toIdValue({ id: args.id, typename: 'TransactionCategory' }),
-        categoryGroups: (root, args) =>
-          toIdValue({ id: args.id, typename: 'CategoryGroup' }),
       },
       CategoryGroup: {
         allocation: (root, args) =>

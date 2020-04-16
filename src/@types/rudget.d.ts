@@ -16,6 +16,7 @@ declare module 'rudget' {
     categories: TransactionCategory[];
     id: string;
     name: string;
+    sort: number;
   }
 
   export interface TransactionCategory {

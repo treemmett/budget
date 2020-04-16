@@ -21,7 +21,7 @@ interface Budgets {
 }
 
 interface CreateBudget {
-  createBudget: BudgetQuery;
+  createBudget: Budget;
 }
 
 interface CreateBudgetInput {
@@ -33,6 +33,18 @@ const CREATE_BUDGET = gql`
     createBudget(name: $name) {
       id
       name
+      categoryGroups {
+        name
+        id
+        categories {
+          id
+          name
+          allocation {
+            id
+            amount
+          }
+        }
+      }
     }
   }
 `;
@@ -119,9 +131,10 @@ const Budgets: FC<RouteComponentProps> = () => {
             className={styles.name}
             onChange={e => setNewBudgetName(e.currentTarget.value)}
             onKeyDown={async e => {
-              if (e.key === 'Enter')
-                await createBudgetAction(e.currentTarget.value);
-              if (e.key === 'Esc') setCreateNewBudget(false);
+              const { key, currentTarget } = e;
+              if (key === 'Enter')
+                await createBudgetAction(currentTarget.value);
+              if (key === 'Esc') setCreateNewBudget(false);
             }}
             value={newBudgetName}
             autoFocus
