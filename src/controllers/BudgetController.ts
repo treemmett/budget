@@ -63,8 +63,8 @@ export default class BudgetController {
     const ctrl = new BudgetController(budget);
 
     await Promise.all(
-      defaultGroups.map(async group => {
-        const createdGroup = await ctrl.createCategoryGroup(group.name);
+      defaultGroups.map(async (group, i) => {
+        const createdGroup = await ctrl.createCategoryGroup(group.name, i);
 
         await Promise.all(
           group.categories.map(async categoryName => {
@@ -288,10 +288,16 @@ export default class BudgetController {
   }
 
   // category groups
-  public async createCategoryGroup(name: string): Promise<CategoryGroup> {
+  public async createCategoryGroup(
+    name: string,
+    index?: number
+  ): Promise<CategoryGroup> {
+    // get number of existing groups
+    const groups = await this.getCategoryGroups();
     const categoryGroup = new CategoryGroup();
     categoryGroup.budget = this.budget;
     categoryGroup.name = name;
+    categoryGroup.sort = Math.floor(index ?? groups.length);
     await getManager().save(categoryGroup);
     return categoryGroup;
   }
@@ -323,7 +329,8 @@ export default class BudgetController {
     const query = getManager()
       .createQueryBuilder(CategoryGroup, 'group')
       .leftJoin('group.budget', 'budget')
-      .where('budget.id = :budgetId', { budgetId: this.budget.id });
+      .where('budget.id = :budgetId', { budgetId: this.budget.id })
+      .orderBy('group.sort', 'ASC');
 
     const group = groupId
       ? await query.andWhere('group.id = :groupId', { groupId }).getOne()
@@ -364,6 +371,44 @@ export default class BudgetController {
     allocation.amount = allocations.reduce((acc, cur) => acc + cur.amount, 0);
     allocation.id = `${date.getFullYear()}-${date.getMonth()}-${groupId}`;
     return allocation;
+  }
+
+  public async sortCategoryGroup(
+    id: string,
+    index: number
+  ): Promise<CategoryGroup[]> {
+    const groups = await this.getCategoryGroups();
+    groups.sort((a, b) => {
+      if (a.sort > b.sort) return 1;
+      if (a.sort < b.sort) return -1;
+      return 0;
+    });
+
+    const currentIndex = groups.findIndex(g => g.id === id);
+
+    if (!~currentIndex) {
+      throw new HttpException({
+        error: 'invalid_request',
+        message: 'Group not found',
+        status: 404,
+      });
+    }
+
+    const [group] = groups.splice(currentIndex, 1);
+    groups.splice(index, 0, group);
+
+    await Promise.all(
+      groups.map((g, i) =>
+        getManager()
+          .createQueryBuilder()
+          .update(CategoryGroup)
+          .set({ sort: i })
+          .where('id = :id', { id: g.id })
+          .execute()
+      )
+    );
+
+    return this.getCategoryGroups();
   }
 
   // income source

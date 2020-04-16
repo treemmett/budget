@@ -3,6 +3,7 @@ import {
   Ctx,
   FieldResolver,
   ID,
+  Int,
   Mutation,
   Query,
   Resolver,
@@ -85,5 +86,20 @@ export default class CategoryGroupResolver {
     );
 
     return new BudgetController(budget).deleteCategoryGroup(categoryGroupId);
+  }
+
+  @Mutation(() => [CategoryGroup])
+  public async sortCategoryGroup(
+    @Arg('budgetId', () => ID) budgetId: string,
+    @Arg('id', () => ID) id: string,
+    @Arg('index', () => Int) index: number,
+    @Ctx() ctx: Context
+  ): Promise<CategoryGroup[]> {
+    const budget = await BudgetController.getBudgets(
+      requireAuth(ctx),
+      budgetId
+    );
+
+    return new BudgetController(budget).sortCategoryGroup(id, index);
   }
 }

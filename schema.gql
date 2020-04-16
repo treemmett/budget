@@ -128,6 +128,9 @@ type CategoryGroup {
 
   """List of categories within the group"""
   categories: [TransactionCategory!]!
+
+  """Sorting index of the group"""
+  sort: Float!
 }
 
 """New user data"""
@@ -196,6 +199,7 @@ type Mutation {
   renameBudget(id: ID!, name: String!): Budget!
   createCategoryGroup(name: String!, budgetId: ID!): CategoryGroup!
   deleteCategoryGroup(categoryGroupId: ID!, budgetId: ID!): Boolean!
+  sortCategoryGroup(index: Int!, id: ID!, budgetId: ID!): [CategoryGroup!]!
   createCategory(budgetId: ID!, categoryGroupId: ID!, name: String!): TransactionCategory!
   deleteCategory(budgetId: ID!, id: ID!): Boolean!
   renameCategory(budgetId: ID!, newName: String!, id: ID!): TransactionCategory!

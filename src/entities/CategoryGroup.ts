@@ -32,4 +32,8 @@ export default class CategoryGroup {
   })
   @OneToMany(() => TransactionCategory, category => category.group)
   public categories: TransactionCategory[];
+
+  @Field({ description: 'Sorting index of the group' })
+  @Column({ default: 0, type: 'int2' })
+  public sort: number;
 }
