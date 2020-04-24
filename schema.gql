@@ -133,7 +133,6 @@ type CategoryGroup {
   sort: Float!
 }
 
-"""New user data"""
 input CreateUserInput {
   email: String!
   password: String!
@@ -179,18 +178,6 @@ type IncomeSource {
   annualIncome: Float!
 }
 
-"""Token details for authorization"""
-type LoginToken {
-  """The authorization token"""
-  jwt: String!
-
-  """Token details"""
-  token: Token!
-
-  """Details about the logged in user"""
-  user: User!
-}
-
 type Mutation {
   createAccount(budgetId: ID!, type: AccountType!, name: String!): Account!
   deleteAccount(budgetId: ID!, id: ID!): Boolean!
@@ -210,7 +197,6 @@ type Mutation {
   setTax(status: FilingStatus, state: State, budgetId: ID!): Tax!
   createTransaction(budgetId: ID!, description: String!, accountId: ID!, categoryId: ID!, date: Date!, amount: Float!): Transaction!
   createUser(data: CreateUserInput!): User!
-  login(password: String!, email: String!): LoginToken!
 }
 
 """Income payment scale"""
@@ -290,26 +276,6 @@ type Tax {
   status: FilingStatus!
 }
 
-"""User access token"""
-type Token {
-  id: ID!
-
-  """JWT token id"""
-  jti: String!
-
-  """Date the token is set to expire"""
-  expires: DateTime!
-
-  """Date the token was issued"""
-  issued: DateTime!
-
-  """Date the token was last refreshed"""
-  lastUsed: DateTime!
-
-  """The tokens owning user"""
-  user: User!
-}
-
 """Transaction"""
 type Transaction {
   id: ID!
@@ -368,7 +334,4 @@ type User {
 
   """Date the user was registered"""
   dateCreated: DateTime!
-
-  """List of access tokens assigned to the user"""
-  tokens: [Token!]!
 }

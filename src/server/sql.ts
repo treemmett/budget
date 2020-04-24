@@ -24,8 +24,8 @@ export default function createSqlConnection(
     database: `${prefix ?? ''}${DB_DATABASE}${suffix ?? ''}`,
     dropSchema: drop,
     entities: [
-      path.resolve(__dirname, '../entities/*.ts'),
-      path.resolve(__dirname, '../entities/*.js'),
+      path.join(__dirname, '../entities/!(*.test).ts'),
+      path.join(__dirname, '../entities/!(*.test).js'),
     ],
     host: DB_HOST,
     password: DB_PASS,

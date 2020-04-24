@@ -1,7 +1,6 @@
 import { ApolloServer } from 'apollo-server-express';
 import { Request } from 'express';
 import User from '../entities/User';
-import UserController from '../controllers/UserController';
 import { buildSchema } from 'type-graphql';
 import config from '../utils/config';
 import path from 'path';
@@ -21,13 +20,13 @@ async function generateGQL(): Promise<ApolloServer> {
 
   const apollo = new ApolloServer({
     context: async ({ req }: { req: Request }): Promise<Context> => {
-      const [user] = await Promise.all([
-        UserController.verifyToken(req.get('authorization')),
-      ]);
+      const ctx: Context = {};
 
-      const ctx: Context = {
-        user: user || undefined,
-      };
+      const token = req.get('authorization');
+
+      if (token) {
+        ctx.user = await User.validateToken(token);
+      }
 
       return ctx;
     },
