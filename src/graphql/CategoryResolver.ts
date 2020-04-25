@@ -1,138 +1,35 @@
 import {
   Arg,
   Ctx,
-  Field,
   FieldResolver,
-  Float,
   ID,
-  InputType,
-  Int,
   Mutation,
   Resolver,
   Root,
 } from 'type-graphql';
-import { Max, Min } from 'class-validator';
-import Allocation from '../entities/Allocation';
-import AllocationFilterInput from './inputs/AllocationFilterInput';
 import Budget from '../entities/Budget';
-import BudgetController from '../controllers/BudgetController';
+import Category from '../entities/Category';
 import CategoryGroup from '../entities/CategoryGroup';
-import { Context } from '.';
-import HttpException from '../utils/HttpException';
-import Transaction from '../entities/Transaction';
-import TransactionCategory from '../entities/TransactionCategory';
-import { getManager } from 'typeorm';
-import requireAuth from '../utils/requireAuth';
+import { Context } from 'vm';
+import auth from '../utils/requireAuth';
 
-@InputType()
-class AllocateCategoryInput {
-  @Field(() => ID)
-  public categoryId: string;
-
-  @Field(() => ID)
-  public budgetId: string;
-
-  @Field(() => Int, {
-    defaultValue: new Date().getFullYear(),
-    description:
-      'Year of the allocation. Can be set up to 10 years in the future, 5 years in the past.',
-  })
-  @Max(new Date().getFullYear() + 10)
-  @Min(new Date().getFullYear() - 5)
-  public year: number;
-
-  @Field(() => Int, {
-    defaultValue: new Date().getMonth(),
-    description: '0-based month of allocation. Min: 0, Max: 11',
-  })
-  @Max(11)
-  @Min(0)
-  public month: number;
-
-  @Field(() => Float)
-  public amount: number;
-}
-
-@Resolver(() => TransactionCategory)
+@Resolver(() => Category)
 export default class CategoryResolver {
-  @FieldResolver()
-  public async allocation(
-    @Root() category: TransactionCategory,
-    @Arg('date', { nullable: true }) data?: AllocationFilterInput
-  ): Promise<Allocation> {
-    const date = data ? new Date(data.year, data.month, 1) : new Date();
-    date.setDate(1);
-
-    return new BudgetController(await this.budget(category)).getAllocation(
-      category.id,
-      date
-    );
+  @FieldResolver(() => CategoryGroup)
+  public group(@Root() category: Category): Promise<CategoryGroup> {
+    return category.group;
   }
 
-  @FieldResolver()
-  public async budget(@Root() parent: TransactionCategory): Promise<Budget> {
-    const budget = await getManager()
-      .createQueryBuilder(Budget, 'budget')
-      .leftJoin('budget.categories', 'category')
-      .where('category.id = :categoryId', { categoryId: parent.id })
-      .getOne();
-
-    if (!budget) {
-      throw new HttpException({
-        error: 'invalid_request',
-        message: 'No budget found for category',
-        status: 404,
-      });
-    }
-
-    return budget;
-  }
-
-  @FieldResolver()
-  public async group(
-    @Root() parent: TransactionCategory
-  ): Promise<CategoryGroup> {
-    const group = await getManager()
-      .createQueryBuilder(CategoryGroup, 'group')
-      .leftJoin('group.categories', 'category')
-      .where('category.id = :categoryId', { categoryId: parent.id })
-      .getOne();
-
-    if (!group) {
-      throw new HttpException({
-        error: 'invalid_request',
-        message: 'No group found for category',
-        status: 404,
-      });
-    }
-
-    return group;
-  }
-
-  @FieldResolver()
-  public async transactions(
-    @Root() parent: TransactionCategory
-  ): Promise<Transaction[]> {
-    return getManager()
-      .createQueryBuilder(Transaction, 'transaction')
-      .leftJoin('transaction.category', 'category')
-      .where('category.id = :categoryId', { categoryId: parent.id })
-      .getMany();
-  }
-
-  @Mutation(() => TransactionCategory)
+  @Mutation(() => Category)
   public async createCategory(
     @Arg('name') name: string,
-    @Arg('categoryGroupId', () => ID) categoryGroupId: string,
+    @Arg('groupId', () => ID) groupId: string,
     @Arg('budgetId', () => ID) budgetId: string,
     @Ctx() ctx: Context
-  ): Promise<TransactionCategory> {
-    const budget = await BudgetController.getBudgets(
-      requireAuth(ctx),
-      budgetId
-    );
-
-    return new BudgetController(budget).createCategory(name, categoryGroupId);
+  ): Promise<Category> {
+    const budget = await Budget.find(budgetId, auth(ctx));
+    const group = await CategoryGroup.find(groupId, budget);
+    return Category.create(name, group);
   }
 
   @Mutation(() => Boolean)
@@ -141,57 +38,20 @@ export default class CategoryResolver {
     @Arg('budgetId', () => ID) budgetId: string,
     @Ctx() ctx: Context
   ): Promise<boolean> {
-    const budget = await BudgetController.getBudgets(
-      requireAuth(ctx),
-      budgetId
-    );
-    return new BudgetController(budget).deleteCategory(id);
+    const budget = await Budget.find(budgetId, auth(ctx));
+    const category = await Category.find(id, budget);
+    return category.delete();
   }
 
-  @Mutation(() => TransactionCategory)
+  @Mutation(() => Category)
   public async renameCategory(
+    @Arg('name') name: string,
     @Arg('id', () => ID) id: string,
-    @Arg('newName') newName: string,
     @Arg('budgetId', () => ID) budgetId: string,
     @Ctx() ctx: Context
-  ): Promise<TransactionCategory> {
-    const budget = await BudgetController.getBudgets(
-      requireAuth(ctx),
-      budgetId
-    );
-    return new BudgetController(budget).renameCategory(id, newName);
-  }
-
-  @Mutation(() => CategoryGroup)
-  public async setCategoryGroup(
-    @Arg('categoryGroupId', () => ID) categoryGroupId: string,
-    @Arg('categoryId', () => ID) categoryId: string,
-    @Arg('budgetId', () => ID) budgetId: string,
-    @Ctx() ctx: Context
-  ): Promise<CategoryGroup> {
-    const budget = await BudgetController.getBudgets(
-      requireAuth(ctx),
-      budgetId
-    );
-    return new BudgetController(budget).setCategoryGroup(
-      categoryId,
-      categoryGroupId
-    );
-  }
-
-  @Mutation(() => Allocation)
-  public async allocateCategory(
-    @Arg('input') input: AllocateCategoryInput,
-    @Ctx() ctx: Context
-  ): Promise<Allocation> {
-    const budget = await BudgetController.getBudgets(
-      requireAuth(ctx),
-      input.budgetId
-    );
-    return new BudgetController(budget).setAllocation(
-      input.categoryId,
-      new Date(input.year, input.month, 1),
-      input.amount
-    );
+  ): Promise<Category> {
+    const budget = await Budget.find(budgetId, auth(ctx));
+    const category = await Category.find(id, budget);
+    return category.rename(name);
   }
 }

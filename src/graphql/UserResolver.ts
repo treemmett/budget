@@ -3,7 +3,7 @@ import CreateUserInput from '../inputs/CreateUserInput';
 import LoginInput from '../inputs/LoginInput';
 import User from '../entities/User';
 
-@Resolver()
+@Resolver(() => User)
 export default class UserResolver {
   @Mutation(() => User)
   public createUser(@Arg('data') data: CreateUserInput): Promise<User> {

@@ -5,101 +5,69 @@ import {
   ID,
   Int,
   Mutation,
-  Query,
   Resolver,
   Root,
 } from 'type-graphql';
 import Budget from '../entities/Budget';
-import BudgetController from '../controllers/BudgetController';
+import Category from '../entities/Category';
 import CategoryGroup from '../entities/CategoryGroup';
 import { Context } from '.';
-import HttpException from '../utils/HttpException';
-import TransactionCategory from '../entities/TransactionCategory';
-import { getManager } from 'typeorm';
-import requireAuth from '../utils/requireAuth';
+import auth from '../utils/requireAuth';
 
 @Resolver(() => CategoryGroup)
 export default class CategoryGroupResolver {
-  @Query(() => CategoryGroup)
-  public async categoryGroup(
-    @Arg('id', () => ID) id: string,
-    @Arg('budgetId', () => ID) budgetId: string,
-    @Ctx() ctx: Context
-  ): Promise<CategoryGroup> {
-    const budget = await BudgetController.getBudgets(
-      requireAuth(ctx),
-      budgetId
-    );
-    return new BudgetController(budget).getCategoryGroups(id);
-  }
-
   @FieldResolver(() => Budget)
-  public async budget(@Root() categoryGroup: CategoryGroup): Promise<Budget> {
-    const budget = await getManager()
-      .createQueryBuilder(Budget, 'budget')
-      .leftJoin('budget.categoryGroups', 'group')
-      .where('group.id = :groupId', { groupId: categoryGroup.id })
-      .getOne();
-
-    if (!budget) {
-      throw new HttpException({
-        error: 'invalid_request',
-        message: 'Budget not found.',
-        status: 404,
-      });
-    }
-
-    return budget;
+  public budget(@Root() group: CategoryGroup): Promise<Budget> {
+    return group.budget;
   }
 
-  @FieldResolver(() => [TransactionCategory])
-  public async categories(
-    @Root() categoryGroup: CategoryGroup
-  ): Promise<TransactionCategory[]> {
-    const budget = await this.budget(categoryGroup);
-
-    return new BudgetController(budget).getCategoriesInGroup(categoryGroup.id);
+  @FieldResolver(() => [Category])
+  public categories(@Root() group: CategoryGroup): Promise<Category[]> {
+    return group.categories;
   }
 
   @Mutation(() => CategoryGroup)
   public async createCategoryGroup(
-    @Arg('budgetId', () => ID) budgetId: string,
     @Arg('name') name: string,
+    @Arg('budgetId', () => ID) budgetId: string,
     @Ctx() ctx: Context
   ): Promise<CategoryGroup> {
-    const budget = await BudgetController.getBudgets(
-      requireAuth(ctx),
-      budgetId
-    );
-    return new BudgetController(budget).createCategoryGroup(name);
+    const budget = await Budget.find(budgetId, auth(ctx));
+    return CategoryGroup.create(name, budget);
   }
 
   @Mutation(() => Boolean)
   public async deleteCategoryGroup(
+    @Arg('id', () => ID) id: string,
     @Arg('budgetId', () => ID) budgetId: string,
-    @Arg('categoryGroupId', () => ID) categoryGroupId: string,
     @Ctx() ctx: Context
   ): Promise<boolean> {
-    const budget = await BudgetController.getBudgets(
-      requireAuth(ctx),
-      budgetId
-    );
+    const budget = await Budget.find(budgetId, auth(ctx));
+    const group = await CategoryGroup.find(id, budget);
+    return group.delete();
+  }
 
-    return new BudgetController(budget).deleteCategoryGroup(categoryGroupId);
+  @Mutation(() => CategoryGroup)
+  public async renameCategoryGroup(
+    @Arg('id', () => ID) id: string,
+    @Arg('name') name: string,
+    @Arg('budgetId', () => ID) budgetId: string,
+    @Ctx() ctx: Context
+  ): Promise<CategoryGroup> {
+    const budget = await Budget.find(budgetId, auth(ctx));
+    const group = await CategoryGroup.find(id, budget);
+    return group.rename(name);
   }
 
   @Mutation(() => [CategoryGroup])
-  public async sortCategoryGroup(
-    @Arg('budgetId', () => ID) budgetId: string,
+  public async resortCategoryGroups(
     @Arg('id', () => ID) id: string,
     @Arg('index', () => Int) index: number,
+    @Arg('budgetId', () => ID) budgetId: string,
     @Ctx() ctx: Context
   ): Promise<CategoryGroup[]> {
-    const budget = await BudgetController.getBudgets(
-      requireAuth(ctx),
-      budgetId
-    );
-
-    return new BudgetController(budget).sortCategoryGroup(id, index);
+    const budget = await Budget.find(budgetId, auth(ctx));
+    const group = await CategoryGroup.find(id, budget);
+    return group.resort(index);
   }
 }

@@ -1,75 +1,79 @@
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   Index,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
+  getRepository,
 } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
-import Account from './Account';
+import { MaxLength, validateOrReject } from 'class-validator';
 import CategoryGroup from './CategoryGroup';
-import IncomeSource from './IncomeSource';
-import Tax from './Tax';
-import Transaction from './Transaction';
-import TransactionCategory from './TransactionCategory';
 import User from './User';
+import { UserInputError } from 'apollo-server-express';
 
 @ObjectType({ description: 'Budget' })
 @Entity({ name: 'budgets' })
 export default class Budget {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
-  public id: string;
+  public readonly id: string;
 
   @Field({ description: 'Name of the budget' })
-  @Column()
+  @MaxLength(62)
+  @Column({ length: 62 })
   public name: string;
 
   @Field(() => User, { description: "Budget's owner" })
   @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @Index()
-  public user: User;
-
-  @Field(() => [TransactionCategory], {
-    description: 'Categories in the budget',
-  })
-  @OneToMany(() => TransactionCategory, category => category.budget)
-  public categories: TransactionCategory[];
-
-  @Field(() => TransactionCategory, { description: 'Category in the budget' })
-  public category: TransactionCategory;
+  public user: Promise<User>;
 
   @Field(() => [CategoryGroup], {
     description: 'All category groups within the budget',
   })
   @OneToMany(() => CategoryGroup, group => group.budget)
-  public categoryGroups: CategoryGroup[];
+  public categoryGroups: Promise<CategoryGroup[]>;
 
-  @Field(() => [Account], {
-    description: 'List of bank accounts in the budget',
-  })
-  @OneToMany(() => Account, account => account.budget)
-  public accounts: Account[];
+  public static async create(name: string, user: User): Promise<Budget> {
+    const budget = new Budget();
+    budget.name = name;
+    budget.user = Promise.resolve(user);
+    await getRepository(Budget).save(budget);
+    return budget;
+  }
 
-  @Field(() => [Transaction], { description: 'All transactions in the budget' })
-  @OneToMany(() => Transaction, transaction => transaction.budget)
-  public transactions: Transaction[];
+  public static async find(id: string, user: User): Promise<Budget> {
+    const budget = await getRepository(Budget).findOne(id, { where: { user } });
 
-  @Field(() => Account, { description: 'Bank account in the budget' })
-  public account: Account;
+    if (!budget) {
+      throw new UserInputError('Budget not found', { invalidArgs: ['id'] });
+    }
 
-  @Field(() => [IncomeSource], {
-    description: 'List of income sources in the budget',
-  })
-  @OneToMany(() => IncomeSource, incomeSource => incomeSource.budget)
-  public incomeSources: IncomeSource[];
+    return budget;
+  }
 
-  @Field(() => IncomeSource, { description: 'Income source' })
-  public incomeSource: IncomeSource;
+  public async delete(): Promise<boolean> {
+    try {
+      await getRepository(Budget).remove(this);
+      return true;
+    } catch {
+      return false;
+    }
+  }
 
-  @OneToOne(() => Tax, tax => tax.budget)
-  @Field(() => Tax, { description: 'Tax details' })
-  public tax: Tax;
+  public async rename(name: string): Promise<this> {
+    this.name = name;
+    await getRepository(Budget).save(this);
+    return this;
+  }
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  public async validate(): Promise<void> {
+    await validateOrReject(this);
+  }
 }

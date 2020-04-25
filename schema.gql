@@ -3,67 +3,6 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-"""Bank account"""
-type Account {
-  id: ID!
-
-  """Name of the bank account"""
-  name: String!
-
-  """Bank account type"""
-  type: AccountType!
-  budget: Budget!
-  transactions: [Transaction!]!
-}
-
-"""Bank account type"""
-enum AccountType {
-  checking
-  savings
-  creditCard
-}
-
-input AllocateCategoryInput {
-  categoryId: ID!
-  budgetId: ID!
-
-  """
-  Year of the allocation. Can be set up to 10 years in the future, 5 years in the past.
-  """
-  year: Int = 2020
-
-  """0-based month of allocation. Min: 0, Max: 11"""
-  month: Int = 3
-  amount: Float!
-}
-
-"""Category allocation for given month-year"""
-type Allocation {
-  id: ID!
-
-  """Amount of the allocation"""
-  amount: Float!
-
-  """ISO 8601 date string of the allocation. Date will be set to the first."""
-  date: String!
-
-  """Year of the allocation"""
-  year: Int!
-
-  """Month of the allocation. 0 based (January is 0, December is 11)"""
-  month: Int!
-}
-
-input AllocationFilterInput {
-  """
-  Year of the allocation. Can be set up to 10 years in the future, 5 years in the past.
-  """
-  year: Int = 2020
-
-  """0-based month of allocation. Min: 0, Max: 11"""
-  month: Int = 3
-}
-
 """Budget"""
 type Budget {
   id: ID!
@@ -74,46 +13,19 @@ type Budget {
   """Budget's owner"""
   user: User!
 
-  """Categories in the budget"""
-  categories: [TransactionCategory!]!
-
-  """Category in the budget"""
-  category(id: ID!): TransactionCategory!
-
   """All category groups within the budget"""
   categoryGroups: [CategoryGroup!]!
+}
 
-  """List of bank accounts in the budget"""
-  accounts: [Account!]!
+"""Budget category"""
+type Category {
+  id: ID!
 
-  """All transactions in the budget"""
-  transactions(
-    """
-    Maximum date of the transactions. Defaults to the last day of the current
-    month. Cannot be more than 366 days more than "from".
-    """
-    to: Date = "2020-04-30"
+  """Name of the category"""
+  name: String!
 
-    """
-    Minimum date of the transactions. Defaults to the first day of the current
-    month. Cannot be more than 366 days less than "to".
-    """
-    from: Date = "2020-04-01"
-    categoryId: ID
-    accountId: ID
-  ): [Transaction!]!
-
-  """Bank account in the budget"""
-  account(id: ID!): Account!
-
-  """List of income sources in the budget"""
-  incomeSources: [IncomeSource!]!
-
-  """Income source"""
-  incomeSource(id: ID!): IncomeSource!
-
-  """Tax details"""
-  tax: Tax!
+  """The group the category is in"""
+  group: CategoryGroup!
 }
 
 """Category groups"""
@@ -127,7 +39,7 @@ type CategoryGroup {
   budget: Budget!
 
   """List of categories within the group"""
-  categories: [TransactionCategory!]!
+  categories: [Category!]!
 
   """Sorting index of the group"""
   sort: Float!
@@ -140,43 +52,10 @@ input CreateUserInput {
   lastName: String!
 }
 
-"""ISO 8601 representation of a date without time"""
-scalar Date
-
 """
 The javascript `Date` as string. Type represents date and time as the ISO Date string.
 """
 scalar DateTime
-
-enum FilingStatus {
-  single
-  married
-  separate
-  head
-}
-
-"""Income source"""
-type IncomeSource {
-  id: ID!
-
-  """Name of the income"""
-  name: String!
-
-  """Type of income"""
-  scale: PayScale!
-
-  """Pay rate per scale"""
-  rate: Float!
-
-  """Number of hours per week"""
-  hours: Float
-
-  """Budget the income source is attached to"""
-  budget: Budget!
-
-  """The total annual income from the source"""
-  annualIncome: Float!
-}
 
 input LoginInput {
   email: String!
@@ -184,145 +63,23 @@ input LoginInput {
 }
 
 type Mutation {
-  createAccount(budgetId: ID!, type: AccountType!, name: String!): Account!
-  deleteAccount(budgetId: ID!, id: ID!): Boolean!
-  updateAccount(type: AccountType, name: String, budgetId: ID!, id: ID!): Account!
   createBudget(name: String!): Budget!
-  renameBudget(id: ID!, name: String!): Budget!
-  createCategoryGroup(name: String!, budgetId: ID!): CategoryGroup!
-  deleteCategoryGroup(categoryGroupId: ID!, budgetId: ID!): Boolean!
-  sortCategoryGroup(index: Int!, id: ID!, budgetId: ID!): [CategoryGroup!]!
-  createCategory(budgetId: ID!, categoryGroupId: ID!, name: String!): TransactionCategory!
+  deleteBudget(id: ID!): Boolean!
+  renameBudget(name: String!, id: ID!): Budget!
+  createCategoryGroup(budgetId: ID!, name: String!): CategoryGroup!
+  deleteCategoryGroup(budgetId: ID!, id: ID!): Boolean!
+  renameCategoryGroup(budgetId: ID!, name: String!, id: ID!): CategoryGroup!
+  resortCategoryGroups(budgetId: ID!, index: Int!, id: ID!): [CategoryGroup!]!
+  createCategory(budgetId: ID!, groupId: ID!, name: String!): Category!
   deleteCategory(budgetId: ID!, id: ID!): Boolean!
-  renameCategory(budgetId: ID!, newName: String!, id: ID!): TransactionCategory!
-  setCategoryGroup(budgetId: ID!, categoryId: ID!, categoryGroupId: ID!): CategoryGroup!
-  allocateCategory(input: AllocateCategoryInput!): Allocation!
-  createIncomeSource(hours: Float!, budgetId: ID!, scale: PayScale!, rate: Int!, name: String!): IncomeSource!
-  deleteIncomeSource(budgetId: ID!, id: ID!): Boolean!
-  setTax(status: FilingStatus, state: State, budgetId: ID!): Tax!
-  createTransaction(budgetId: ID!, description: String!, accountId: ID!, categoryId: ID!, date: Date!, amount: Float!): Transaction!
+  renameCategory(budgetId: ID!, id: ID!, name: String!): Category!
   createUser(data: CreateUserInput!): User!
   login(credentials: LoginInput!): String!
 }
 
-"""Income payment scale"""
-enum PayScale {
-  yearly
-  monthly
-  weekly
-  hourly
-}
-
 type Query {
-  budget(id: ID!): Budget!
   budgets: [Budget!]!
-  categoryGroup(budgetId: ID!, id: ID!): CategoryGroup!
-}
-
-"""Abbreviation of the state"""
-enum State {
-  Alabama
-  Alaska
-  Arizona
-  Arkansas
-  California
-  Colorado
-  Connecticut
-  Delaware
-  Florida
-  Georgia
-  Hawaii
-  Idaho
-  Illinois
-  Indiana
-  Iowa
-  Kansas
-  Kentucky
-  Louisiana
-  Maine
-  Maryland
-  Massachusetts
-  Michigan
-  Minnesota
-  Mississippi
-  Missouri
-  Montana
-  Nebraska
-  Nevada
-  New_Hampshire
-  New_Jersey
-  New_Mexico
-  New_York
-  North_Carolina
-  North_Dakota
-  Ohio
-  Oklahoma
-  Oregon
-  Pennsylvania
-  Rhode_Island
-  South_Carolina
-  South_Dakota
-  Tennessee
-  Texas
-  Utah
-  Vermont
-  Virginia
-  Washington
-  West_Virginia
-  Wisconsin
-  Wyoming
-}
-
-"""Tax info for budget"""
-type Tax {
-  """Filing state for income tax"""
-  state: State!
-
-  """Filing status for income tax"""
-  status: FilingStatus!
-}
-
-"""Transaction"""
-type Transaction {
-  id: ID!
-
-  """Budget the transaction is in"""
-  budget: Budget!
-
-  """Details of the transaction"""
-  description: String!
-
-  """Date the transaction occurred"""
-  date: Date!
-
-  """Amount of the transaction"""
-  amount: Float!
-
-  """Category of the transaction"""
-  category: TransactionCategory!
-
-  """The bank account the transaction was charged from"""
-  account: Account!
-}
-
-"""Budget category"""
-type TransactionCategory {
-  id: ID!
-
-  """Name of the category"""
-  name: String!
-
-  """Budget the transaction is attached to"""
-  budget: Budget!
-
-  """The group the category is in"""
-  group: CategoryGroup!
-
-  """List of transactions within the category"""
-  transactions: [Transaction!]!
-
-  """Allocation for the category"""
-  allocation(date: AllocationFilterInput): Allocation!
+  budget(id: String!): Budget!
 }
 
 """User account"""
