@@ -14,7 +14,7 @@ export default class LoginInput {
   public readonly password: string;
 
   public constructor(data: LoginInput) {
-    this.email = data.email;
-    this.password = data.password;
+    this.email = data?.email;
+    this.password = data?.password;
   }
 }

@@ -28,9 +28,9 @@ export default class CreateUserInput {
   public readonly lastName: string;
 
   public constructor(data: CreateUserInput) {
-    this.email = data.email;
-    this.firstName = data.firstName;
-    this.lastName = data.lastName;
-    this.password = data.password;
+    this.email = data?.email;
+    this.firstName = data?.firstName;
+    this.lastName = data?.lastName;
+    this.password = data?.password;
   }
 }

@@ -1,6 +1,8 @@
 import { AuthenticationError } from 'apollo-server-express';
+import Config from '../utils/config';
 import User from './User';
 import faker from 'faker';
+import jwt from 'jsonwebtoken';
 import validator from 'validator';
 
 describe('registration', () => {
@@ -31,6 +33,7 @@ describe('registration', () => {
     };
 
     await expect(User.create(data)).resolves.toBeDefined();
+    await expect(User.create(data)).rejects.toBeDefined();
   });
 
   it('should not allow invalid emails', async () => {
@@ -173,6 +176,16 @@ describe('token validation', () => {
     ].join('.');
 
     await expect(User.validateToken(forgedToken)).rejects.toThrow(
+      AuthenticationError
+    );
+  });
+
+  it('should not allow a valid token with no user', async () => {
+    const token = jwt.sign({}, Config.JWT_SECRET, {
+      subject: faker.random.uuid(),
+    });
+
+    await expect(User.validateToken(token)).rejects.toThrow(
       AuthenticationError
     );
   });

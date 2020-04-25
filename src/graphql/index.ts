@@ -22,10 +22,8 @@ async function generateGQL(): Promise<ApolloServer> {
     context: async ({ req }: { req: Request }): Promise<Context> => {
       const ctx: Context = {};
 
-      const token = req.get('authorization');
-
-      if (token) {
-        ctx.user = await User.validateToken(token);
+      if (req?.headers?.authorization) {
+        ctx.user = await User.validateToken(req.headers.authorization);
       }
 
       return ctx;

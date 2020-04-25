@@ -178,6 +178,11 @@ type IncomeSource {
   annualIncome: Float!
 }
 
+input LoginInput {
+  email: String!
+  password: String!
+}
+
 type Mutation {
   createAccount(budgetId: ID!, type: AccountType!, name: String!): Account!
   deleteAccount(budgetId: ID!, id: ID!): Boolean!
@@ -197,6 +202,7 @@ type Mutation {
   setTax(status: FilingStatus, state: State, budgetId: ID!): Tax!
   createTransaction(budgetId: ID!, description: String!, accountId: ID!, categoryId: ID!, date: Date!, amount: Float!): Transaction!
   createUser(data: CreateUserInput!): User!
+  login(credentials: LoginInput!): String!
 }
 
 """Income payment scale"""
