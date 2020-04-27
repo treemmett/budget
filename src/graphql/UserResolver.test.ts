@@ -1,23 +1,14 @@
+import {
+  ApolloServerTestClient,
+  createTestClient,
+} from 'apollo-server-testing';
 import CreateUserInput from '../inputs/CreateUserInput';
-import { DocumentNode } from 'graphql';
-import { GraphQLResponse } from 'apollo-server-types';
 import { IsJWT } from 'class-validator';
-import { createTestClient } from 'apollo-server-testing';
 import faker from 'faker';
 import generateServer from '.';
 import { gql } from 'apollo-server-express';
 
-type StringOrAst = string | DocumentNode;
-
-interface Mutation {
-  mutation: StringOrAst;
-  variables?: {
-    [name: string]: unknown;
-  };
-  operationName?: string;
-}
-
-let mutate: (mutation: Mutation) => Promise<GraphQLResponse>;
+let client: ApolloServerTestClient;
 
 const CREATE_USER = gql`
   mutation CreateUser($data: CreateUserInput!) {
@@ -38,8 +29,7 @@ const LOGIN = gql`
 
 beforeAll(async () => {
   const server = await generateServer();
-  const client = createTestClient(server);
-  mutate = client.mutate;
+  client = createTestClient(server);
 });
 
 it('should register a new user', async () => {
@@ -50,7 +40,7 @@ it('should register a new user', async () => {
     password: faker.internet.password(),
   });
 
-  const results = await mutate({
+  const results = await client.mutate({
     mutation: CREATE_USER,
     variables: { data },
   });
@@ -70,12 +60,12 @@ it('should login', async () => {
     password: faker.internet.password(),
   });
 
-  await mutate({
+  await client.mutate({
     mutation: CREATE_USER,
     variables: { data },
   });
 
-  const results = await mutate({
+  const results = await client.mutate({
     mutation: LOGIN,
     variables: {
       credentials: {

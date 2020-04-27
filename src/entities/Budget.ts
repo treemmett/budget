@@ -57,12 +57,8 @@ export default class Budget {
   }
 
   public async delete(): Promise<boolean> {
-    try {
-      await getRepository(Budget).remove(this);
-      return true;
-    } catch {
-      return false;
-    }
+    await getRepository(Budget).remove(this);
+    return true;
   }
 
   public async rename(name: string): Promise<this> {

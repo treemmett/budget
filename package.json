@@ -12,6 +12,7 @@
     "build": "tsc"
   },
   "dependencies": {
+    "apollo-server-core": "^2.12.0",
     "apollo-server-express": "^2.12.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
@@ -41,7 +42,6 @@
     "@types/uuid": "^3.4.5",
     "@types/validator": "^13.0.0",
     "apollo-server-testing": "^2.12.0",
-    "apollo-server-types": "^0.3.1",
     "eslint": "^6.8.0",
     "eslint-config-zyehex": "^0.3.1",
     "faker": "^4.1.0",

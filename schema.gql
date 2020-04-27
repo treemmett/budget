@@ -79,7 +79,7 @@ type Mutation {
 
 type Query {
   budgets: [Budget!]!
-  budget(id: String!): Budget!
+  budget(id: ID!): Budget!
 }
 
 """User account"""

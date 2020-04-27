@@ -21,7 +21,10 @@ export default class BudgetResolver {
   }
 
   @Query(() => Budget)
-  public budget(@Arg('id') id: string, @Ctx() ctx: Context): Promise<Budget> {
+  public budget(
+    @Arg('id', () => ID) id: string,
+    @Ctx() ctx: Context
+  ): Promise<Budget> {
     return Budget.find(id, auth(ctx));
   }
 

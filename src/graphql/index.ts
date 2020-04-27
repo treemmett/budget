@@ -1,4 +1,6 @@
 import { ApolloServer } from 'apollo-server-express';
+import { ContextFunction } from 'apollo-server-core';
+import { GraphQLSchema } from 'graphql';
 import { Request } from 'express';
 import User from '../entities/User';
 import { buildSchema } from 'type-graphql';
@@ -9,30 +11,35 @@ export interface Context {
   user?: User;
 }
 
-async function generateGQL(): Promise<ApolloServer> {
-  const schema = await buildSchema({
+const schemaTask: Promise<GraphQLSchema> = new Promise((res, rej) => {
+  buildSchema({
     emitSchemaFile: true,
     resolvers: [
       path.join(__dirname, '/**/*Resolver.ts'),
       path.join(__dirname, '/**/*Resolver.js'),
     ],
-  });
+  })
+    .then(schema => res(schema))
+    .catch(err => rej(err));
+});
 
-  const apollo = new ApolloServer({
-    context: async ({ req }: { req: Request }): Promise<Context> => {
-      const ctx: Context = {};
+const generateGQL = async (
+  context?: Context | ContextFunction<unknown, Context>
+): Promise<ApolloServer> =>
+  new ApolloServer({
+    context:
+      context ??
+      (async ({ req }: { req: Request }): Promise<Context> => {
+        const ctx: Context = {};
 
-      if (req?.headers?.authorization) {
-        ctx.user = await User.validateToken(req.headers.authorization);
-      }
+        if (req?.headers?.authorization) {
+          ctx.user = await User.validateToken(req.headers.authorization);
+        }
 
-      return ctx;
-    },
+        return ctx;
+      }),
     playground: config.DEVELOPMENT,
-    schema,
+    schema: await schemaTask,
   });
-
-  return apollo;
-}
 
 export default generateGQL;
