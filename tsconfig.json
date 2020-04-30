@@ -6,7 +6,7 @@
     "strict": true,
     "esModuleInterop": true,
     "outDir": "build",
-    "inlineSourceMap": true,
+    "sourceMap": true,
     "lib": ["es6", "dom"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
