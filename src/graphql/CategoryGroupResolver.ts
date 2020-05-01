@@ -26,6 +26,15 @@ export default class CategoryGroupResolver {
     return group.categories;
   }
 
+  @FieldResolver(() => Category)
+  public async category(
+    @Root() group: CategoryGroup,
+    @Arg('id', () => ID) id: string
+  ): Promise<Category> {
+    const budget = await group.budget;
+    return Category.find(id, budget);
+  }
+
   @Mutation(() => CategoryGroup)
   public async createCategoryGroup(
     @Arg('name') name: string,

@@ -3,6 +3,11 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+input AllocationDateInput {
+  month: Float!
+  year: Float!
+}
+
 """Budget"""
 type Budget {
   id: ID!
@@ -15,6 +20,7 @@ type Budget {
 
   """All category groups within the budget"""
   categoryGroups: [CategoryGroup!]!
+  categoryGroup(id: ID!): CategoryGroup!
 }
 
 """Budget category"""
@@ -26,6 +32,7 @@ type Category {
 
   """The group the category is in"""
   group: CategoryGroup!
+  allocation(date: AllocationDateInput!): Int!
 }
 
 """Category groups"""
@@ -43,6 +50,7 @@ type CategoryGroup {
 
   """Sorting index of the group"""
   sort: Float!
+  category(id: ID!): Category!
 }
 
 input CreateUserInput {
@@ -70,6 +78,7 @@ type Mutation {
   deleteCategoryGroup(budgetId: ID!, id: ID!): Boolean!
   renameCategoryGroup(budgetId: ID!, name: String!, id: ID!): CategoryGroup!
   resortCategoryGroups(budgetId: ID!, index: Int!, id: ID!): [CategoryGroup!]!
+  allocateCategory(budgetId: ID!, date: AllocationDateInput!, amount: Int!, id: ID!): Category!
   createCategory(budgetId: ID!, groupId: ID!, name: String!): Category!
   deleteCategory(budgetId: ID!, id: ID!): Boolean!
   renameCategory(budgetId: ID!, id: ID!, name: String!): Category!

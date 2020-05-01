@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
 import { MaxLength, validateOrReject } from 'class-validator';
+import Allocation from './Allocation';
 import Budget from './Budget';
 import CategoryGroup from './CategoryGroup';
 import { UserInputError } from 'apollo-server-express';
@@ -19,6 +20,9 @@ export default class Category {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   public readonly id: string;
+
+  @ManyToOne(() => Allocation, allocation => allocation.category)
+  public allocations: Promise<Allocation[]>;
 
   @MaxLength(62)
   @Field({ description: 'Name of the category' })
@@ -68,9 +72,45 @@ export default class Category {
     }
   }
 
+  public async getAllocation(date: Date): Promise<number> {
+    const firstOfMonth = new Date(date);
+    firstOfMonth.setDate(1);
+
+    const allocation = await getRepository(Allocation)
+      .createQueryBuilder('allocation')
+      .leftJoin('allocation.category', 'category')
+      .where('category.id = :id', { id: this.id })
+      .andWhere('EXTRACT(MONTH FROM allocation.date) = :month', {
+        month: firstOfMonth.getMonth() + 1,
+      })
+      .andWhere('EXTRACT(YEAR FROM allocation.date) = :year', {
+        year: firstOfMonth.getFullYear(),
+      })
+      .getOne();
+
+    return allocation?.amount ?? 0;
+  }
+
   public async rename(name: string): Promise<this> {
     this.name = name;
     await getRepository(Category).save(this);
+    return this;
+  }
+
+  public async setAllocation(date: Date, amount: number): Promise<this> {
+    const allocation = new Allocation();
+    allocation.amount = amount;
+    allocation.category = Promise.resolve(this);
+    allocation.date = date;
+
+    await getRepository(Allocation)
+      .createQueryBuilder('allocation')
+      .insert()
+      .values(allocation)
+      .onConflict('ON CONSTRAINT "cat_date" DO UPDATE SET "amount" = :amount')
+      .setParameter('amount', amount)
+      .execute();
+
     return this;
   }
 

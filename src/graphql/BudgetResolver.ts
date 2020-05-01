@@ -28,6 +28,14 @@ export default class BudgetResolver {
     return Budget.find(id, auth(ctx));
   }
 
+  @FieldResolver(() => CategoryGroup)
+  public categoryGroup(
+    @Root() budget: Budget,
+    @Arg('id', () => ID) id: string
+  ): Promise<CategoryGroup> {
+    return CategoryGroup.find(id, budget);
+  }
+
   @FieldResolver(() => [CategoryGroup])
   public categoryGroups(@Root() budget: Budget): Promise<CategoryGroup[]> {
     return budget.categoryGroups;

@@ -33,7 +33,13 @@ const generateGQL = async (
         const ctx: Context = {};
 
         if (req?.headers?.authorization) {
-          ctx.user = await User.validateToken(req.headers.authorization);
+          const user = await User.validateToken(
+            req.headers.authorization
+          ).catch(() => {});
+
+          if (user) {
+            ctx.user = user;
+          }
         }
 
         return ctx;

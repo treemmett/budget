@@ -3,10 +3,12 @@ import {
   Ctx,
   FieldResolver,
   ID,
+  Int,
   Mutation,
   Resolver,
   Root,
 } from 'type-graphql';
+import AllocationDateInput from '../inputs/AllocationDateInput';
 import Budget from '../entities/Budget';
 import Category from '../entities/Category';
 import CategoryGroup from '../entities/CategoryGroup';
@@ -18,6 +20,27 @@ export default class CategoryResolver {
   @FieldResolver(() => CategoryGroup)
   public group(@Root() category: Category): Promise<CategoryGroup> {
     return category.group;
+  }
+
+  @FieldResolver(() => Int)
+  public allocation(
+    @Root() category: Category,
+    @Arg('date') date: AllocationDateInput
+  ): Promise<number> {
+    return category.getAllocation(date.toDate());
+  }
+
+  @Mutation(() => Category)
+  public async allocateCategory(
+    @Arg('id', () => ID) id: string,
+    @Arg('amount', () => Int) amount: number,
+    @Arg('date') date: AllocationDateInput,
+    @Arg('budgetId', () => ID) budgetId: string,
+    @Ctx() ctx: Context
+  ): Promise<Category> {
+    const budget = await Budget.find(budgetId, auth(ctx));
+    const category = await Category.find(id, budget);
+    return category.setAllocation(date.toDate(), amount);
   }
 
   @Mutation(() => Category)
