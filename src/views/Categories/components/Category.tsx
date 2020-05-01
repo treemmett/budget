@@ -1,9 +1,9 @@
 import React, { FC, useEffect, useState } from 'react';
+import { toCents, toDisplay } from '../../../utils/formatCurrency';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { BudgetProps } from '../../Budget/Budget';
 import Loader from '../../../components/Loader/Loader';
 import cx from 'classnames';
-import formatCurrency from '../../../utils/formatCurrency';
 import gql from 'graphql-tag';
 import styles from '../Categories.scss';
 import useGraphQLError from '../../../utils/useGraphQLError';
@@ -116,13 +116,10 @@ const Category: FC<CategoryProps> = ({ id, groupId }) => {
     setAllocatedInput(data?.budget.categoryGroup.category.allocation || 0);
   }, [data]);
 
-  function maskInput(input: string): number {
-    const replacedInput = input.replace(/[^0-9]/g, '');
-
-    const int = parseInt(replacedInput, 10);
-
-    setAllocatedInput(int / 100);
-    return int / 100;
+  function maskInput(input: string): void {
+    // const replacedInput = input.replace(/[^0-9]/g, '');
+    // setAllocatedInput(parseInt(replacedInput, 10));
+    setAllocatedInput(toCents(input));
   }
 
   if (error) {
@@ -149,10 +146,10 @@ const Category: FC<CategoryProps> = ({ id, groupId }) => {
       <div className={styles.field}>
         <input
           className={styles.input}
-          onBlur={e => {
+          onBlur={() => {
             allocateCategory({
               variables: {
-                amount: maskInput(e.currentTarget.value),
+                amount: allocatedInput,
                 budgetId,
                 date: {
                   month: new Date().getMonth(),
@@ -164,7 +161,7 @@ const Category: FC<CategoryProps> = ({ id, groupId }) => {
           }}
           onChange={e => maskInput(e.currentTarget.value)}
           placeholder="$0.00"
-          value={allocatedInput > 0 ? formatCurrency(allocatedInput) : ''}
+          value={allocatedInput > 0 ? toDisplay(allocatedInput) : ''}
         />
       </div>
     </div>

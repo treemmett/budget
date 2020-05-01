@@ -6,9 +6,9 @@ import ChevronDown from '../../../assets/icons/chevronDown.svg';
 import { Draggable } from 'react-beautiful-dnd';
 import Loader from '../../../components/Loader/Loader';
 import cx from 'classnames';
-import formatCurrency from '../../../utils/formatCurrency';
 import gql from 'graphql-tag';
 import styles from '../Categories.scss';
+import { toDisplay } from '../../../utils/formatCurrency';
 import useGraphQLError from '../../../utils/useGraphQLError';
 import { useQuery } from '@apollo/react-hooks';
 
@@ -107,7 +107,7 @@ const Group: FC<GroupProps> = ({ budgetId, id, index }) => {
             <div className={styles.title}>{data.budget.categoryGroup.name}</div>
             <div className={styles.key}>Allocated</div>
             <div className={styles.field}>
-              {formatCurrency(
+              {toDisplay(
                 data.budget.categoryGroup.categories.reduce(
                   (acc, cur) => acc + cur.allocation,
                   0
