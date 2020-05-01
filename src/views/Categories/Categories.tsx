@@ -3,6 +3,7 @@ import { DragDropContext, DropResult, Droppable } from 'react-beautiful-dnd';
 import React, { FC } from 'react';
 import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks';
 import { BudgetProps } from '../Budget/Budget';
+import Fab from '../../components/Fab/Fab';
 import Group from './components/Group';
 import Loader from '../../components/Loader/Loader';
 import { RouteComponentProps } from '@reach/router';
@@ -70,6 +71,38 @@ const SORT_CATEGORY_GROUP = gql`
   }
 `;
 
+interface CreateCategoryGroup {
+  createCategoryGroup: CategoryGroup;
+}
+
+interface CreateCategoryGroupInput {
+  budgetId: string;
+  date: {
+    month: number;
+    year: number;
+  };
+  name: string;
+}
+
+const CREATE_CATEGORY_GROUP = gql`
+  mutation CreateCategoryGroup(
+    $budgetId: ID!
+    $name: String!
+    $date: AllocationDateInput!
+  ) {
+    createCategoryGroup(budgetId: $budgetId, name: $name) {
+      id
+      name
+      sort
+      categories {
+        id
+        name
+        allocation(date: $date)
+      }
+    }
+  }
+`;
+
 const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
   const client = useApolloClient();
   const graphError = useGraphQLError();
@@ -77,6 +110,35 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
     SortCategoryGroup,
     SortCategoryGroupInput
   >(SORT_CATEGORY_GROUP, { onError: graphError });
+  const [createCategoryGroup] = useMutation<
+    CreateCategoryGroup,
+    CreateCategoryGroupInput
+  >(CREATE_CATEGORY_GROUP, {
+    update(cache, { data }) {
+      const cached = cache.readQuery<GetCategoriesResponse>({
+        query: GET_CATEGORIES,
+        variables: {
+          budgetId,
+          date: {
+            month: new Date().getMonth(),
+            year: new Date().getFullYear(),
+          },
+        },
+      });
+      cached.budget.categoryGroups.push(data.createCategoryGroup);
+      cache.writeQuery<GetCategoriesResponse>({
+        data: cached,
+        query: GET_CATEGORIES,
+        variables: {
+          budgetId,
+          date: {
+            month: new Date().getMonth(),
+            year: new Date().getFullYear(),
+          },
+        },
+      });
+    },
+  });
   const { loading, data, error } = useQuery<
     GetCategoriesResponse,
     GetCategoriesInput
@@ -177,6 +239,24 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
             </div>
           )}
         </Droppable>
+        <Fab
+          onClick={() =>
+            createCategoryGroup({
+              variables: {
+                budgetId,
+                date: {
+                  month: new Date().getMonth(),
+                  year: new Date().getFullYear(),
+                },
+                // TODO: add better prompt
+                // eslint-disable-next-line no-alert
+                name: prompt('Group name'),
+              },
+            })
+          }
+        >
+          +
+        </Fab>
       </div>
     </DragDropContext>
   );
