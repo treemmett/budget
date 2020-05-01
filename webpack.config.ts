@@ -11,7 +11,7 @@ const config: ConfigurationFactory = (env, { mode }) => {
     devServer: {
       historyApiFallback: true,
       open: true,
-      port: 3000,
+      port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
       proxy: {
         '/api': {
           pathRewrite: {

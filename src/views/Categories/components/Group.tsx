@@ -1,6 +1,6 @@
-import { Allocation, CategoryGroup, TransactionCategory } from 'rudget';
 import React, { FC, useEffect, useState } from 'react';
 import { animated, useTransition } from 'react-spring';
+import { Budget } from 'rudget';
 import Category from './Category';
 import ChevronDown from '../../../assets/icons/chevronDown.svg';
 import { Draggable } from 'react-beautiful-dnd';
@@ -12,16 +12,6 @@ import styles from '../Categories.scss';
 import useGraphQLError from '../../../utils/useGraphQLError';
 import { useQuery } from '@apollo/react-hooks';
 
-type AllocationCustom = Pick<Allocation, 'amount'>;
-interface CategoryCustom extends Pick<TransactionCategory, 'id' | 'name'> {
-  allocation: AllocationCustom;
-}
-interface GroupCustom extends Pick<CategoryGroup, 'name'> {
-  name: string;
-  allocation: AllocationCustom;
-  categories: CategoryCustom[];
-}
-
 interface GroupProps {
   budgetId: string;
   id: string;
@@ -29,24 +19,31 @@ interface GroupProps {
 }
 
 interface GetCategoryGroup {
-  categoryGroup: GroupCustom;
+  budget: Budget;
 }
 
 interface GetCategoryGroupInput {
   budgetId: string;
+  date: {
+    month: number;
+    year: number;
+  };
   id: string;
 }
 
 const GET_CATEGORY_GROUP = gql`
-  query GetCategoryGroup($id: ID!, $budgetId: ID!) {
-    categoryGroup(id: $id, budgetId: $budgetId) {
-      name
-      categories {
-        id
+  query GetCategoryGroup(
+    $id: ID!
+    $budgetId: ID!
+    $date: AllocationDateInput!
+  ) {
+    budget(id: $budgetId) {
+      categoryGroup(id: $id) {
         name
-        allocation {
+        categories {
           id
-          amount
+          name
+          allocation(date: $date)
         }
       }
     }
@@ -61,12 +58,18 @@ const Group: FC<GroupProps> = ({ budgetId, id, index }) => {
     GetCategoryGroupInput
   >(GET_CATEGORY_GROUP, {
     onError: graphError,
-    variables: { budgetId, id },
+    variables: {
+      budgetId,
+      date: { month: new Date().getMonth(), year: new Date().getFullYear() },
+      id,
+    },
   });
   const transition = useTransition(!collapsed, null, {
     config: { clamp: true, friction: 51, mass: 1, tension: 268 },
     enter: {
-      height: `${loading ? 0 : data.categoryGroup.categories.length * 3.25}rem`,
+      height: `${
+        loading ? 0 : data.budget.categoryGroup.categories.length * 3.25
+      }rem`,
     },
     from: { height: '0rem' },
     leave: { height: '0rem' },
@@ -101,19 +104,19 @@ const Group: FC<GroupProps> = ({ budgetId, id, index }) => {
           {...provided.draggableProps}
         >
           <div className={styles.header} {...provided.dragHandleProps}>
-            <div className={styles.title}>{data.categoryGroup.name}</div>
+            <div className={styles.title}>{data.budget.categoryGroup.name}</div>
             <div className={styles.key}>Allocated</div>
             <div className={styles.field}>
               {formatCurrency(
-                data.categoryGroup.categories.reduce(
-                  (acc, cur) => acc + cur.allocation.amount,
+                data.budget.categoryGroup.categories.reduce(
+                  (acc, cur) => acc + cur.allocation,
                   0
                 )
               )}
             </div>
             <div className={styles.border} />
             <button
-              aria-label={`Collapse group ${data.categoryGroup.name}`}
+              aria-label={`Collapse group ${data.budget.categoryGroup.name}`}
               className={styles.toggle}
               onClick={() => setCollapsed(s => !s)}
               type="button"
@@ -129,8 +132,8 @@ const Group: FC<GroupProps> = ({ budgetId, id, index }) => {
                   key={key}
                   style={props}
                 >
-                  {data.categoryGroup.categories.map(category => (
-                    <Category id={category.id} key={category.id} />
+                  {data.budget.categoryGroup.categories.map(category => (
+                    <Category groupId={id} id={category.id} key={category.id} />
                   ))}
                 </animated.div>
               )

@@ -9,36 +9,45 @@ import styles from '../Categories.scss';
 import useGraphQLError from '../../../utils/useGraphQLError';
 import { useParams } from '@reach/router';
 
+interface CategoryProps {
+  id: string;
+  groupId: string;
+}
+
 interface GetCategory {
   budget: {
-    category: {
-      allocation: {
-        amount: number;
-        id: string;
+    categoryGroup: {
+      category: {
+        allocation: number;
+        name: string;
       };
-      name: string;
     };
   };
 }
 
 interface GetCategoryInput {
   budgetId: string;
+  groupId: string;
   id: string;
-}
-
-interface CategoryProps {
-  id: string;
+  date: {
+    month: number;
+    year: number;
+  };
 }
 
 const GET_CATEGORY = gql`
-  query GetCategory($id: ID!, $budgetId: ID!) {
+  query GetCategory(
+    $id: ID!
+    $budgetId: ID!
+    $groupId: ID!
+    $date: AllocationDateInput!
+  ) {
     budget(id: $budgetId) {
-      category(id: $id) {
-        allocation {
-          id
-          amount
+      categoryGroup(id: $groupId) {
+        category(id: $id) {
+          allocation(date: $date)
+          name
         }
-        name
       }
     }
   }
@@ -46,76 +55,65 @@ const GET_CATEGORY = gql`
 
 interface AllocateCategory {
   allocateCategory: {
-    amount: number;
+    id: string;
+    allocation: number;
   };
 }
 
 interface AllocateCategoryInput {
-  input: {
-    amount: number;
-    budgetId: string;
-    categoryId: string;
-    month?: number;
-    year?: number;
+  amount: number;
+  id: string;
+  budgetId: string;
+  date: {
+    month: number;
+    year: number;
   };
 }
 
 const ALLOCATE_CATEGORY = gql`
-  mutation AllocateCategory($input: AllocateCategoryInput!) {
-    allocateCategory(input: $input) {
-      amount
+  mutation AllocateCategory(
+    $id: ID!
+    $budgetId: ID!
+    $amount: Int!
+    $date: AllocationDateInput!
+  ) {
+    allocateCategory(
+      id: $id
+      budgetId: $budgetId
+      amount: $amount
+      date: $date
+    ) {
+      id
+      allocation(date: $date)
     }
   }
 `;
 
-const Category: FC<CategoryProps> = ({ id }) => {
+const Category: FC<CategoryProps> = ({ id, groupId }) => {
   const graphError = useGraphQLError();
   const { budgetId } = useParams() as BudgetProps;
   const [allocateCategory] = useMutation<
     AllocateCategory,
     AllocateCategoryInput
-  >(ALLOCATE_CATEGORY, {
-    onError: graphError,
-    update: (cache, { data }) => {
-      const cached = cache.readQuery<GetCategory, GetCategoryInput>({
-        query: GET_CATEGORY,
-        variables: { budgetId, id },
-      });
-
-      cached.budget.category.allocation.amount = data.allocateCategory.amount;
-
-      cache.writeQuery<GetCategory, GetCategoryInput>({
-        data: {
-          ...cached,
-          budget: {
-            ...cached.budget,
-            category: {
-              ...cached.budget.category,
-              allocation: {
-                ...cached.budget.category.allocation,
-                amount: data.allocateCategory.amount,
-              },
-            },
-          },
-        },
-        query: GET_CATEGORY,
-        variables: {
-          budgetId,
-          id,
-        },
-      });
-    },
-  });
+  >(ALLOCATE_CATEGORY, { onError: graphError });
   const [allocatedInput, setAllocatedInput] = useState(0);
   const { data, error, loading } = useQuery<GetCategory, GetCategoryInput>(
     GET_CATEGORY,
     {
-      variables: { budgetId, id },
+      variables: {
+        budgetId,
+        date: {
+          month: new Date().getMonth(),
+          year: new Date().getFullYear(),
+        },
+        groupId,
+        id,
+      },
     }
   );
 
   useEffect(() => {
-    setAllocatedInput(data?.budget.category.allocation?.amount || 0);
+    setAllocatedInput(data?.budget.categoryGroup.category.allocation || 0);
   }, [data]);
 
   function maskInput(input: string): number {
@@ -145,18 +143,22 @@ const Category: FC<CategoryProps> = ({ id }) => {
 
   return (
     <div className={styles.category}>
-      <div className={styles.title}>{data.budget.category.name}</div>
+      <div className={styles.title}>
+        {data.budget.categoryGroup.category.name}
+      </div>
       <div className={styles.field}>
         <input
           className={styles.input}
           onBlur={e => {
             allocateCategory({
               variables: {
-                input: {
-                  amount: maskInput(e.currentTarget.value),
-                  budgetId,
-                  categoryId: id,
+                amount: maskInput(e.currentTarget.value),
+                budgetId,
+                date: {
+                  month: new Date().getMonth(),
+                  year: new Date().getFullYear(),
                 },
+                id,
               },
             }).catch(() => {});
           }}

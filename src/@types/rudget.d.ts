@@ -1,29 +1,30 @@
 declare module 'rudget' {
-  export interface Allocation {
-    amount: number;
-    date: Date;
-    month: number;
-    year: number;
-  }
-
   export interface Budget {
     id: string;
     name: string;
+    categoryGroup: CategoryGroup;
   }
 
   export interface CategoryGroup {
-    allocation: Allocation;
     categories: TransactionCategory[];
+    category: TransactionCategory;
     id: string;
     name: string;
     sort: number;
   }
 
   export interface TransactionCategory {
-    allocation: Allocation;
+    allocation: number;
     budget: Budget;
     group: CategoryGroup;
     id: string;
     name: string;
+  }
+
+  export interface User {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
   }
 }

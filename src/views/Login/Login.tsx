@@ -1,19 +1,42 @@
 import { Link, RouteComponentProps } from '@reach/router';
 import React, { FC } from 'react';
 import Input from '../../components/Input/Input';
+import { User } from 'rudget';
 import cx from 'classnames';
 import gql from 'graphql-tag';
 import styles from './Login.scss';
 import useGraphQLError from '../../utils/useGraphQLError';
 import { useMutation } from '@apollo/react-hooks';
 
+interface Login {
+  login: string;
+}
+
+interface LoginInput {
+  credentials: {
+    email: string;
+    password: string;
+  };
+}
+
 const LOGIN = gql`
-  mutation Login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      jwt
-    }
+  mutation Login($credentials: LoginInput!) {
+    login(credentials: $credentials)
   }
 `;
+
+interface CreateUserInput {
+  data: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    password: string;
+  };
+}
+
+interface CreateUser {
+  createUser: User;
+}
 
 const CREATE_USER = gql`
   mutation CreateUser($data: CreateUserInput!) {
@@ -24,30 +47,11 @@ const CREATE_USER = gql`
   }
 `;
 
-interface LoginResponse {
-  jwt: string;
-}
-
 const Login: FC<RouteComponentProps> = ({ navigate, path }) => {
   const gqlErrorToToast = useGraphQLError();
-  const [login] = useMutation<
-    { login: LoginResponse },
-    { email: string; password: string }
-  >(LOGIN);
+  const [login] = useMutation<Login, LoginInput>(LOGIN);
 
-  const [createUser] = useMutation<
-    {
-      createUser: { email: string };
-    },
-    {
-      data: {
-        email: string;
-        firstName: string;
-        lastName: string;
-        password: string;
-      };
-    }
-  >(CREATE_USER);
+  const [createUser] = useMutation<CreateUser, CreateUserInput>(CREATE_USER);
 
   async function onLogin(e: React.FormEvent<HTMLFormElement>): Promise<void> {
     try {
@@ -61,10 +65,10 @@ const Login: FC<RouteComponentProps> = ({ navigate, path }) => {
       ) as HTMLInputElement).value;
 
       const response = await login({
-        variables: { email, password },
+        variables: { credentials: { email, password } },
       });
 
-      localStorage.setItem('token', response.data.login.jwt);
+      localStorage.setItem('token', response.data.login);
       await navigate('/');
     } catch (err) {
       gqlErrorToToast(err, 'Login failed');
@@ -99,10 +103,15 @@ const Login: FC<RouteComponentProps> = ({ navigate, path }) => {
       if (!registerResponse) return;
 
       const loginResponse = await login({
-        variables: { email: registerResponse.data.createUser.email, password },
+        variables: {
+          credentials: {
+            email: registerResponse.data.createUser.email,
+            password,
+          },
+        },
       });
 
-      localStorage.setItem('token', loginResponse.data.login.jwt);
+      localStorage.setItem('token', loginResponse.data.login);
       await navigate('/');
     } catch (err) {
       gqlErrorToToast(err, 'User creation failed');

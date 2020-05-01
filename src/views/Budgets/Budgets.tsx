@@ -39,10 +39,6 @@ const CREATE_BUDGET = gql`
         categories {
           id
           name
-          allocation {
-            id
-            amount
-          }
         }
       }
     }
@@ -60,10 +56,6 @@ const GET_BUDGETS = gql`
         categories {
           id
           name
-          allocation {
-            id
-            amount
-          }
         }
       }
     }

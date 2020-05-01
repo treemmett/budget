@@ -1,4 +1,4 @@
-import { Allocation, CategoryGroup, TransactionCategory } from 'rudget';
+import { CategoryGroup, TransactionCategory } from 'rudget';
 import { DragDropContext, DropResult, Droppable } from 'react-beautiful-dnd';
 import React, { FC } from 'react';
 import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks';
@@ -11,12 +11,9 @@ import gql from 'graphql-tag';
 import styles from './Categories.scss';
 import useGraphQLError from '../../utils/useGraphQLError';
 
-type AllocationQuery = Pick<Allocation, 'amount'>;
-interface CategoryQuery extends Pick<TransactionCategory, 'id' | 'name'> {
-  allocation: AllocationQuery;
-}
+type CategoryQuery = Pick<TransactionCategory, 'id' | 'allocation' | 'name'>;
+
 interface GroupQuery extends Pick<CategoryGroup, 'id' | 'name' | 'sort'> {
-  allocation: AllocationQuery;
   categories: CategoryQuery[];
 }
 
@@ -25,11 +22,15 @@ interface GetCategoriesResponse {
 }
 
 interface GetCategoriesInput {
+  date: {
+    month: number;
+    year: number;
+  };
   budgetId: string;
 }
 
 const GET_CATEGORIES = gql`
-  query GetCategories($budgetId: ID!) {
+  query GetCategories($budgetId: ID!, $date: AllocationDateInput!) {
     budget(id: $budgetId) {
       categoryGroups {
         id
@@ -38,10 +39,7 @@ const GET_CATEGORIES = gql`
         categories {
           id
           name
-          allocation {
-            id
-            amount
-          }
+          allocation(date: $date)
         }
       }
     }
@@ -84,7 +82,10 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
     GetCategoriesInput
   >(GET_CATEGORIES, {
     onError: graphError,
-    variables: { budgetId },
+    variables: {
+      budgetId,
+      date: { month: new Date().getMonth(), year: new Date().getFullYear() },
+    },
   });
 
   if (error) {
@@ -110,7 +111,13 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
       GetCategoriesInput
     >({
       query: GET_CATEGORIES,
-      variables: { budgetId },
+      variables: {
+        budgetId,
+        date: {
+          month: new Date().getMonth(),
+          year: new Date().getFullYear(),
+        },
+      },
     });
 
     cachedData.budget.categoryGroups.sort((a, b) => {
