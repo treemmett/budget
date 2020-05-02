@@ -1,17 +1,18 @@
-# Rudget API
+# Budget API
 
 ## Setup
 
-### Environment Variables
+### Configuration
 
-Below is a list of all variables in use by Rudget. Either set the variables in the shell, or add them to a `.env` file in the root.
+The following env values are used
 
-| Variable      | Description                             | Required | Default Value      |
-| ------------- | --------------------------------------- | -------- | ------------------ |
-| `DB_DATABASE` | Database name.                          | ✓        |                    |
-| `DB_HOST`     | Hostname of database server.            | ✓        |                    |
-| `DB_PASS`     | Password for database.                  |          |                    |
-| `DB_PORT`     | Port for database server.               |          | 5432               |
-| `DB_USER`     | Username for database.                  |          | postgres           |
-| `PORT`        | Port for Rudget API to run on.          |          | 8080               |
-| `JWT_SECRET`  | Base-64 encoded secret for JWT signing. |          | Randomized buffer. |
+| Variable      | Description                             | Type                                   | Default Value          |
+| ------------- | --------------------------------------- | -------------------------------------- | ---------------------- |
+| `NODE_ENV`    | Environment                             | `production`, `development`, `testing` | `development`          |
+| `PG_DATABASE` | Database name                           | string                                 | `budget`               |
+| `PG_HOST`     | Hostname of database server.            | string                                 | `localhost`            |
+| `PG_PASSWORD` | Password for database.                  | string                                 | `''`                   |
+| `PG_PORT`     | Port for database server.               | number                                 | `5432`                 |
+| `PG_USERNAME` | Username for database.                  | string                                 | `postgres`             |
+| `PORT`        | Port for Rudget API to run on.          | number                                 | `8080`                 |
+| `JWT_SECRET`  | Base-64 encoded secret for JWT signing. | base64 encoded string                  | `crypto.randomBytes()` |

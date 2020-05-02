@@ -44,7 +44,7 @@ const generateGQL = async (
 
         return ctx;
       }),
-    playground: config.DEVELOPMENT,
+    playground: config.NODE_ENV === 'development',
     schema: await schemaTask,
   });
 

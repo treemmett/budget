@@ -2,7 +2,7 @@ import { Connection, createConnection } from 'typeorm';
 import config from '../utils/config';
 import path from 'path';
 
-const { DB_DATABASE, DB_HOST, DB_PASS, DB_PORT, DB_USER } = config;
+const { PG_DATABASE, PG_HOST, PG_PASSWORD, PG_PORT, PG_USERNAME } = config;
 
 interface Options {
   prefix?: string;
@@ -21,17 +21,17 @@ export default function createSqlConnection(
   }
 
   return createConnection({
-    database: `${prefix ?? ''}${DB_DATABASE}${suffix ?? ''}`,
+    database: `${prefix ?? ''}${PG_DATABASE}${suffix ?? ''}`,
     dropSchema: drop,
     entities: [
       path.join(__dirname, '../entities/!(*.test).ts'),
       path.join(__dirname, '../entities/!(*.test).js'),
     ],
-    host: DB_HOST,
-    password: DB_PASS,
-    port: DB_PORT,
+    host: PG_HOST,
+    password: PG_PASSWORD,
+    port: PG_PORT,
     synchronize,
     type: 'postgres',
-    username: DB_USER,
+    username: PG_USERNAME,
   });
 }

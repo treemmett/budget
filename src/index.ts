@@ -8,11 +8,11 @@ import generateGQL from './graphql';
 import helmet from 'helmet';
 import logger from './utils/logger';
 
-const { API_PORT, DEVELOPMENT } = config;
+const { PORT, NODE_ENV } = config;
 
 let sqlConnection: Connection;
 
-createSqlConnection({ synchronize: DEVELOPMENT })
+createSqlConnection({ synchronize: NODE_ENV === 'development' })
   .then(async conn => {
     sqlConnection = conn;
     const app = express();
@@ -23,7 +23,7 @@ createSqlConnection({ synchronize: DEVELOPMENT })
     const gql = await generateGQL();
     gql.applyMiddleware({ app });
 
-    app.listen(API_PORT, () => logger.info(`API is up on port: ${API_PORT}`));
+    app.listen(PORT, () => logger.info(`API is up on port: ${PORT}`));
   })
   .catch(async err => {
     if (sqlConnection) {
