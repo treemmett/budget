@@ -9,8 +9,15 @@
     margin-bottom: 0;
   }
 
-  &:hover .toggle {
-    opacity: 1;
+  &:hover,
+  &:focus-within {
+    .toggle {
+      opacity: 1;
+    }
+
+    .plus {
+      opacity: 1;
+    }
   }
 
   &.collapsed {
@@ -46,6 +53,55 @@
 
   .title {
     font-weight: 500;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .plus {
+    @include button;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 0.5rem;
+    border-radius: 2rem;
+    height: 1.75rem;
+    width: 1.75rem;
+    padding: 0;
+    transition: opacity 0.2s $curve, $transitionBg;
+    opacity: 0;
+    box-sizing: border-box;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+      color: #888;
+    }
+  }
+
+  .tooltip {
+    position: absolute;
+    left: 3rem;
+    width: inherit;
+
+    input {
+      @include card;
+      position: fixed;
+      background-color: #ff4747;
+      background: linear-gradient(to bottom left, #ff4747, #ff8b4c);
+      border: none;
+      outline: none;
+      cursor: text;
+      padding: 1em;
+      font-size: 1rem;
+      z-index: 1;
+      color: #fff;
+
+      &::placeholder {
+        color: inherit;
+      }
+    }
   }
 }
 
