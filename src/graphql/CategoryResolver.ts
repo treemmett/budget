@@ -77,4 +77,16 @@ export default class CategoryResolver {
     const category = await Category.find(id, budget);
     return category.rename(name);
   }
+
+  @Mutation(() => [Category])
+  public async sortCategory(
+    @Arg('id', () => ID) id: string,
+    @Arg('index', () => Int) index: number,
+    @Arg('budgetId', () => ID) budgetId: string,
+    @Ctx() ctx: Context
+  ): Promise<Category[]> {
+    const budget = await Budget.find(budgetId, auth(ctx));
+    const category = await Category.find(id, budget);
+    return category.changeSort(index);
+  }
 }

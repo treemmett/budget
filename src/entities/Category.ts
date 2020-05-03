@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
   getRepository,
 } from 'typeorm';
-import { Field, ID, ObjectType } from 'type-graphql';
-import { MaxLength, validateOrReject } from 'class-validator';
+import { Field, ID, Int, ObjectType } from 'type-graphql';
+import { IsInt, MaxLength, Min, validateOrReject } from 'class-validator';
 import Allocation from './Allocation';
 import Budget from './Budget';
 import CategoryGroup from './CategoryGroup';
@@ -36,6 +36,12 @@ export default class Category {
   })
   public group: Promise<CategoryGroup>;
 
+  @IsInt()
+  @Min(0)
+  @Field(() => Int, { description: 'Sorting index of the group' })
+  @Column({ type: 'int2' })
+  public sort: number;
+
   public static async find(id: string, budget: Budget): Promise<Category> {
     const category = await getRepository(Category)
       .createQueryBuilder('category')
@@ -54,11 +60,13 @@ export default class Category {
 
   public static async create(
     name: string,
-    group: CategoryGroup
+    group: CategoryGroup,
+    index?: number
   ): Promise<Category> {
     const category = new Category();
     category.name = name;
     category.group = Promise.resolve(group);
+    category.sort = index ?? (await group.categories).length;
     await getRepository(Category).save(category);
     return category;
   }
@@ -112,6 +120,29 @@ export default class Category {
       .execute();
 
     return this;
+  }
+
+  public async changeSort(index: number): Promise<Category[]> {
+    const group = await this.group;
+    const categories = await group.categories;
+
+    // sort the categories before modification
+    categories.sort((a, b) => {
+      if (a.sort > b.sort) return 1;
+      if (a.sort < b.sort) return -1;
+      return 0;
+    });
+
+    categories.splice(this.sort, 1);
+    categories.splice(index, 0, this);
+
+    for (let i = 0; i < categories.length; i += 1) {
+      categories[i].sort = i;
+    }
+
+    await getRepository(Category).save(categories);
+
+    return categories;
   }
 
   @BeforeInsert()

@@ -32,6 +32,9 @@ type Category {
 
   """The group the category is in"""
   group: CategoryGroup!
+
+  """Sorting index of the group"""
+  sort: Int!
   allocation(date: AllocationDateInput!): Int!
 }
 
@@ -82,6 +85,7 @@ type Mutation {
   createCategory(budgetId: ID!, groupId: ID!, name: String!): Category!
   deleteCategory(budgetId: ID!, id: ID!): Boolean!
   renameCategory(budgetId: ID!, id: ID!, name: String!): Category!
+  sortCategory(budgetId: ID!, index: Int!, id: ID!): [Category!]!
   createUser(data: CreateUserInput!): User!
   login(credentials: LoginInput!): String!
 }
