@@ -2,6 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { toCents, toDisplay } from '../../../utils/formatCurrency';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { BudgetProps } from '../../Budget/Budget';
+import { Draggable } from 'react-beautiful-dnd';
 import Loader from '../../../components/Loader/Loader';
 import cx from 'classnames';
 import gql from 'graphql-tag';
@@ -11,6 +12,7 @@ import { useParams } from '@reach/router';
 
 interface CategoryProps {
   id: string;
+  index: number;
   groupId: string;
 }
 
@@ -89,7 +91,7 @@ const ALLOCATE_CATEGORY = gql`
   }
 `;
 
-const Category: FC<CategoryProps> = ({ id, groupId }) => {
+const Category: FC<CategoryProps> = ({ id, index, groupId }) => {
   const graphError = useGraphQLError();
   const { budgetId } = useParams() as BudgetProps;
   const [allocateCategory] = useMutation<
@@ -139,32 +141,41 @@ const Category: FC<CategoryProps> = ({ id, groupId }) => {
   }
 
   return (
-    <div className={styles.category}>
-      <div className={styles.title}>
-        {data.budget.categoryGroup.category.name}
-      </div>
-      <div className={styles.field}>
-        <input
-          className={styles.input}
-          onBlur={() => {
-            allocateCategory({
-              variables: {
-                amount: allocatedInput,
-                budgetId,
-                date: {
-                  month: new Date().getMonth(),
-                  year: new Date().getFullYear(),
-                },
-                id,
-              },
-            }).catch(() => {});
-          }}
-          onChange={e => maskInput(e.currentTarget.value)}
-          placeholder="$0.00"
-          value={allocatedInput > 0 ? toDisplay(allocatedInput) : ''}
-        />
-      </div>
-    </div>
+    <Draggable draggableId={id} index={index} key={id}>
+      {provided => (
+        <div
+          className={styles.category}
+          ref={provided.innerRef}
+          {...provided.dragHandleProps}
+          {...provided.draggableProps}
+        >
+          <div className={styles.title}>
+            {data.budget.categoryGroup.category.name}
+          </div>
+          <div className={styles.field}>
+            <input
+              className={styles.input}
+              onBlur={() => {
+                allocateCategory({
+                  variables: {
+                    amount: allocatedInput,
+                    budgetId,
+                    date: {
+                      month: new Date().getMonth(),
+                      year: new Date().getFullYear(),
+                    },
+                    id,
+                  },
+                }).catch(() => {});
+              }}
+              onChange={e => maskInput(e.currentTarget.value)}
+              placeholder="$0.00"
+              value={allocatedInput > 0 ? toDisplay(allocatedInput) : ''}
+            />
+          </div>
+        </div>
+      )}
+    </Draggable>
   );
 };
 

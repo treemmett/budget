@@ -19,6 +19,7 @@ declare module 'rudget' {
     group: CategoryGroup;
     id: string;
     name: string;
+    sort: number;
   }
 
   export interface User {

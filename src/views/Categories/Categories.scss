@@ -137,7 +137,7 @@
   background: radial-gradient(#ccc 30%, #fff);
   transition: opacity 700ms ease;
   left: 1rem;
-  top: 100%;
+  top: calc(100% - 1px);
 }
 
 .categories {
@@ -152,6 +152,8 @@
   grid-template-rows: 1fr;
   grid-template-areas: 'title field';
   align-items: center;
+  border-radius: 6px;
+  background-color: #fff;
 
   &:hover .input:not(:focus) {
     border-color: #d8d8d8;

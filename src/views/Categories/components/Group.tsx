@@ -1,10 +1,10 @@
 import { Budget, TransactionCategory } from 'rudget';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
 import React, { FC, useEffect, useState } from 'react';
 import { animated, useTransition } from 'react-spring';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import Category from './Category';
 import ChevronDown from '../../../assets/icons/chevronDown.svg';
-import { Draggable } from 'react-beautiful-dnd';
 import Loader from '../../../components/Loader/Loader';
 import Plus from '../../../assets/icons/plusCircle.svg';
 import cx from 'classnames';
@@ -46,6 +46,7 @@ const GET_CATEGORY_GROUP = gql`
           id
           name
           allocation(date: $date)
+          sort
         }
       }
     }
@@ -77,6 +78,7 @@ const CREATE_CATEGORY = gql`
       id
       name
       allocation(date: $date)
+      sort
     }
   }
 `;
@@ -242,15 +244,33 @@ const Group: FC<GroupProps> = ({ budgetId, id, index }) => {
           {transition.map(
             ({ item, key, props }) =>
               item && (
-                <animated.div
-                  className={styles.categories}
-                  key={key}
-                  style={props}
-                >
-                  {data.budget.categoryGroup.categories.map(category => (
-                    <Category groupId={id} id={category.id} key={category.id} />
-                  ))}
-                </animated.div>
+                <Droppable droppableId={id} key={id} type="categories">
+                  {categoriesProvided => (
+                    <animated.div
+                      className={styles.categories}
+                      key={key}
+                      ref={categoriesProvided.innerRef}
+                      style={props}
+                      {...categoriesProvided.droppableProps}
+                    >
+                      {[...data.budget.categoryGroup.categories]
+                        .sort((a, b) => {
+                          if (a.sort > b.sort) return 1;
+                          if (a.sort < b.sort) return -1;
+                          return 0;
+                        })
+                        .map((category, i) => (
+                          <Category
+                            groupId={id}
+                            id={category.id}
+                            index={i}
+                            key={category.id}
+                          />
+                        ))}
+                      {categoriesProvided.placeholder}
+                    </animated.div>
+                  )}
+                </Droppable>
               )
           )}
         </div>

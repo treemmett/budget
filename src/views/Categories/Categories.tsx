@@ -12,7 +12,10 @@ import gql from 'graphql-tag';
 import styles from './Categories.scss';
 import useGraphQLError from '../../utils/useGraphQLError';
 
-type CategoryQuery = Pick<TransactionCategory, 'id' | 'allocation' | 'name'>;
+type CategoryQuery = Pick<
+  TransactionCategory,
+  'id' | 'allocation' | 'name' | 'sort'
+>;
 
 interface GroupQuery extends Pick<CategoryGroup, 'id' | 'name' | 'sort'> {
   categories: CategoryQuery[];
@@ -41,6 +44,7 @@ const GET_CATEGORIES = gql`
           id
           name
           allocation(date: $date)
+          sort
         }
       }
     }
@@ -103,18 +107,57 @@ const CREATE_CATEGORY_GROUP = gql`
   }
 `;
 
+// sort category is defined here as it's
+// called from the droppable context
+
+interface SortCategory {
+  sortCategory: {
+    id: string;
+    sort: number;
+  }[];
+}
+
+interface SortCategoryInput {
+  id: string;
+  budgetId: string;
+  index: number;
+}
+
+const SORT_CATEGORY = gql`
+  mutation SortCategory($id: ID!, $budgetId: ID!, $index: Int!) {
+    sortCategory(id: $id, budgetId: $budgetId, index: $index) {
+      id
+      sort
+      name
+    }
+  }
+`;
+
 const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
   const client = useApolloClient();
   const graphError = useGraphQLError();
+
+  const { loading, data, error } = useQuery<
+    GetCategoriesResponse,
+    GetCategoriesInput
+  >(GET_CATEGORIES, {
+    onError: graphError,
+    variables: {
+      budgetId,
+      date: { month: new Date().getMonth(), year: new Date().getFullYear() },
+    },
+  });
+
   const [sortCategoryGroup] = useMutation<
     SortCategoryGroup,
     SortCategoryGroupInput
   >(SORT_CATEGORY_GROUP, { onError: graphError });
+
   const [createCategoryGroup] = useMutation<
     CreateCategoryGroup,
     CreateCategoryGroupInput
   >(CREATE_CATEGORY_GROUP, {
-    update(cache, { data }) {
+    update(cache, response) {
       const cached = cache.readQuery<GetCategoriesResponse>({
         query: GET_CATEGORIES,
         variables: {
@@ -125,7 +168,7 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
           },
         },
       });
-      cached.budget.categoryGroups.push(data.createCategoryGroup);
+      cached.budget.categoryGroups.push(response.data.createCategoryGroup);
       cache.writeQuery<GetCategoriesResponse>({
         data: cached,
         query: GET_CATEGORIES,
@@ -139,16 +182,11 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
       });
     },
   });
-  const { loading, data, error } = useQuery<
-    GetCategoriesResponse,
-    GetCategoriesInput
-  >(GET_CATEGORIES, {
-    onError: graphError,
-    variables: {
-      budgetId,
-      date: { month: new Date().getMonth(), year: new Date().getFullYear() },
-    },
-  });
+
+  const [sortCategory] = useMutation<SortCategory, SortCategoryInput>(
+    SORT_CATEGORY,
+    { onError: graphError }
+  );
 
   if (error) {
     return (
@@ -166,8 +204,10 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
     );
   }
 
-  async function sortGroup(result: DropResult): Promise<void> {
-    // update sorting in cache
+  async function sort(result: DropResult): Promise<void> {
+    // do nothing if we're dropped in the same location
+    if (result.destination.index === result.source.index) return;
+
     const cachedData = client.readQuery<
       GetCategoriesResponse,
       GetCategoriesInput
@@ -182,39 +222,74 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
       },
     });
 
-    cachedData.budget.categoryGroups.sort((a, b) => {
-      if (a.sort > b.sort) return 1;
-      if (a.sort < b.sort) return -1;
-      return 0;
-    });
+    if (result.type === 'categories') {
+      await sortCategory({
+        optimisticResponse: () => {
+          const group = cachedData.budget.categoryGroups.find(
+            g => g.id === result.destination.droppableId
+          );
 
-    const [group] = cachedData.budget.categoryGroups.splice(
-      result.source.index,
-      1
-    );
+          const categories = [...group.categories].sort((a, b) => {
+            if (a.sort > b.sort) return 1;
+            if (a.sort < b.sort) return -1;
+            return 0;
+          });
 
-    cachedData.budget.categoryGroups.splice(result.destination.index, 0, group);
+          const [category] = categories.splice(result.source.index, 1);
+          categories.splice(result.destination.index, 0, category);
 
-    await sortCategoryGroup({
-      optimisticResponse: {
-        sortCategoryGroup: cachedData.budget.categoryGroups.map((g, i) => ({
-          __typename: 'CategoryGroup',
-          ...g,
-          sort: i,
-        })),
-      },
-      variables: {
-        budgetId,
-        id: result.draggableId,
-        index: result.destination.index,
-      },
-    });
+          for (let i = 0; i < categories.length; i += 1) {
+            categories[i].sort = i;
+          }
+
+          return { sortCategory: categories };
+        },
+        variables: {
+          budgetId,
+          id: result.draggableId,
+          index: result.destination.index,
+        },
+      });
+    } else {
+      // update sorting in cache
+      cachedData.budget.categoryGroups.sort((a, b) => {
+        if (a.sort > b.sort) return 1;
+        if (a.sort < b.sort) return -1;
+        return 0;
+      });
+
+      const [group] = cachedData.budget.categoryGroups.splice(
+        result.source.index,
+        1
+      );
+
+      cachedData.budget.categoryGroups.splice(
+        result.destination.index,
+        0,
+        group
+      );
+
+      await sortCategoryGroup({
+        optimisticResponse: {
+          sortCategoryGroup: cachedData.budget.categoryGroups.map((g, i) => ({
+            __typename: 'CategoryGroup',
+            ...g,
+            sort: i,
+          })),
+        },
+        variables: {
+          budgetId,
+          id: result.draggableId,
+          index: result.destination.index,
+        },
+      });
+    }
   }
 
   return (
-    <DragDropContext onDragEnd={sortGroup}>
+    <DragDropContext onDragEnd={sort}>
       <div className={globalStyles.view}>
-        <Droppable droppableId="group">
+        <Droppable droppableId="group" type="groups">
           {provided => (
             <div
               className={styles.groups}
