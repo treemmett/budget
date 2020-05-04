@@ -40,3 +40,18 @@ $transitionBg: background-color 0.2s $curve;
     background-color: rgba($color, 0.1);
   }
 }
+
+@mixin input {
+  display: inline-block;
+  font-size: 1rem;
+  padding: 0.125rem;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  outline: none;
+  transition: border-color 0.15s ease;
+
+  &:focus,
+  &:active {
+    border-color: $blue;
+  }
+}

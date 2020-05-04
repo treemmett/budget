@@ -41,6 +41,7 @@ const GET_CATEGORY_GROUP = gql`
   ) {
     budget(id: $budgetId) {
       categoryGroup(id: $id) {
+        id
         name
         categories {
           id
@@ -79,6 +80,29 @@ const CREATE_CATEGORY = gql`
       name
       allocation(date: $date)
       sort
+    }
+  }
+`;
+
+interface RenameGroup {
+  renameCategoryGroup: {
+    __typename: string;
+    id: string;
+    name: string;
+  };
+}
+
+interface RenameGroupInput {
+  id: string;
+  name: string;
+  budgetId: string;
+}
+
+const RENAME_GROUP = gql`
+  mutation RenameGroup($id: ID!, $budgetId: ID!, $name: String!) {
+    renameCategoryGroup(id: $id, budgetId: $budgetId, name: $name) {
+      id
+      name
     }
   }
 `;
@@ -154,6 +178,12 @@ const Group: FC<GroupProps> = ({ budgetId, id, index }) => {
     },
   });
 
+  const [isChangingTitle, setIsChangingTitle] = useState(false);
+  const [renameGroup] = useMutation<RenameGroup, RenameGroupInput>(
+    RENAME_GROUP,
+    { onError: graphError }
+  );
+
   useEffect(() => {
     setCollapsed(loading);
   }, [loading]);
@@ -183,45 +213,83 @@ const Group: FC<GroupProps> = ({ budgetId, id, index }) => {
           {...provided.draggableProps}
         >
           <div className={styles.header} {...provided.dragHandleProps}>
-            <div className={styles.title}>
-              <span>{data.budget.categoryGroup.name}</span>
-              <button
-                className={styles.plus}
-                onClick={() => setIsCreatingCategory(true)}
-                type="button"
-              >
-                <Plus />
-              </button>
-              {isCreatingCategory && (
-                <div className={styles.tooltip}>
-                  <input
-                    onBlur={() => setIsCreatingCategory(false)}
-                    onKeyDown={e =>
-                      submitInput({
-                        enter: async evt => {
-                          await createCategory({
-                            variables: {
-                              budget: budgetId,
-                              date: {
-                                month: new Date().getMonth(),
-                                year: new Date().getFullYear(),
-                              },
-                              group: id,
-                              name: evt.currentTarget.value,
-                            },
-                          });
-                          setIsCreatingCategory(false);
+            {isChangingTitle ? (
+              <input
+                aria-label="Group name"
+                className={cx(styles.title, styles.edit)}
+                defaultValue={data.budget.categoryGroup.name}
+                onBlur={() => setIsChangingTitle(false)}
+                onKeyDown={e =>
+                  submitInput({
+                    enter: async () => {
+                      await renameGroup({
+                        optimisticResponse: {
+                          renameCategoryGroup: {
+                            __typename: 'CategoryGroup',
+                            id,
+                            name: e.currentTarget.value,
+                          },
                         },
-                        escape: () => setIsCreatingCategory(false),
-                        event: e,
-                      })
-                    }
-                    placeholder="New category name"
-                    autoFocus
-                  />
-                </div>
-              )}
-            </div>
+                        variables: {
+                          budgetId,
+                          id,
+                          name: e.currentTarget.value,
+                        },
+                      });
+                      setIsChangingTitle(false);
+                    },
+                    escape: () => setIsChangingTitle(false),
+                    event: e,
+                  })
+                }
+                autoFocus
+              />
+            ) : (
+              <div className={styles.title}>
+                <span
+                  className={styles.text}
+                  onDoubleClick={() => setIsChangingTitle(true)}
+                >
+                  {data.budget.categoryGroup.name}
+                </span>
+                <button
+                  className={styles.plus}
+                  onClick={() => setIsCreatingCategory(true)}
+                  type="button"
+                >
+                  <Plus />
+                </button>
+                {isCreatingCategory && (
+                  <div className={styles.tooltip}>
+                    <input
+                      onBlur={() => setIsCreatingCategory(false)}
+                      onKeyDown={e =>
+                        submitInput({
+                          enter: async evt => {
+                            await createCategory({
+                              variables: {
+                                budget: budgetId,
+                                date: {
+                                  month: new Date().getMonth(),
+                                  year: new Date().getFullYear(),
+                                },
+                                group: id,
+                                name: evt.currentTarget.value,
+                              },
+                            });
+                            setIsCreatingCategory(false);
+                          },
+                          escape: () => setIsCreatingCategory(false),
+                          event: e,
+                        })
+                      }
+                      placeholder="New category name"
+                      autoFocus
+                    />
+                  </div>
+                )}
+              </div>
+            )}
             <div className={styles.key}>Allocated</div>
             <div className={styles.field}>
               {toDisplay(

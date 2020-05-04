@@ -46,6 +46,7 @@ const GET_CATEGORY = gql`
   ) {
     budget(id: $budgetId) {
       categoryGroup(id: $groupId) {
+        id
         category(id: $id) {
           allocation(date: $date)
           name

@@ -56,6 +56,19 @@
     position: relative;
     display: flex;
     align-items: center;
+    border: none;
+    font-size: 1rem;
+    transition: color 0.2s $curve;
+
+    &.edit {
+      @include input;
+      padding: 0.25rem 1rem;
+      margin-left: calc(-1rem - 1px);
+    }
+
+    .text {
+      cursor: text;
+    }
   }
 
   .plus {
