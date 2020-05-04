@@ -206,7 +206,8 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
 
   async function sort(result: DropResult): Promise<void> {
     // do nothing if we're dropped in the same location
-    if (result.destination.index === result.source.index) return;
+    if (!result.destination || result.destination.index === result.source.index)
+      return;
 
     const cachedData = client.readQuery<
       GetCategoriesResponse,

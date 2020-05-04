@@ -244,33 +244,33 @@ const Group: FC<GroupProps> = ({ budgetId, id, index }) => {
           {transition.map(
             ({ item, key, props }) =>
               item && (
-                <Droppable droppableId={id} key={id} type="categories">
-                  {categoriesProvided => (
-                    <animated.div
-                      className={styles.categories}
-                      key={key}
-                      ref={categoriesProvided.innerRef}
-                      style={props}
-                      {...categoriesProvided.droppableProps}
-                    >
-                      {[...data.budget.categoryGroup.categories]
-                        .sort((a, b) => {
-                          if (a.sort > b.sort) return 1;
-                          if (a.sort < b.sort) return -1;
-                          return 0;
-                        })
-                        .map((category, i) => (
-                          <Category
-                            groupId={id}
-                            id={category.id}
-                            index={i}
-                            key={category.id}
-                          />
-                        ))}
-                      {categoriesProvided.placeholder}
-                    </animated.div>
-                  )}
-                </Droppable>
+                <animated.div key={key} style={props}>
+                  <Droppable droppableId={id} key={id} type="categories">
+                    {categoriesProvided => (
+                      <div
+                        className={styles.categories}
+                        ref={categoriesProvided.innerRef}
+                        {...categoriesProvided.droppableProps}
+                      >
+                        {[...data.budget.categoryGroup.categories]
+                          .sort((a, b) => {
+                            if (a.sort > b.sort) return 1;
+                            if (a.sort < b.sort) return -1;
+                            return 0;
+                          })
+                          .map((category, i) => (
+                            <Category
+                              groupId={id}
+                              id={category.id}
+                              index={i}
+                              key={category.id}
+                            />
+                          ))}
+                        {categoriesProvided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </animated.div>
               )
           )}
         </div>
