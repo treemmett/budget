@@ -289,51 +289,49 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
 
   return (
     <DragDropContext onDragEnd={sort}>
-      <div className={globalStyles.view}>
-        <Droppable droppableId="group" type="groups">
-          {provided => (
-            <div
-              className={styles.groups}
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-            >
-              {[...data.budget.categoryGroups]
-                .sort((a, b) => {
-                  if (a.sort > b.sort) return 1;
-                  if (a.sort < b.sort) return -1;
-                  return 0;
-                })
-                .map((group, i) => (
-                  <Group
-                    budgetId={budgetId}
-                    id={group.id}
-                    index={i}
-                    key={group.id}
-                  />
-                ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-        <Fab
-          onClick={() =>
-            createCategoryGroup({
-              variables: {
-                budgetId,
-                date: {
-                  month: new Date().getMonth(),
-                  year: new Date().getFullYear(),
-                },
-                // TODO: add better prompt
-                // eslint-disable-next-line no-alert
-                name: prompt('Group name'),
+      <Droppable droppableId="group" type="groups">
+        {provided => (
+          <div
+            className={styles.groups}
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+          >
+            {[...data.budget.categoryGroups]
+              .sort((a, b) => {
+                if (a.sort > b.sort) return 1;
+                if (a.sort < b.sort) return -1;
+                return 0;
+              })
+              .map((group, i) => (
+                <Group
+                  budgetId={budgetId}
+                  id={group.id}
+                  index={i}
+                  key={group.id}
+                />
+              ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+      <Fab
+        onClick={() =>
+          createCategoryGroup({
+            variables: {
+              budgetId,
+              date: {
+                month: new Date().getMonth(),
+                year: new Date().getFullYear(),
               },
-            })
-          }
-        >
-          +
-        </Fab>
-      </div>
+              // TODO: add better prompt
+              // eslint-disable-next-line no-alert
+              name: prompt('Group name'),
+            },
+          })
+        }
+      >
+        +
+      </Fab>
     </DragDropContext>
   );
 };

@@ -26,30 +26,6 @@ const Budget: FC<RouteComponentProps<BudgetProps>> = ({
 
   return (
     <div className={styles.view}>
-      <div className={styles.sidebar}>
-        <div className={styles.brand}>
-          <div className={styles.first}>Tide</div>
-          <div className={styles.last}>Save</div>
-        </div>
-        <div aria-label="budget" className={styles.nav} role="navigation">
-          <Link
-            getProps={p => ({
-              className: cx({ [styles.active]: p.isCurrent }),
-            })}
-            to={`/${budgetId}`}
-          >
-            Categories
-          </Link>
-          <Link
-            getProps={p => ({
-              className: cx({ [styles.active]: p.isCurrent }),
-            })}
-            to={`/${budgetId}/transactions`}
-          >
-            Transactions
-          </Link>
-        </div>
-      </div>
       <div className={styles.content}>{children}</div>
     </div>
   );
