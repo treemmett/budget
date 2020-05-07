@@ -80,7 +80,7 @@ type Mutation {
   createCategoryGroup(budgetId: ID!, name: String!): CategoryGroup!
   deleteCategoryGroup(budgetId: ID!, id: ID!): Boolean!
   renameCategoryGroup(budgetId: ID!, name: String!, id: ID!): CategoryGroup!
-  resortCategoryGroups(budgetId: ID!, index: Int!, id: ID!): [CategoryGroup!]!
+  sortCategoryGroup(budgetId: ID!, index: Int!, id: ID!): [CategoryGroup!]!
   allocateCategory(budgetId: ID!, date: AllocationDateInput!, amount: Int!, id: ID!): Category!
   createCategory(budgetId: ID!, groupId: ID!, name: String!): Category!
   deleteCategory(budgetId: ID!, id: ID!): Boolean!

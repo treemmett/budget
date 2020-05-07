@@ -69,7 +69,7 @@ export default class CategoryGroupResolver {
   }
 
   @Mutation(() => [CategoryGroup])
-  public async resortCategoryGroups(
+  public async sortCategoryGroup(
     @Arg('id', () => ID) id: string,
     @Arg('index', () => Int) index: number,
     @Arg('budgetId', () => ID) budgetId: string,
@@ -77,6 +77,6 @@ export default class CategoryGroupResolver {
   ): Promise<CategoryGroup[]> {
     const budget = await Budget.find(budgetId, auth(ctx));
     const group = await CategoryGroup.find(id, budget);
-    return group.resort(index);
+    return group.changeSort(index);
   }
 }

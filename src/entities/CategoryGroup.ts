@@ -86,7 +86,7 @@ export default class CategoryGroup {
     return this;
   }
 
-  public async resort(index: number): Promise<CategoryGroup[]> {
+  public async changeSort(index: number): Promise<CategoryGroup[]> {
     const budget = await this.budget;
     const groups = await budget.categoryGroups;
 
