@@ -8,7 +8,6 @@ import Loader from '../../components/Loader/Loader';
 import globalStyles from '../../index.scss';
 import gql from 'graphql-tag';
 import styles from './Budgets.scss';
-import useGraphQLError from '../../utils/useGraphQLError';
 
 type BudgetQuery = Pick<Budget, 'id' | 'name'>;
 
@@ -63,7 +62,6 @@ const GET_BUDGETS = gql`
 `;
 
 const Budgets: FC<RouteComponentProps> = () => {
-  const errorToToast = useGraphQLError();
   const [createBudget] = useMutation<CreateBudget, CreateBudgetInput>(
     CREATE_BUDGET
   );
@@ -76,26 +74,22 @@ const Budgets: FC<RouteComponentProps> = () => {
   }, [createNewBudget]);
 
   async function createBudgetAction(name: string): Promise<void> {
-    try {
-      await createBudget({
-        update(cache, { data: updateData }) {
-          const { budgets } = cache.readQuery<Budgets>({ query: GET_BUDGETS });
-          cache.writeQuery<Budgets>({
-            data: {
-              budgets: [...budgets, updateData.createBudget],
-            },
-            query: GET_BUDGETS,
-          });
-        },
-        variables: {
-          name,
-        },
-      });
+    await createBudget({
+      update(cache, { data: updateData }) {
+        const { budgets } = cache.readQuery<Budgets>({ query: GET_BUDGETS });
+        cache.writeQuery<Budgets>({
+          data: {
+            budgets: [...budgets, updateData.createBudget],
+          },
+          query: GET_BUDGETS,
+        });
+      },
+      variables: {
+        name,
+      },
+    });
 
-      setCreateNewBudget(false);
-    } catch (e) {
-      errorToToast(e, 'Budget creation failed');
-    }
+    setCreateNewBudget(false);
   }
 
   if (loading) {

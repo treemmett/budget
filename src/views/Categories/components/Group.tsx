@@ -12,7 +12,6 @@ import gql from 'graphql-tag';
 import styles from '../Categories.scss';
 import submitInput from '../../../utils/submitInput';
 import { toDisplay } from '../../../utils/formatCurrency';
-import useGraphQLError from '../../../utils/useGraphQLError';
 
 interface GroupProps {
   budgetId: string;
@@ -108,12 +107,10 @@ const RENAME_GROUP = gql`
 `;
 
 const Group: FC<GroupProps> = ({ budgetId, id, index }) => {
-  const graphError = useGraphQLError();
   const { data, error, loading } = useQuery<
     GetCategoryGroup,
     GetCategoryGroupInput
   >(GET_CATEGORY_GROUP, {
-    onError: graphError,
     variables: {
       budgetId,
       date: { month: new Date().getMonth(), year: new Date().getFullYear() },
@@ -125,7 +122,6 @@ const Group: FC<GroupProps> = ({ budgetId, id, index }) => {
   const [createCategory] = useMutation<CreateCategory, CreateCategoryInput>(
     CREATE_CATEGORY,
     {
-      onError: graphError,
       update: (cache, results) => {
         const cached = cache.readQuery<GetCategoryGroup, GetCategoryGroupInput>(
           {
@@ -180,8 +176,7 @@ const Group: FC<GroupProps> = ({ budgetId, id, index }) => {
 
   const [isChangingTitle, setIsChangingTitle] = useState(false);
   const [renameGroup] = useMutation<RenameGroup, RenameGroupInput>(
-    RENAME_GROUP,
-    { onError: graphError }
+    RENAME_GROUP
   );
 
   useEffect(() => {

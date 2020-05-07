@@ -10,7 +10,6 @@ import { RouteComponentProps } from '@reach/router';
 import globalStyles from '../../index.scss';
 import gql from 'graphql-tag';
 import styles from './Categories.scss';
-import useGraphQLError from '../../utils/useGraphQLError';
 
 type CategoryQuery = Pick<
   TransactionCategory,
@@ -135,13 +134,11 @@ const SORT_CATEGORY = gql`
 
 const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
   const client = useApolloClient();
-  const graphError = useGraphQLError();
 
   const { loading, data, error } = useQuery<
     GetCategoriesResponse,
     GetCategoriesInput
   >(GET_CATEGORIES, {
-    onError: graphError,
     variables: {
       budgetId,
       date: { month: new Date().getMonth(), year: new Date().getFullYear() },
@@ -151,7 +148,7 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
   const [sortCategoryGroup] = useMutation<
     SortCategoryGroup,
     SortCategoryGroupInput
-  >(SORT_CATEGORY_GROUP, { onError: graphError });
+  >(SORT_CATEGORY_GROUP);
 
   const [createCategoryGroup] = useMutation<
     CreateCategoryGroup,
@@ -184,8 +181,7 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
   });
 
   const [sortCategory] = useMutation<SortCategory, SortCategoryInput>(
-    SORT_CATEGORY,
-    { onError: graphError }
+    SORT_CATEGORY
   );
 
   if (error) {

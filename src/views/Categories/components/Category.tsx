@@ -7,7 +7,6 @@ import Loader from '../../../components/Loader/Loader';
 import cx from 'classnames';
 import gql from 'graphql-tag';
 import styles from '../Categories.scss';
-import useGraphQLError from '../../../utils/useGraphQLError';
 import { useParams } from '@reach/router';
 
 interface CategoryProps {
@@ -93,12 +92,11 @@ const ALLOCATE_CATEGORY = gql`
 `;
 
 const Category: FC<CategoryProps> = ({ id, index, groupId }) => {
-  const graphError = useGraphQLError();
   const { budgetId } = useParams() as BudgetProps;
   const [allocateCategory] = useMutation<
     AllocateCategory,
     AllocateCategoryInput
-  >(ALLOCATE_CATEGORY, { onError: graphError });
+  >(ALLOCATE_CATEGORY);
   const [allocatedInput, setAllocatedInput] = useState(0);
   const { data, error, loading } = useQuery<GetCategory, GetCategoryInput>(
     GET_CATEGORY,

@@ -5,7 +5,6 @@ import { User } from 'rudget';
 import cx from 'classnames';
 import gql from 'graphql-tag';
 import styles from './Login.scss';
-import useGraphQLError from '../../utils/useGraphQLError';
 import { useMutation } from '@apollo/react-hooks';
 
 interface Login {
@@ -48,74 +47,65 @@ const CREATE_USER = gql`
 `;
 
 const Login: FC<RouteComponentProps> = ({ navigate, path }) => {
-  const gqlErrorToToast = useGraphQLError();
   const [login] = useMutation<Login, LoginInput>(LOGIN);
 
   const [createUser] = useMutation<CreateUser, CreateUserInput>(CREATE_USER);
 
   async function onLogin(e: React.FormEvent<HTMLFormElement>): Promise<void> {
-    try {
-      e.preventDefault();
-      const email = (e.currentTarget.elements.namedItem(
-        'email'
-      ) as HTMLInputElement).value;
+    e.preventDefault();
+    const email = (e.currentTarget.elements.namedItem(
+      'email'
+    ) as HTMLInputElement).value;
 
-      const password = (e.currentTarget.elements.namedItem(
-        'password'
-      ) as HTMLInputElement).value;
+    const password = (e.currentTarget.elements.namedItem(
+      'password'
+    ) as HTMLInputElement).value;
 
-      const response = await login({
-        variables: { credentials: { email, password } },
-      });
+    const response = await login({
+      variables: { credentials: { email, password } },
+    });
 
-      localStorage.setItem('token', response.data.login);
-      await navigate('/');
-    } catch (err) {
-      gqlErrorToToast(err, 'Login failed');
-    }
+    localStorage.setItem('token', response.data.login);
+    await navigate('/');
   }
 
   async function onRegister(
     e: React.FormEvent<HTMLFormElement>
   ): Promise<void> {
-    try {
-      e.preventDefault();
-      const [firstName, lastName, email, password, confirmPassword] = [
-        'firstName',
-        'lastName',
-        'email',
-        'password',
-        'confirmPassword',
-      ].map(
-        name =>
-          (e.currentTarget.elements.namedItem(name) as HTMLInputElement).value
-      );
+    e.preventDefault();
+    const [firstName, lastName, email, password, confirmPassword] = [
+      'firstName',
+      'lastName',
+      'email',
+      'password',
+      'confirmPassword',
+    ].map(
+      name =>
+        (e.currentTarget.elements.namedItem(name) as HTMLInputElement).value
+    );
 
-      if (password !== confirmPassword) {
-        // TODO: add better confirmation handling
-        throw new Error('Passwords do not match.');
-      }
-
-      const registerResponse = await createUser({
-        variables: { data: { email, firstName, lastName, password } },
-      });
-
-      if (!registerResponse) return;
-
-      const loginResponse = await login({
-        variables: {
-          credentials: {
-            email: registerResponse.data.createUser.email,
-            password,
-          },
-        },
-      });
-
-      localStorage.setItem('token', loginResponse.data.login);
-      await navigate('/');
-    } catch (err) {
-      gqlErrorToToast(err, 'User creation failed');
+    if (password !== confirmPassword) {
+      // TODO: add better confirmation handling
+      throw new Error('Passwords do not match.');
     }
+
+    const registerResponse = await createUser({
+      variables: { data: { email, firstName, lastName, password } },
+    });
+
+    if (!registerResponse) return;
+
+    const loginResponse = await login({
+      variables: {
+        credentials: {
+          email: registerResponse.data.createUser.email,
+          password,
+        },
+      },
+    });
+
+    localStorage.setItem('token', loginResponse.data.login);
+    await navigate('/');
   }
 
   return (
