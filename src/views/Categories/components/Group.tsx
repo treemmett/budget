@@ -1,8 +1,8 @@
 import { Budget, TransactionCategory } from 'rudget';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import React, { FC, useEffect, useState } from 'react';
-import { animated, useTransition } from 'react-spring';
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import AnimateHeight from 'react-animate-height';
 import Category from './Category';
 import ChevronDown from '../../../assets/icons/chevronDown.svg';
 import Loader from '../../../components/Loader/Loader';
@@ -157,22 +157,7 @@ const Group: FC<GroupProps> = ({ budgetId, id, index }) => {
     }
   );
 
-  const [collapsed, setCollapsed] = useState(true);
-  const transition = useTransition(!collapsed, null, {
-    config: { clamp: true, friction: 51, mass: 1, tension: 268 },
-    enter: {
-      height: `${
-        (loading ? 0 : data.budget.categoryGroup.categories.length) * 3.25
-      }rem`,
-    },
-    from: { height: '0rem' },
-    leave: { height: '0rem' },
-    update: {
-      height: `${
-        (loading ? 0 : data.budget.categoryGroup.categories.length) * 3.25
-      }rem`,
-    },
-  });
+  const [collapsed, setCollapsed] = useState(false);
 
   const [isChangingTitle, setIsChangingTitle] = useState(false);
   const [renameGroup] = useMutation<RenameGroup, RenameGroupInput>(
@@ -304,38 +289,37 @@ const Group: FC<GroupProps> = ({ budgetId, id, index }) => {
               <ChevronDown />
             </button>
           </div>
-          {transition.map(
-            ({ item, key, props }) =>
-              item && (
-                <animated.div key={key} style={props}>
-                  <Droppable droppableId={id} key={id} type="categories">
-                    {categoriesProvided => (
-                      <div
-                        className={styles.categories}
-                        ref={categoriesProvided.innerRef}
-                        {...categoriesProvided.droppableProps}
-                      >
-                        {[...data.budget.categoryGroup.categories]
-                          .sort((a, b) => {
-                            if (a.sort > b.sort) return 1;
-                            if (a.sort < b.sort) return -1;
-                            return 0;
-                          })
-                          .map((category, i) => (
-                            <Category
-                              groupId={id}
-                              id={category.id}
-                              index={i}
-                              key={category.id}
-                            />
-                          ))}
-                        {categoriesProvided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
-                </animated.div>
-              )
-          )}
+          <Droppable droppableId={id} key={id} type="categories">
+            {categoriesProvided => (
+              <AnimateHeight
+                duration={300}
+                easing="ease-in-out"
+                height={collapsed ? 0 : 'auto'}
+              >
+                <div
+                  className={styles.categories}
+                  ref={categoriesProvided.innerRef}
+                  {...categoriesProvided.droppableProps}
+                >
+                  {[...data.budget.categoryGroup.categories]
+                    .sort((a, b) => {
+                      if (a.sort > b.sort) return 1;
+                      if (a.sort < b.sort) return -1;
+                      return 0;
+                    })
+                    .map((category, i) => (
+                      <Category
+                        groupId={id}
+                        id={category.id}
+                        index={i}
+                        key={category.id}
+                      />
+                    ))}
+                  {categoriesProvided.placeholder}
+                </div>
+              </AnimateHeight>
+            )}
+          </Droppable>
         </div>
       )}
     </Draggable>
