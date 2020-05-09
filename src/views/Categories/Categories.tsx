@@ -16,12 +16,8 @@ type CategoryQuery = Pick<
   'id' | 'allocation' | 'name' | 'sort'
 >;
 
-interface GroupQuery extends Pick<CategoryGroup, 'id' | 'name' | 'sort'> {
-  categories: CategoryQuery[];
-}
-
 interface GetCategoriesResponse {
-  budget: { categoryGroups: GroupQuery[] };
+  budget: { categoryGroups: CategoryGroup[] };
 }
 
 interface GetCategoriesInput {
@@ -132,6 +128,39 @@ const SORT_CATEGORY = gql`
   }
 `;
 
+interface ChangeCategoryGroup {
+  changeCategoryGroup: CategoryGroup[];
+}
+
+interface ChangeCategoryGroupInput {
+  id: string;
+  groupId: string;
+  index: number;
+  budgetId: string;
+}
+
+const CHANGE_CATEGORY_GROUP = gql`
+  mutation ChangeCategoryGroup(
+    $id: ID!
+    $groupId: ID!
+    $index: Int!
+    $budgetId: ID!
+  ) {
+    changeCategoryGroup(
+      id: $id
+      groupId: $groupId
+      index: $index
+      budgetId: $budgetId
+    ) {
+      id
+      categories {
+        id
+        sort
+      }
+    }
+  }
+`;
+
 const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
   const client = useApolloClient();
 
@@ -184,6 +213,11 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
     SORT_CATEGORY
   );
 
+  const [changeCategoryGroup] = useMutation<
+    ChangeCategoryGroup,
+    ChangeCategoryGroupInput
+  >(CHANGE_CATEGORY_GROUP);
+
   if (error) {
     return (
       <div className={globalStyles.view}>
@@ -201,10 +235,6 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
   }
 
   async function sort(result: DropResult): Promise<void> {
-    // do nothing if we're dropped in the same location
-    if (!result.destination || result.destination.index === result.source.index)
-      return;
-
     const cachedData = client.readQuery<
       GetCategoriesResponse,
       GetCategoriesInput
@@ -220,33 +250,44 @@ const Categories: FC<RouteComponentProps<BudgetProps>> = ({ budgetId }) => {
     });
 
     if (result.type === 'categories') {
-      await sortCategory({
-        optimisticResponse: () => {
-          const group = cachedData.budget.categoryGroups.find(
-            g => g.id === result.destination.droppableId
-          );
+      if (result.source.droppableId === result.destination.droppableId) {
+        await sortCategory({
+          optimisticResponse: () => {
+            const group = cachedData.budget.categoryGroups.find(
+              g => g.id === result.destination.droppableId
+            );
 
-          const categories = [...group.categories].sort((a, b) => {
-            if (a.sort > b.sort) return 1;
-            if (a.sort < b.sort) return -1;
-            return 0;
-          });
+            const categories = [...group.categories].sort((a, b) => {
+              if (a.sort > b.sort) return 1;
+              if (a.sort < b.sort) return -1;
+              return 0;
+            });
 
-          const [category] = categories.splice(result.source.index, 1);
-          categories.splice(result.destination.index, 0, category);
+            const [category] = categories.splice(result.source.index, 1);
+            categories.splice(result.destination.index, 0, category);
 
-          for (let i = 0; i < categories.length; i += 1) {
-            categories[i].sort = i;
-          }
+            for (let i = 0; i < categories.length; i += 1) {
+              categories[i].sort = i;
+            }
 
-          return { sortCategory: categories };
-        },
-        variables: {
-          budgetId,
-          id: result.draggableId,
-          index: result.destination.index,
-        },
-      });
+            return { sortCategory: categories };
+          },
+          variables: {
+            budgetId,
+            id: result.draggableId,
+            index: result.destination.index,
+          },
+        });
+      } else {
+        await changeCategoryGroup({
+          variables: {
+            budgetId,
+            groupId: result.destination.droppableId,
+            id: result.draggableId,
+            index: result.destination.index,
+          },
+        });
+      }
     } else {
       // update sorting in cache
       cachedData.budget.categoryGroups.sort((a, b) => {
