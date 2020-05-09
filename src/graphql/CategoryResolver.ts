@@ -43,6 +43,22 @@ export default class CategoryResolver {
     return category.setAllocation(date.toDate(), amount);
   }
 
+  @Mutation(() => [CategoryGroup])
+  public async changeCategoryGroup(
+    @Arg('id', () => ID) id: string,
+    @Arg('groupId', () => ID) groupId: string,
+    @Arg('index', () => Int) index: number,
+    @Arg('budgetId', () => ID) budgetId: string,
+    @Ctx() ctx: Context
+  ): Promise<CategoryGroup[]> {
+    const budget = await Budget.find(budgetId, auth(ctx));
+    const [category, group] = await Promise.all([
+      Category.find(id, budget),
+      CategoryGroup.find(groupId, budget),
+    ]);
+    return category.changeGroup(group, index);
+  }
+
   @Mutation(() => Category)
   public async createCategory(
     @Arg('name') name: string,

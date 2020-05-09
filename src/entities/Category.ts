@@ -122,6 +122,54 @@ export default class Category {
     return this;
   }
 
+  public async changeGroup(
+    group: CategoryGroup,
+    index: number
+  ): Promise<CategoryGroup[]> {
+    // remove category from current group
+    const currentGroup = await this.group;
+    const currentGroupCategories = await currentGroup.categories;
+    currentGroupCategories.sort((a, b) => {
+      if (a.sort > b.sort) return 1;
+      if (a.sort < b.sort) return -1;
+      return 0;
+    });
+    const currentIndex = currentGroupCategories.findIndex(
+      c => c.id === this.id
+    );
+    if (!~currentIndex) return [];
+    const [category] = currentGroupCategories.splice(currentIndex, 1);
+
+    // resort indices in the old group
+    for (let i = 0; i < currentGroupCategories.length; i += 1) {
+      currentGroupCategories[i].sort = i;
+    }
+
+    // get categories in the new group
+    const newGroupCategories = await group.categories;
+    newGroupCategories.sort((a, b) => {
+      if (a.sort > b.sort) return 1;
+      if (a.sort < b.sort) return -1;
+      return 0;
+    });
+
+    // move category to the new group
+    category.group = Promise.resolve(group);
+    newGroupCategories.splice(index, 0, category);
+
+    // resort indices in the new group
+    for (let i = 0; i < newGroupCategories.length; i += 1) {
+      newGroupCategories[i].sort = i;
+    }
+
+    await getRepository(Category).save([
+      ...newGroupCategories,
+      ...currentGroupCategories,
+    ]);
+
+    return [currentGroup, group];
+  }
+
   public async changeSort(index: number): Promise<Category[]> {
     const group = await this.group;
     const categories = await group.categories;

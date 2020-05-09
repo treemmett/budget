@@ -82,6 +82,7 @@ type Mutation {
   renameCategoryGroup(budgetId: ID!, name: String!, id: ID!): CategoryGroup!
   sortCategoryGroup(budgetId: ID!, index: Int!, id: ID!): [CategoryGroup!]!
   allocateCategory(budgetId: ID!, date: AllocationDateInput!, amount: Int!, id: ID!): Category!
+  changeCategoryGroup(budgetId: ID!, index: Int!, groupId: ID!, id: ID!): [CategoryGroup!]!
   createCategory(budgetId: ID!, groupId: ID!, name: String!): Category!
   deleteCategory(budgetId: ID!, id: ID!): Boolean!
   renameCategory(budgetId: ID!, id: ID!, name: String!): Category!
