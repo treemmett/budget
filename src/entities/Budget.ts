@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
 import { MaxLength, validateOrReject } from 'class-validator';
+import Account from './Account';
 import CategoryGroup from './CategoryGroup';
 import User from './User';
 import { UserInputError } from 'apollo-server-express';
@@ -31,6 +32,10 @@ export default class Budget {
   @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
   @Index()
   public user: Promise<User>;
+
+  @Field(() => [Account])
+  @OneToMany(() => Account, account => account.budget)
+  public accounts: Promise<Account[]>;
 
   @Field(() => [CategoryGroup], {
     description: 'All category groups within the budget',

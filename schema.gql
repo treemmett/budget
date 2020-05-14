@@ -3,6 +3,11 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type Account {
+  id: ID!
+  name: String!
+}
+
 input AllocationDateInput {
   month: Float!
   year: Float!
@@ -17,6 +22,7 @@ type Budget {
 
   """Budget's owner"""
   user: User!
+  accounts: [Account!]!
 
   """All category groups within the budget"""
   categoryGroups: [CategoryGroup!]!
@@ -74,6 +80,8 @@ input LoginInput {
 }
 
 type Mutation {
+  createAccount(budgetId: ID!, name: String!): Account!
+  renameAccount(budgetId: ID!, name: String!, id: ID!): Account!
   createBudget(name: String!): Budget!
   deleteBudget(id: ID!): Boolean!
   renameBudget(name: String!, id: ID!): Budget!
