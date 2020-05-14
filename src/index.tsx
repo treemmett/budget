@@ -1,5 +1,6 @@
 import './index.scss';
 import React, { FC } from 'react';
+import Accounts from './views/Accounts/Accounts';
 import Apollo from './Apollo';
 import Budget from './views/Budget/Budget';
 import Budgets from './views/Budgets/Budgets';
@@ -20,6 +21,7 @@ const App: FC = () => {
           <Login path="/register" />
           <Budget path="/:budgetId">
             <Categories path="/" />
+            <Accounts path="/accounts" />
             <Transactions path="/transactions" />
           </Budget>
         </Apollo>

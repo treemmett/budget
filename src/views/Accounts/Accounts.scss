@@ -1,0 +1,77 @@
+@import '../../global';
+.title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+
+  .cell {
+    position: relative;
+  }
+}
+
+.card {
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(1.25rem, auto) 3rem;
+  grid-template-columns: 3rem auto 1rem;
+  grid-template-areas: 'name name edit' 'icon type type';
+  gap: 0.5rem;
+  background-color: #fff;
+  padding: 1rem;
+  border: 1px solid $green;
+  border-radius: 6px;
+
+  .accountName {
+    position: relative;
+    grid-area: name;
+    color: darken($green, 20%);
+    font-weight: 500;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    font-size: 1rem;
+    padding: 0;
+  }
+
+  .edit {
+    grid-area: edit;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    opacity: 0;
+    transition: opacity 0.2s $curve;
+
+    &:focus {
+      opacity: 1;
+    }
+  }
+
+  .typeIcon {
+    grid-area: icon;
+    align-self: center;
+    color: $green;
+  }
+
+  .accountType {
+    grid-area: type;
+    align-self: center;
+    color: $green;
+    text-transform: uppercase;
+    font-weight: 300;
+    cursor: default;
+  }
+
+  &:hover,
+  &.isEditing {
+    .edit {
+      opacity: 1;
+    }
+  }
+}
