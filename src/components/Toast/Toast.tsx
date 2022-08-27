@@ -11,7 +11,7 @@ import React, {
 import { animated, useTransition } from 'react-spring';
 import X from '../../assets/icons/x.svg';
 import uuid from '../../utils/uuid';
-import styles from './Toast.scss';
+import styles from './Toast.module.scss';
 
 type ToastStatus = 'info' | 'error';
 
