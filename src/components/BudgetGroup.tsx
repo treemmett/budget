@@ -1,12 +1,10 @@
 import { Draggable, Droppable } from 'react-beautiful-dnd';
-import React, { FC, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { FC, useState } from 'react';
 import BudgetCategory from './BudgetCategory';
 import DragHandle from './icons/DragHandle';
 import Plus from './icons/Plus';
-import { State } from '../redux/store';
-import { addCategory } from '../redux/actions/budget';
 import styles from '../views/Budget.module.scss';
+import { Category } from '../redux/types/budget';
 
 interface BudgetGroupProps {
   id: string;
@@ -19,30 +17,27 @@ const BudgetGroup: FC<BudgetGroupProps> = ({
   name,
   index
 }: BudgetGroupProps) => {
-  const dispatch = useDispatch();
-  const allCategories = useSelector((state: State) => state.budget.categories);
   const [inputVisible, setInput] = useState(false);
 
-  const categories = useMemo(
-    () =>
-      allCategories
-        .filter(c => c.groupId === id)
-        .sort((a, b) => {
-          if (a.sort > b.sort) return 1;
-          if (a.sort < b.sort) return -1;
-          return 0;
-        }),
-    [id, allCategories]
-  );
+  const categories: Category[] = [
+    {
+      id: 'a',
+      name: 'Rent',
+      sort: 0,
+      groupId: 'a'
+    },
+    {
+      id: 'a',
+      name: 'Electric',
+      sort: 0,
+      groupId: 'a'
+    },
+  ]
 
   function createCategory(e: React.KeyboardEvent): void {
     if (e.keyCode !== 13) {
       return;
     }
-
-    const input = e.currentTarget as HTMLInputElement;
-
-    dispatch(addCategory(input.value, id));
 
     setInput(false);
   }
