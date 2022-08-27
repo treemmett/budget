@@ -4,8 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Button from '../../components/Button/Button';
 import Fab from '../../components/Fab/Fab';
-import globalStyles from '../../index.scss';
-import styles from './Budgets.scss';
+import styles from './Budgets.module.scss';
 
 const Budgets: NextPage = () => {
   const [createNewBudget, setCreateNewBudget] = useState(false);
@@ -30,7 +29,7 @@ const Budgets: NextPage = () => {
   ];
 
   return (
-    <div className={globalStyles.view}>
+    <div className="view">
       {budgets.map((budget) => (
         <Link href={`/${budget.id}`} key={budget.id}>
           <a className={styles.budget} href="#.">
