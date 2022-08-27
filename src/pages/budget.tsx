@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { DragDropContext, DropResult, Droppable } from 'react-beautiful-dnd';
 import BudgetGroup from '../components/BudgetGroup';
 import Chevron from '../components/icons/Chevron';
-import styles from './Budget.module.scss';
+import styles from './budget.module.scss';
 
 const Budget: FC = () => {
   function onDragEnd(result: DropResult): void {

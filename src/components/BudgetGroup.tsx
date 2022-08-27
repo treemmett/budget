@@ -3,7 +3,7 @@ import React, { FC, useState } from 'react';
 import BudgetCategory from './BudgetCategory';
 import DragHandle from './icons/DragHandle';
 import Plus from './icons/Plus';
-import styles from '../views/Budget.module.scss';
+import styles from '../pages/budget.module.scss';
 import { Category } from '../redux/types/budget';
 
 interface BudgetGroupProps {
@@ -43,7 +43,7 @@ const BudgetGroup: FC<BudgetGroupProps> = ({
   }
 
   return (
-    <Draggable draggableId={id} index={index} type="group">
+    <Draggable draggableId={id} index={index}>
       {groupProvided => (
         <div
           className={styles.group}
