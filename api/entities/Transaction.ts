@@ -1,31 +1,21 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { IsDate, IsInt, IsNotEmpty, IsUUID, MaxLength, Min, ValidateNested } from 'class-validator';
 import BudgetCategory from './BudgetCategory';
 
-@Entity({ name: 'transactions ' })
 export default class Transaction {
-  @PrimaryGeneratedColumn('uuid')
+  @IsUUID()
   public id: string;
 
-  @Column()
+  @MaxLength(62)
+  @IsNotEmpty()
   public description: string;
 
-  @Column({
-    type: 'decimal',
-    precision: 13,
-    scale: 2,
-    transformer: { from: value => Number(value), to: value => Number(value) }
-  })
+  @IsInt()
+  @Min(0)
   public amount: number;
 
-  @Column({ type: 'date' })
+  @IsDate()
   public date: Date;
 
-  @ManyToOne(() => BudgetCategory, category => category.transactions, {
-    onDelete: 'CASCADE',
-    nullable: false
-  })
+  @ValidateNested()
   public category: BudgetCategory;
-
-  @Column({ nullable: false })
-  public categoryId: string;
 }

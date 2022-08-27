@@ -1,34 +1,18 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn
-} from 'typeorm';
+import { IsInt, IsNotEmpty, IsUUID, MaxLength, Min, ValidateNested } from 'class-validator';
 import BudgetAllocation from './BudgetAllocation';
-import BudgetGroup from './BudgetGroup';
-import Transaction from './Transaction';
 
-@Entity({ name: 'budget_categories' })
 export default class BudgetCategory {
-  @PrimaryGeneratedColumn('uuid')
+  @IsUUID()
   public id: string;
 
-  @Column()
+  @MaxLength(62)
+  @IsNotEmpty()
   public name: string;
 
-  @ManyToOne(() => BudgetGroup, group => group.categories, {
-    onDelete: 'CASCADE',
-    nullable: false
-  })
-  public group: BudgetGroup;
-
-  @OneToMany(() => BudgetAllocation, allocation => allocation.category)
+  @ValidateNested()
   public allocations: BudgetAllocation[];
 
-  @OneToMany(() => Transaction, transaction => transaction.category)
-  public transactions: Transaction[];
-
-  @Column({ nullable: false })
+  @IsInt()
+  @Min(0)
   public sort: number;
 }
