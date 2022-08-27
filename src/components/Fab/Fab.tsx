@@ -1,16 +1,14 @@
-import React, { FC } from 'react';
+import React, { FC, PropsWithChildren } from 'react';
 import styles from './Fab.scss';
 
-interface FabProps {
+interface FabProps extends PropsWithChildren {
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-const Fab: FC<FabProps> = ({ children, onClick }) => {
-  return (
-    <button className={styles.fab} onClick={onClick} type="button">
-      {children}
-    </button>
-  );
-};
+const Fab: FC<FabProps> = ({ children, onClick }) => (
+  <button className={styles.fab} onClick={onClick} type="button">
+    {children}
+  </button>
+);
 
 export default Fab;
