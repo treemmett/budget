@@ -1,12 +1,18 @@
-import React, { FC, createContext, useContext, useState } from 'react';
+import cx from 'classnames';
+import React, {
+  FC,
+  createContext,
+  useContext,
+  useState,
+  PropsWithChildren,
+  useMemo,
+  useCallback,
+} from 'react';
 import { animated, useTransition } from 'react-spring';
 import X from '../../assets/icons/x.svg';
-import cx from 'classnames';
-import styles from './Toast.scss';
 import uuid from '../../utils/uuid';
+import styles from './Toast.scss';
 
-type AddToastFn = (toast: ToastOptions | string) => string;
-type RemoveToastFn = (id: string) => void;
 type ToastStatus = 'info' | 'error';
 
 interface ToastOptions {
@@ -14,6 +20,9 @@ interface ToastOptions {
   message: string;
   title?: string;
 }
+
+type AddToastFn = (toast: ToastOptions | string) => string;
+type RemoveToastFn = (id: string) => void;
 
 export interface ToastData extends ToastOptions {
   id: string;
@@ -25,11 +34,14 @@ export interface UseToasts {
   removeToast: RemoveToastFn;
 }
 
-export const ToastContext = createContext<UseToasts>(null);
+export const ToastContext = createContext<UseToasts>({
+  addToast: () => '',
+  removeToast: () => null,
+});
 
-export const Toaster: FC = ({ children }) => {
+export const Toaster: FC<PropsWithChildren> = ({ children }) => {
   const [toasts, setToasts] = useState<ToastData[]>([]);
-  const transitions = useTransition(toasts, t => t.id, {
+  const transitions = useTransition(toasts, (t) => t.id, {
     enter: {
       height: '4.5rem',
       marginBottom: '1rem',
@@ -45,30 +57,35 @@ export const Toaster: FC = ({ children }) => {
     },
   });
 
-  const removeToast: RemoveToastFn = function removeToast(id) {
-    setToasts(t => t.filter(toast => toast.id !== id));
-  };
+  const removeToast: RemoveToastFn = useCallback((id) => {
+    setToasts((t) => t.filter((toast) => toast.id !== id));
+  }, []);
 
-  const addToast: AddToastFn = function addToast(toast) {
-    const id = uuid();
+  const addToast: AddToastFn = useCallback(
+    (toast) => {
+      const id = uuid();
 
-    setToasts(t => [
-      ...t,
-      {
-        id,
-        message: typeof toast === 'string' ? toast : toast.message,
-        status: typeof toast === 'string' ? 'info' : toast.status || 'info',
-        title: typeof toast === 'string' ? null : toast.title,
-      },
-    ]);
+      setToasts((t) => [
+        ...t,
+        {
+          id,
+          message: typeof toast === 'string' ? toast : toast.message,
+          status: typeof toast === 'string' ? 'info' : toast.status || 'info',
+          title: typeof toast === 'string' ? undefined : toast.title,
+        },
+      ]);
 
-    setTimeout(removeToast, 5500, id);
+      setTimeout(removeToast, 5500, id);
 
-    return id;
-  };
+      return id;
+    },
+    [removeToast]
+  );
+
+  const contextValue = useMemo(() => ({ addToast, removeToast }), [addToast, removeToast]);
 
   return (
-    <ToastContext.Provider value={{ addToast, removeToast }}>
+    <ToastContext.Provider value={contextValue}>
       {children}
 
       <div className={styles.toaster}>
@@ -102,9 +119,7 @@ export const useToasts = (): UseToasts => {
   const ctx = useContext(ToastContext);
 
   if (!ctx) {
-    throw new Error(
-      '`useToasts` can only be called from a descendant of `Toaster`'
-    );
+    throw new Error('`useToasts` can only be called from a descendant of `Toaster`');
   }
 
   return {

@@ -2,44 +2,99 @@
 
 .toaster {
   position: fixed;
+  z-index: 1000000;
   top: 0;
   right: 0;
-  z-index: 1000000;
-  padding: 1rem;
-  pointer-events: none;
   max-width: 100vw;
   box-sizing: border-box;
+  padding: 1rem;
+  pointer-events: none;
+}
+
+.title,
+.message {
+  overflow: hidden;
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.title {
+  color: $blueText;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.close {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 1.3rem;
+  height: 1.3rem;
+  box-sizing: content-box;
+  padding: 0.75rem;
+  border: unset;
+  background: radial-gradient(#fff 30%, #fff0);
+  cursor: pointer;
+  fill: #d6d6d6;
+  opacity: 0;
+  outline: none;
+  transform: translateY(-50%);
+  transition: opacity 0.2s cubic-bezier(0.65, 0.29, 0.26, 0.48),
+    fill 0.2s cubic-bezier(0.65, 0.29, 0.26, 0.48);
+
+  &:hover {
+    fill: #c4c4c4;
+  }
+
+  &:active,
+  &:focus {
+    fill: #999;
+    opacity: 1;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  &.leaving {
+    opacity: 0 !important;
+    transition: opacity 0.1s cubic-bezier(0.65, 0.29, 0.26, 0.48);
+  }
 }
 
 .toast {
   @include card;
+
+  position: relative;
   display: flex;
+  overflow: hidden;
+  width: fit-content;
+  max-width: 100%;
+  height: 100%;
+  box-sizing: border-box;
   flex-direction: column;
   justify-content: center;
-  position: relative;
-  background-color: #fff;
-  overflow: hidden;
-  height: 100%;
   padding: 0 2rem;
-  width: fit-content;
-  float: right;
+  background-color: #fff;
   clear: both;
+  float: right;
   pointer-events: auto;
-  max-width: 100%;
-  box-sizing: border-box;
 
   &:not(:first-child) {
     margin-top: 0;
   }
 
   &::before {
-    content: '';
     position: absolute;
     top: 0;
     left: 0;
-    height: 100%;
     width: 5px;
+    height: 100%;
     background: linear-gradient($blueLight 0%, $blue 85%);
+    content: '';
   }
 
   &.error {
@@ -57,61 +112,7 @@
   }
 }
 
-.title,
 .message {
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.title {
-  font-weight: 500;
-  font-weight: 14px;
-  color: $blueText;
-}
-
-.message {
-  font-weight: 300;
   font-size: 13px;
-}
-
-.close {
-  position: absolute;
-  background: radial-gradient(#fff 30%, #fff0);
-  border: unset;
-  padding: 0.75rem;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-  width: 1.3rem;
-  height: 1.3rem;
-  box-sizing: content-box;
-  opacity: 0;
-  fill: #d6d6d6;
-  transition: opacity 0.2s cubic-bezier(0.65, 0.29, 0.26, 0.48),
-    fill 0.2s cubic-bezier(0.65, 0.29, 0.26, 0.48);
-  outline: none;
-  cursor: pointer;
-
-  &:hover {
-    fill: #c4c4c4;
-  }
-
-  &:active,
-  &:focus {
-    opacity: 1;
-    fill: #999;
-  }
-
-  svg {
-    display: block;
-    height: 100%;
-    width: 100%;
-  }
-
-  &.leaving {
-    transition: opacity 0.1s cubic-bezier(0.65, 0.29, 0.26, 0.48);
-    opacity: 0 !important;
-  }
+  font-weight: 300;
 }
