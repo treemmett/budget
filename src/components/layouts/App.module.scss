@@ -1,0 +1,108 @@
+@import '../../globals';
+
+.app {
+  display: grid;
+  height: 100%;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 3.5em;
+  grid-template-areas: 'content' 'nav';
+  overflow: hidden;
+}
+
+.content {
+  grid-area: content;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nav {
+  display: flex;
+  grid-area: nav;
+  height: 100%;
+  background-color: #fff;
+
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+    pointer-events: none;
+    box-shadow: 0 -5px 20px rgba(#000, 0.1);
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+    padding: 0.5em 1em;
+    box-sizing: border-box;
+    stroke: #5f6369;
+    color: #5f6369;
+    text-decoration: none;
+    transition: 0.15s ease;
+    transition-property: background-color, box-shadow, color, stroke;
+
+    &.active-link {
+      color: #eb6c7c;
+      stroke: #eb6c7c;
+    }
+
+    svg {
+      fill: transparent;
+      height: 100%;
+      width: 100%;
+    }
+
+    .title {
+      font-size: 14px;
+    }
+  }
+}
+
+@media screen and (min-width: $desktop-break) {
+  .app {
+    grid-template-columns: 15em 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: 'nav content';
+  }
+
+  .nav {
+    display: block;
+    box-shadow: none;
+    background-color: transparent;
+    padding: 0.25em;
+
+    &::after {
+      content: unset;
+    }
+
+    a {
+      position: relative;
+      flex-direction: row;
+      justify-content: flex-start;
+      height: 3em;
+      border-radius: 4px;
+      box-sizing: border-box;
+      overflow: hidden;
+
+      &.active-link {
+        background-color: #eb6c7c;
+        color: #fff;
+        stroke: #fff;
+        box-shadow: 0 5px 10px rgba(#eb6c7c, 10%);
+      }
+
+      svg {
+        width: auto;
+        height: 1em;
+        margin-right: 1em;
+      }
+    }
+  }
+}

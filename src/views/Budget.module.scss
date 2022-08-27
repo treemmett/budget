@@ -1,0 +1,280 @@
+@import '../globals';
+
+.view {
+  padding: 2em;
+}
+
+.page-header {
+  color: #42475a;
+  padding: 0 2em;
+}
+
+.budget-title {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.date {
+  display: inline-flex;
+  font-weight: 500;
+  color: $blue;
+  background-color: lighten($blue, 40%);
+  border-radius: 4px;
+  margin-top: 1em;
+  height: 2em;
+  line-height: 2em;
+  align-items: center;
+  justify-content: center;
+  width: 13em;
+  user-select: none;
+
+  .text {
+    display: inline;
+    margin: auto;
+  }
+
+  .prev,
+  .next {
+    display: inline-flex;
+    width: 1.5em;
+    height: 1.5em;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 5px;
+    border: 1px solid transparent;
+    border-radius: 1.5em;
+    margin: 0 0.5em;
+    fill: $blue;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    background-color: transparent;
+    font-size: inherit;
+    outline: none;
+
+    &:hover {
+      border-color: $blue;
+    }
+
+    svg {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  .prev {
+    transform: rotate(90deg);
+  }
+
+  .next {
+    transform: rotate(-90deg);
+  }
+}
+
+.budget-list {
+  margin-top: 2em;
+}
+
+.group {
+  position: relative;
+  background-color: #fff;
+  box-shadow: 0 5px 20px rgba(#000, 0.1);
+  margin-bottom: 1.5em;
+  border-radius: 5px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.head,
+.category {
+  display: grid;
+  grid-template-columns: minmax(1em, min-content) 1fr 6em 6em;
+  grid-template-rows: 1fr;
+  grid-template-areas: 'name add activity allocation';
+  grid-column-gap: 0.5em;
+
+  &:hover {
+    input {
+      border-color: #e7e7ea;
+    }
+
+    .drag-handle {
+      color: #ccc;
+    }
+  }
+}
+
+.head {
+  position: relative;
+  padding: 1.25em 2em;
+  font-weight: 500;
+  color: #666;
+
+  .name {
+    font-size: 20px;
+  }
+
+  .add {
+    display: inline-block;
+    height: 1.5em;
+    width: 1.5em;
+    padding: 3px;
+    margin-left: 0.5em;
+    border-radius: 1.5em;
+    margin-right: auto;
+    color: darken(#fff, 15%);
+    box-sizing: border-box;
+    transition: 0.15s ease;
+    transition-property: color, background-color;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    outline: none;
+    grid-area: add;
+
+    &:hover {
+      background-color: darken(#fff, 5%);
+      color: darken(#fff, 20%);
+    }
+
+    &:active,
+    &:focus {
+      background-color: darken(#fff, 10%);
+      color: darken(#fff, 25%);
+    }
+  }
+
+  .allocation {
+    text-align: right;
+    grid-area: allocation;
+    color: inherit;
+  }
+
+  .category-input {
+    position: absolute;
+    background-color: #e35100;
+    background: $orange-gradient;
+    top: 75%;
+    z-index: 1;
+    left: 2em;
+    border-radius: 6px;
+    box-shadow: 0 5px 20px rgba(#000, 0.1);
+
+    input {
+      padding: 1.5em 1em;
+      font-size: 16px;
+      outline: none;
+      background-color: transparent;
+      border: none;
+      color: #fff;
+      font-weight: 500;
+
+      &::placeholder {
+        color: darken(#fff, 5%);
+      }
+    }
+  }
+}
+
+.border {
+  margin: 0 2em;
+  height: 1px;
+  box-sizing: border-box;
+  background-color: #ddd;
+}
+
+.category {
+  position: relative;
+  padding: 1em 2em;
+  background-color: #fff;
+  border-radius: 5px;
+
+  input {
+    padding: 0.25em 0.25em;
+    font-size: 16px;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    outline: none;
+
+    &:active,
+    &:focus {
+      border-color: $blue;
+    }
+  }
+}
+
+.name {
+  display: inline-block;
+  grid-area: name;
+  align-self: center;
+  vertical-align: middle;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.category-list {
+  min-height: 1em;
+}
+
+.activity {
+  text-align: right;
+  grid-area: activity;
+  color: inherit;
+  border-radius: 4px;
+  padding: 2px 8px;
+
+  &.with-value {
+    font-weight: 500;
+
+    &.positive {
+      color: $green;
+      background-color: lighten($green, 48%);
+    }
+
+    &.negative {
+      color: $red;
+      background-color: lighten($red, 30%);
+    }
+  }
+}
+
+.activity,
+.allocation {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.category-allocation {
+  width: 6em;
+  text-align: right;
+  grid-area: allocation;
+}
+
+.drag-handle {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 50%;
+  left: 0.3em;
+  transform: translateY(-50%);
+  height: 100%;
+  width: 1.4em;
+  color: #ccc0;
+  transition: color 0.2s ease;
+
+  &:focus {
+    color: #aaa;
+    outline: none;
+  }
+
+  svg {
+    height: 50%;
+    width: 75%;
+  }
+}

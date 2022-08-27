@@ -1,0 +1,42 @@
+@import '../globals';
+
+.input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.radio {
+  padding: 1em 2em;
+  width: 100%;
+  box-sizing: border-box;
+  transition: 0.15s ease;
+  transition-property: background-color, color;
+  cursor: default;
+}
+
+.border {
+  display: flex;
+  background-color: $blue;
+  color: #fff;
+  padding: 1em 2em;
+  align-items: center;
+  box-sizing: border-box;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+}
+
+.input:active + .radio {
+  background-color: darken(#fff, 5%);
+}
+
+.input:checked + .radio + .border {
+  background-color: $blue;
+  opacity: 1;
+}
