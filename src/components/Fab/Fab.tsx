@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren } from 'react';
-import styles from './Fab.scss';
+import styles from './Fab.module.scss';
 
 interface FabProps extends PropsWithChildren {
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
