@@ -1,49 +1,10 @@
+import { FC } from 'react';
 import { DragDropContext, DropResult, Droppable } from 'react-beautiful-dnd';
-import React, { useEffect, useMemo } from 'react';
-import {
-  changeCategoryPosition,
-  changeDate,
-  changeGroupPosition,
-  getBudgets,
-  getTransactions
-} from '../redux/actions/budget';
-import { useDispatch, useSelector } from 'react-redux';
 import BudgetGroup from '../components/BudgetGroup';
 import Chevron from '../components/icons/Chevron';
-import { RouteComponentProps } from '@reach/router';
-import { State } from '../redux/store';
 import styles from './Budget.module.scss';
 
-const Budget: React.FC<RouteComponentProps> = () => {
-  const dispatch = useDispatch();
-  const budgetId = useSelector((state: State) => state.budget.selectedBudget);
-  const allGroups = useSelector((state: State) => state.budget.groups);
-  const transactions = useSelector((state: State) => state.budget.transactions);
-  const month = useSelector((state: State) => state.budget.month);
-  const year = useSelector((state: State) => state.budget.year);
-
-  const groups = useMemo(
-    () =>
-      allGroups
-        .filter(g => g.budgetId === budgetId)
-        .sort((a, b) => {
-          if (a.sort > b.sort) return 1;
-          if (a.sort < b.sort) return -1;
-          return 0;
-        }),
-    [budgetId, allGroups]
-  );
-
-  useEffect(() => {
-    if (!budgetId) {
-      dispatch(getBudgets());
-    }
-
-    if (!transactions.length && budgetId) {
-      dispatch(getTransactions(budgetId));
-    }
-  }, [dispatch, transactions, budgetId]);
-
+const Budget: FC = () => {
   function onDragEnd(result: DropResult): void {
     const { destination, draggableId, source } = result;
     if (!destination) {
@@ -56,18 +17,6 @@ const Budget: React.FC<RouteComponentProps> = () => {
     ) {
       return;
     }
-
-    if (result.type === 'category') {
-      dispatch(
-        changeCategoryPosition(
-          draggableId,
-          destination.droppableId,
-          destination.index
-        )
-      );
-    } else if (result.type === 'group') {
-      dispatch(changeGroupPosition(draggableId, destination.index));
-    }
   }
 
   return (
@@ -77,7 +26,7 @@ const Budget: React.FC<RouteComponentProps> = () => {
         <div className={styles.date}>
           <button
             className={styles.prev}
-            onClick={() => dispatch(changeDate(-1))}
+            onClick={() => {}}
           >
             <Chevron />
           </button>
@@ -85,7 +34,7 @@ const Budget: React.FC<RouteComponentProps> = () => {
             {
               [
                 'January',
-                'Febuary',
+                'February',
                 'March',
                 'April',
                 'May',
@@ -96,13 +45,13 @@ const Budget: React.FC<RouteComponentProps> = () => {
                 'October',
                 'November',
                 'December'
-              ][month]
-            }{' '}
-            {year}
+              ][3]
+            }
+            2022
           </div>
           <button
             className={styles.next}
-            onClick={() => dispatch(changeDate(1))}
+            onClick={() => {}}
           >
             <Chevron />
           </button>
@@ -116,9 +65,7 @@ const Budget: React.FC<RouteComponentProps> = () => {
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
-              {groups.map((g, i) => (
-                <BudgetGroup key={g.id} id={g.id} index={i} name={g.name} />
-              ))}
+                <BudgetGroup id="g.id" index={0} name="Housing" />
               {provided.placeholder}
             </div>
           )}
