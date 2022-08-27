@@ -1,7 +1,7 @@
-import CreditCard from '../icons/CreditCard';
-import { Link } from '@reach/router';
-import Money from '../icons/Money';
 import React from 'react';
+import { ActiveLink } from '../ActiveLink';
+import CreditCard from '../icons/CreditCard';
+import Money from '../icons/Money';
 import Wallet from '../icons/Wallet';
 import styles from './App.module.scss';
 
@@ -14,33 +14,18 @@ const App: React.FC<AppProps> = ({ children }: AppProps) => (
     <div className={styles.content}>{children}</div>
 
     <nav className={styles.nav}>
-      <Link
-        getProps={({ isCurrent }) => ({
-          className: isCurrent ? styles['active-link'] : undefined
-        })}
-        to="/"
-      >
+      <ActiveLink activeClassName={styles['active-link']} href="/">
         <Wallet />
         <div className={styles.title}>Budget</div>
-      </Link>
-      <Link
-        getProps={({ isCurrent }) => ({
-          className: isCurrent ? styles['active-link'] : undefined
-        })}
-        to="/transactions"
-      >
+      </ActiveLink>
+      <ActiveLink activeClassName={styles['active-link']} href="/transactions">
         <CreditCard />
         <div className={styles.title}>Transactions</div>
-      </Link>
-      <Link
-        getProps={({ isCurrent }) => ({
-          className: isCurrent ? styles['active-link'] : undefined
-        })}
-        to="/income"
-      >
+      </ActiveLink>
+      <ActiveLink activeClassName={styles['active-link']} href="/income">
         <Money />
         <div className={styles.title}>Income</div>
-      </Link>
+      </ActiveLink>
     </nav>
   </div>
 );
