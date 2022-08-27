@@ -3,6 +3,7 @@
 # dependencies
 /node_modules
 /.pnp
+yarn.lock
 .pnp.js
 
 # testing
@@ -13,6 +14,7 @@
 # next.js
 /.next/
 /out/
+/.husky/
 
 # production
 /build
@@ -21,6 +23,8 @@
 .DS_Store
 *.pem
 tsconfig.tsbuildinfo
+.prettierignore
+.gitignore
 
 # debug
 npm-debug.log*

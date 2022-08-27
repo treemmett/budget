@@ -1,0 +1,21 @@
+{
+  "extends": [
+    "stylelint-config-standard-scss",
+    "stylelint-config-idiomatic-order",
+    "stylelint-prettier/recommended"
+  ],
+  "plugins": ["stylelint-csstree-validator", "stylelint-prettier"],
+  "rules": {
+    "csstree/validator": {
+      "syntaxExtensions": ["sass"]
+    },
+    "color-function-notation": "legacy",
+    "prettier/prettier": true,
+    "selector-pseudo-class-no-unknown": [
+      true,
+      {
+        "ignorePseudoClasses": ["global"]
+      }
+    ]
+  }
+}
