@@ -21,7 +21,7 @@ declare module 'budget' {
   export interface Budget {
     id: string;
     name: string;
-    categoryGroup: CategoryGroup;
+    categoryGroup: CategoryGroup[];
   }
 
   export interface User {
