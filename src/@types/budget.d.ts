@@ -1,30 +1,27 @@
-declare module 'rudget' {
+declare module 'budget' {
   export interface Account {
     id: string;
     name: string;
+  }
+
+  export interface TransactionCategory {
+    allocation: number;
+    id: string;
+    name: string;
+    sort: number;
+  }
+
+  export interface CategoryGroup {
+    categories: TransactionCategory[];
+    id: string;
+    name: string;
+    sort: number;
   }
 
   export interface Budget {
     id: string;
     name: string;
     categoryGroup: CategoryGroup;
-  }
-
-  export interface CategoryGroup {
-    categories: TransactionCategory[];
-    category: TransactionCategory;
-    id: string;
-    name: string;
-    sort: number;
-  }
-
-  export interface TransactionCategory {
-    allocation: number;
-    budget: Budget;
-    group: CategoryGroup;
-    id: string;
-    name: string;
-    sort: number;
   }
 
   export interface User {
