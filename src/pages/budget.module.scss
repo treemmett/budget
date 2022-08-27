@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '../globals';
 
 .view {
@@ -5,8 +6,8 @@
 }
 
 .page-header {
-  color: #42475a;
   padding: 0 2em;
+  color: #42475a;
 }
 
 .budget-title {
@@ -14,52 +15,47 @@
   font-weight: 600;
 }
 
-.date {
-  display: inline-flex;
-  font-weight: 500;
-  color: $blue;
-  background-color: lighten($blue, 40%);
-  border-radius: 4px;
-  margin-top: 1em;
-  height: 2em;
-  line-height: 2em;
+.drag-handle {
+  position: absolute;
+  top: 50%;
+  left: 0.3em;
+  display: flex;
+  width: 1.4em;
+  height: 100%;
   align-items: center;
   justify-content: center;
+  color: #ccc0;
+  transform: translateY(-50%);
+  transition: color 0.2s ease;
+
+  &:focus {
+    color: #aaa;
+    outline: none;
+  }
+
+  svg {
+    width: 75%;
+    height: 50%;
+  }
+}
+
+.date {
+  display: inline-flex;
   width: 13em;
+  height: 2em;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1em;
+  background-color: color.adjust($blue, $lightness: 40%);
+  border-radius: 4px;
+  color: $blue;
+  font-weight: 500;
+  line-height: 2em;
   user-select: none;
 
   .text {
     display: inline;
     margin: auto;
-  }
-
-  .prev,
-  .next {
-    display: inline-flex;
-    width: 1.5em;
-    height: 1.5em;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-    padding: 5px;
-    border: 1px solid transparent;
-    border-radius: 1.5em;
-    margin: 0 0.5em;
-    fill: $blue;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    background-color: transparent;
-    font-size: inherit;
-    outline: none;
-
-    &:hover {
-      border-color: $blue;
-    }
-
-    svg {
-      height: 100%;
-      width: 100%;
-    }
   }
 
   .prev {
@@ -69,6 +65,35 @@
   .next {
     transform: rotate(-90deg);
   }
+
+  .prev,
+  .next {
+    display: inline-flex;
+    width: 1.5em;
+    height: 1.5em;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    border: 1px solid transparent;
+    margin: 0 0.5em;
+    background-color: transparent;
+    border-radius: 1.5em;
+    cursor: pointer;
+    fill: $blue;
+    font-size: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:hover {
+      border-color: $blue;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
 }
 
 .budget-list {
@@ -77,112 +102,14 @@
 
 .group {
   position: relative;
-  background-color: #fff;
-  box-shadow: 0 5px 20px rgba(#000, 0.1);
   margin-bottom: 1.5em;
+  background-color: #fff;
   border-radius: 5px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 10%);
 
   &:last-child {
     margin-bottom: 0;
   }
-}
-
-.head,
-.category {
-  display: grid;
-  grid-template-columns: minmax(1em, min-content) 1fr 6em 6em;
-  grid-template-rows: 1fr;
-  grid-template-areas: 'name add activity allocation';
-  grid-column-gap: 0.5em;
-
-  &:hover {
-    input {
-      border-color: #e7e7ea;
-    }
-
-    .drag-handle {
-      color: #ccc;
-    }
-  }
-}
-
-.head {
-  position: relative;
-  padding: 1.25em 2em;
-  font-weight: 500;
-  color: #666;
-
-  .name {
-    font-size: 20px;
-  }
-
-  .add {
-    display: inline-block;
-    height: 1.5em;
-    width: 1.5em;
-    padding: 3px;
-    margin-left: 0.5em;
-    border-radius: 1.5em;
-    margin-right: auto;
-    color: darken(#fff, 15%);
-    box-sizing: border-box;
-    transition: 0.15s ease;
-    transition-property: color, background-color;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    outline: none;
-    grid-area: add;
-
-    &:hover {
-      background-color: darken(#fff, 5%);
-      color: darken(#fff, 20%);
-    }
-
-    &:active,
-    &:focus {
-      background-color: darken(#fff, 10%);
-      color: darken(#fff, 25%);
-    }
-  }
-
-  .allocation {
-    text-align: right;
-    grid-area: allocation;
-    color: inherit;
-  }
-
-  .category-input {
-    position: absolute;
-    background-color: #e35100;
-    background: $orange-gradient;
-    top: 75%;
-    z-index: 1;
-    left: 2em;
-    border-radius: 6px;
-    box-shadow: 0 5px 20px rgba(#000, 0.1);
-
-    input {
-      padding: 1.5em 1em;
-      font-size: 16px;
-      outline: none;
-      background-color: transparent;
-      border: none;
-      color: #fff;
-      font-weight: 500;
-
-      &::placeholder {
-        color: darken(#fff, 5%);
-      }
-    }
-  }
-}
-
-.border {
-  margin: 0 2em;
-  height: 1px;
-  box-sizing: border-box;
-  background-color: #ddd;
 }
 
 .category {
@@ -192,52 +119,16 @@
   border-radius: 5px;
 
   input {
-    padding: 0.25em 0.25em;
-    font-size: 16px;
     box-sizing: border-box;
+    padding: 0.25em;
     border: 1px solid transparent;
     border-radius: 4px;
+    font-size: 16px;
     outline: none;
 
     &:active,
     &:focus {
       border-color: $blue;
-    }
-  }
-}
-
-.name {
-  display: inline-block;
-  grid-area: name;
-  align-self: center;
-  vertical-align: middle;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.category-list {
-  min-height: 1em;
-}
-
-.activity {
-  text-align: right;
-  grid-area: activity;
-  color: inherit;
-  border-radius: 4px;
-  padding: 2px 8px;
-
-  &.with-value {
-    font-weight: 500;
-
-    &.positive {
-      color: $green;
-      background-color: lighten($green, 48%);
-    }
-
-    &.negative {
-      color: $red;
-      background-color: lighten($red, 30%);
     }
   }
 }
@@ -249,32 +140,142 @@
   justify-content: flex-end;
 }
 
-.category-allocation {
-  width: 6em;
-  text-align: right;
-  grid-area: allocation;
+.border {
+  height: 1px;
+  box-sizing: border-box;
+  margin: 0 2em;
+  background-color: #ddd;
 }
 
-.drag-handle {
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  top: 50%;
-  left: 0.3em;
-  transform: translateY(-50%);
-  height: 100%;
-  width: 1.4em;
-  color: #ccc0;
-  transition: color 0.2s ease;
+.name {
+  display: inline-block;
+  overflow: hidden;
+  align-self: center;
+  grid-area: name;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
 
-  &:focus {
-    color: #aaa;
-    outline: none;
+.category-list {
+  min-height: 1em;
+}
+
+.activity {
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: inherit;
+  grid-area: activity;
+  text-align: right;
+
+  &.with-value {
+    font-weight: 500;
+
+    &.positive {
+      background-color: color.adjust($green, $lightness: 48%);
+      color: $green;
+    }
+
+    &.negative {
+      background-color: color.adjust($red, $lightness: 30%);
+      color: $red;
+    }
+  }
+}
+
+.category-allocation {
+  width: 6em;
+  grid-area: allocation;
+  text-align: right;
+}
+
+.head {
+  position: relative;
+  padding: 1.25em 2em;
+  color: #666;
+  font-weight: 500;
+
+  .name {
+    font-size: 20px;
   }
 
-  svg {
-    height: 50%;
-    width: 75%;
+  .add {
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+    box-sizing: border-box;
+    padding: 3px;
+    border: none;
+    margin-right: auto;
+    margin-left: 0.5em;
+    border-radius: 1.5em;
+    color: color.adjust(#fff, $lightness: -15%);
+    cursor: pointer;
+    font-size: 16px;
+    grid-area: add;
+    outline: none;
+    transition: 0.15s ease;
+    transition-property: color, background-color;
+
+    &:hover {
+      background-color: color.adjust(#fff, $lightness: -5%);
+      color: color.adjust(#fff, $lightness: -20%);
+    }
+
+    &:active,
+    &:focus {
+      background-color: color.adjust(#fff, $lightness: -10%);
+      color: color.adjust(#fff, $lightness: -25%);
+    }
+  }
+
+  .allocation {
+    color: inherit;
+    grid-area: allocation;
+    text-align: right;
+  }
+
+  .category-input {
+    position: absolute;
+    z-index: 1;
+    top: 75%;
+    left: 2em;
+    background: $orange-gradient;
+    background-color: #e35100;
+    border-radius: 6px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 10%);
+
+    input {
+      padding: 1.5em 1em;
+      border: none;
+      background-color: transparent;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      outline: none;
+
+      &::placeholder {
+        color: color.adjust(#fff, $lightness: -5%);
+      }
+    }
+  }
+}
+
+.head,
+.category {
+  display: grid;
+  grid-column-gap: 0.5em;
+  grid-template-areas: 'name add activity allocation';
+  grid-template-columns: minmax(1em, min-content) 1fr 6em 6em;
+  grid-template-rows: 1fr;
+
+  &:hover {
+    input {
+      border-color: #e7e7ea;
+    }
+
+    .drag-handle {
+      color: #ccc;
+    }
   }
 }
