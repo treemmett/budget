@@ -1,5 +1,5 @@
 module.exports = {
-  extends: 'zyehex/react',
+  extends: ['zyehex/react', 'zyehex/node', 'zyehex/jest'],
   rules: {
     'import/no-unresolved': ['error', {ignore: ['rudget']}],
     'react/jsx-curly-newline': 'off',
