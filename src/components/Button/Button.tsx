@@ -1,12 +1,10 @@
-import React, { FC } from 'react';
 import cx from 'classnames';
-import styles from './Button.scss';
+import React, { FC, PropsWithChildren } from 'react';
+import styles from './Button.module.scss';
 
-interface ButtonProps {
+interface ButtonProps extends PropsWithChildren {
   color?: 'blue' | 'green' | 'orange' | 'red';
-  disabled?: boolean;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  priority?: 'primary' | 'secondary';
 }
 
 const Button: FC<ButtonProps> = ({ children, color, onClick }) => (
