@@ -2,11 +2,11 @@ import { Account as AccountType } from 'budget';
 import cx from 'classnames';
 import { NextPage } from 'next';
 import React, { FC, useState } from 'react';
-import AccountIcon from '../../assets/icons/account.svg';
-import Edit from '../../assets/icons/edit.svg';
-import Fab from '../../components/Fab/Fab';
-import submitInput from '../../utils/submitInput';
-import styles from './Accounts.scss';
+import AccountIcon from '../assets/icons/account.svg';
+import Edit from '../assets/icons/edit.svg';
+import Fab from '../components/Fab/Fab';
+import submitInput from '../utils/submitInput';
+import styles from './accounts.module.scss';
 
 interface AccountProps {
   id: string;
