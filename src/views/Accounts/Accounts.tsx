@@ -1,10 +1,52 @@
 import { Account as AccountType } from 'budget';
 import cx from 'classnames';
 import { NextPage } from 'next';
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
+import AccountIcon from '../../assets/icons/account.svg';
+import Edit from '../../assets/icons/edit.svg';
 import Fab from '../../components/Fab/Fab';
+import submitInput from '../../utils/submitInput';
 import styles from './Accounts.scss';
-import Account from './components/Account';
+
+interface AccountProps {
+  id: string;
+  name: string;
+}
+
+const Account: FC<AccountProps> = ({ id, name }) => {
+  const [isEditing, setIsEditing] = useState(false);
+
+  return (
+    <div className={cx(styles.card, { [styles.editing]: isEditing })}>
+      {isEditing ? (
+        <input
+          className={styles.name}
+          defaultValue={name}
+          onBlur={() => setIsEditing(false)}
+          onKeyDown={(e) =>
+            submitInput({
+              async enter() {
+                console.log('changing', id, e.currentTarget.value);
+                setIsEditing(false);
+              },
+              escape() {
+                setIsEditing(false);
+              },
+              event: e,
+            })
+          }
+        />
+      ) : (
+        <div className={styles.name}>{name}</div>
+      )}
+      <button className={styles.edit} onClick={() => setIsEditing(true)} type="button">
+        <Edit aria-label="Edit account" />
+      </button>
+      <AccountIcon className={styles.icon} />
+      <div className={styles.type}>Checking</div>
+    </div>
+  );
+};
 
 const Accounts: NextPage = () => {
   const [isCreatingAccount, setIsCreatingAccount] = useState(false);
