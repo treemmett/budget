@@ -2,9 +2,9 @@ import { Budget } from 'budget';
 import { NextPage } from 'next';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import Button from '../../components/Button/Button';
-import Fab from '../../components/Fab/Fab';
-import styles from './Budgets.module.scss';
+import Button from '../components/Button/Button';
+import Fab from '../components/Fab/Fab';
+import styles from './budgets.module.scss';
 
 const Budgets: NextPage = () => {
   const [createNewBudget, setCreateNewBudget] = useState(false);
