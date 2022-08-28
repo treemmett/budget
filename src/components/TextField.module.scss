@@ -191,7 +191,7 @@ $border: 1px solid #e7e7ea;
 
       &:focus,
       &:hover {
-        background-color: color.adjust(#fff, $darkness: 5%);
+        background-color: color.adjust(#fff, $lightness: -5%);
       }
 
       &.selected {
