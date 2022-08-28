@@ -1,7 +1,7 @@
 import cx from 'classnames';
 import { NextPage } from 'next';
-import Input from '../../components/Input/Input';
-import styles from './Login.module.scss';
+import Input from '../components/Input/Input';
+import styles from './login.module.scss';
 
 interface Login {
   login: string;
