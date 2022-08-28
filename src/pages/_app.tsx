@@ -7,7 +7,13 @@ import { StoreProvider } from '../components/Store';
 import { Toaster } from '../components/Toast/Toast';
 import App from '../components/layouts/App';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const MyApp: FC<AppProps> = ({ Component, pageProps }) => (
   <StoreProvider>
