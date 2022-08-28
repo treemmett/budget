@@ -1,4 +1,25 @@
-@import '../globals';
+@import '../global';
+
+.indicator {
+  position: relative;
+  top: 0;
+  right: 0;
+  display: flex;
+  width: 1.5em;
+  min-height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.75em;
+  border-left: 1px solid #ccc;
+  margin: 1em 0;
+  fill: #a9a9a9;
+  transition: 0.15s ease;
+  transition-property: fill, border-color;
+
+  svg {
+    width: 100%;
+  }
+}
 
 .field {
   display: flex;
@@ -17,63 +38,42 @@
   top: 0;
   left: 0;
   width: 100%;
-  box-sizing: border-box;
-  border: none;
-  padding: 0;
   height: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  border: none;
   opacity: 0;
   pointer-events: none;
 }
 
 .display {
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
   padding-right: 1em;
-}
-
-.indicator {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  top: 0;
-  right: 0;
-  min-height: 100%;
-  width: 1.5em;
-  padding: 0 0.75em;
-  margin: 1em 0;
-  border-left: 1px solid #ccc;
-  fill: #a9a9a9;
-  transition: 0.15s ease;
-  transition-property: fill, border-color;
-
-  svg {
-    width: 100%;
-  }
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dropdown {
+  position: absolute;
+  z-index: 2;
   top: 100%;
   width: 100%;
-  position: absolute;
+  max-height: 15em;
+  padding: 0.5em 0;
+  margin-top: 5px;
   background-color: #fff;
   border-radius: 6px;
-  box-shadow: 0 5px 20px rgba(#000, 0.1);
-  margin-top: 5px;
-  padding: 0.5em 0;
-  z-index: 2;
+  box-shadow: 0 5px 20px color.adjust(#000, $alpha: 0.1);
   overflow-y: auto;
-  max-height: 15em;
 }
 
 .option {
   padding: 0.75em 1em;
-  user-select: none;
   cursor: pointer;
+  user-select: none;
 
   &.focus {
-    background-color: lighten($blue, 40%);
+    background-color: color.adjust($blue, $lightness: 40%);
   }
 
   &.selected {

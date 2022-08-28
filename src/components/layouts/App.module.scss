@@ -1,49 +1,50 @@
-@import '../../globals';
+@use 'sass:color';
+@import '../../global';
 
 .app {
   display: grid;
+  overflow: hidden;
   height: 100%;
+  grid-template-areas: 'content' 'nav';
   grid-template-columns: 1fr;
   grid-template-rows: 1fr 3.5em;
-  grid-template-areas: 'content' 'nav';
-  overflow: hidden;
 }
 
 .content {
-  grid-area: content;
   min-height: 100%;
+  grid-area: content;
+  -webkit-overflow-scrolling: touch;
   overflow-x: hidden;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .nav {
   display: flex;
-  grid-area: nav;
   height: 100%;
   background-color: #fff;
+  grid-area: nav;
 
   &::after {
-    content: '';
-    display: block;
     position: absolute;
-    height: 100%;
+    display: block;
     width: 100%;
+    height: 100%;
     background-color: transparent;
+    box-shadow: 0 -5px 20px color.adjust(#000, $alpha: 0.1);
+    content: '';
     pointer-events: none;
-    box-shadow: 0 -5px 20px rgba(#000, 0.1);
   }
 
   a {
     display: flex;
+    height: 100%;
+    box-sizing: border-box;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    height: 100%;
     padding: 0.5em 1em;
-    box-sizing: border-box;
-    stroke: #5f6369;
     color: #5f6369;
+    stroke: #5f6369;
     text-decoration: none;
     transition: 0.15s ease;
     transition-property: background-color, box-shadow, color, stroke;
@@ -54,9 +55,9 @@
     }
 
     svg {
-      fill: transparent;
-      height: 100%;
       width: 100%;
+      height: 100%;
+      fill: transparent;
     }
 
     .title {
@@ -67,16 +68,16 @@
 
 @media screen and (min-width: $desktop-break) {
   .app {
+    grid-template-areas: 'nav content';
     grid-template-columns: 15em 1fr;
     grid-template-rows: 1fr;
-    grid-template-areas: 'nav content';
   }
 
   .nav {
     display: block;
-    box-shadow: none;
-    background-color: transparent;
     padding: 0.25em;
+    background-color: transparent;
+    box-shadow: none;
 
     &::after {
       content: unset;
@@ -84,18 +85,18 @@
 
     a {
       position: relative;
+      overflow: hidden;
+      height: 3em;
+      box-sizing: border-box;
       flex-direction: row;
       justify-content: flex-start;
-      height: 3em;
       border-radius: 4px;
-      box-sizing: border-box;
-      overflow: hidden;
 
       &.active-link {
         background-color: #eb6c7c;
+        box-shadow: 0 5px 10px color.adjust(#eb6c7c, $alpha: 0.1);
         color: #fff;
         stroke: #fff;
-        box-shadow: 0 5px 10px rgba(#eb6c7c, 10%);
       }
 
       svg {

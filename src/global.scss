@@ -2,13 +2,21 @@ $blue: #32c1ff;
 $blue-light: #32ffff;
 $blue-text: #0aa5e8;
 $orange: #ed8555;
-$green: #14cc60;
+$red: #eb6c7c;
+$green: #35c387;
 $green-light: #56dd83;
-$red: #d85b56;
+$blue-gradient: linear-gradient(120deg, #00c6ff 0%, #00f2fe 100%);
+$purple-gradient: linear-gradient(#7c69f4, 0%, #5546f2 85%);
+$red-gradient: linear-gradient(to right top, #eb6c7c, #f17378, #f77a74, #fb8370, #ff8b6c);
+$orange-gradient: linear-gradient(to right top, #c6578b, #eb6c7c, #ff8b6c, #ffb161, #fed966);
 $shadow1: 0 2px 10px 0 rgba(68, 71, 81, 13%);
 $shadow3: 0 8px 10px 1px rgba(68, 71, 81, 18%);
 $curve: cubic-bezier(0.65, 0.29, 0.26, 0.48);
 $transition-bg: background-color 0.2s $curve;
+$text-black: #202f2f;
+$font-stack: 'Roboto', -apple-system, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+  'Droid Sans', 'Helvetica Neue', sans-serif;
+$desktop-break: 850px;
 
 @mixin card {
   padding: 1.5rem;

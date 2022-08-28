@@ -1,32 +1,33 @@
-@import '../globals';
+@use 'sass:color';
+@import '../global';
 
 .button {
   display: block;
   width: 100%;
-  border: none;
-  background-color: $blue;
-  margin-top: 1em;
   padding: 1em 2em;
-  font-size: 16px;
-  cursor: pointer;
-  color: #fff;
+  border: none;
+  border: 1px solid $blue;
+  margin-top: 1em;
+  background-color: $blue;
   border-radius: 100vh;
   box-shadow: 0 8px 20px rgba($blue, 0.4);
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
   font-weight: 500;
-  border: 1px solid $blue;
+  outline: none;
   transition: 0.2s ease;
   transition-property: transform, background-color, box-shadow;
-  outline: none;
 
   &:hover {
-    transform: translateY(-1px);
     box-shadow: 0 8px 20px 5px rgba($blue, 0.4);
+    transform: translateY(-1px);
   }
 
   &:active,
   &:focus {
-    transform: translateY(1px);
-    background-color: darken($blue, 2%);
+    background-color: color.adjust($blue, $lightness: -2%);
     box-shadow: 0 8px 10px rgba($blue, 0.4);
+    transform: translateY(1px);
   }
 }
