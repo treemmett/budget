@@ -1,0 +1,223 @@
+@import '../../global';
+
+.border {
+  position: absolute;
+  top: calc(100% - 1px);
+  left: 1rem;
+  width: calc(100% - 2rem);
+  height: 1px;
+  background: radial-gradient(#ccc 30%, #fff);
+  transition: opacity 700ms ease;
+}
+
+.toggle {
+  @include button;
+
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0.25rem;
+  border-radius: 1.25rem;
+  color: #666;
+  font-size: 16px;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 0.25s $curve, transform 0.25s $curve, $transitionBg;
+
+  &:focus {
+    opacity: 1;
+  }
+
+  svg {
+    display: block;
+  }
+}
+
+.title {
+  align-self: center;
+  grid-area: title;
+}
+
+.header {
+  padding: 1rem 3rem;
+  grid-template-areas: 'title key' 'title field';
+  grid-template-rows: 1em 1fr;
+
+  .title {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: color 0.2s $curve;
+
+    &.edit {
+      @include input;
+
+      padding: 0.25rem 1rem;
+      margin-left: calc(-1rem - 1px);
+    }
+
+    .text {
+      cursor: text;
+    }
+  }
+
+  .plus {
+    @include button;
+
+    position: relative;
+    display: flex;
+    width: 1.75rem;
+    height: 1.75rem;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin-left: 0.5rem;
+    border-radius: 2rem;
+    opacity: 0;
+    transition: opacity 0.2s $curve, $transitionBg;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+      color: #888;
+    }
+  }
+
+  .tooltip {
+    position: absolute;
+    left: 3rem;
+    width: inherit;
+
+    input {
+      @include card;
+
+      position: fixed;
+      z-index: 1;
+      padding: 1em;
+      border: none;
+      background: linear-gradient(to bottom left, #ff4747, #ff8b4c);
+      background-color: #ff4747;
+      color: #fff;
+      cursor: text;
+      font-size: 1rem;
+      outline: none;
+
+      &::placeholder {
+        color: inherit;
+      }
+    }
+  }
+}
+
+.group {
+  @include card;
+
+  overflow: hidden;
+  padding: 0;
+
+  &:hover,
+  &:focus-within {
+    .toggle {
+      opacity: 1;
+    }
+
+    .plus {
+      opacity: 1;
+    }
+  }
+
+  &.collapsed {
+    .header .border {
+      opacity: 0;
+    }
+
+    .toggle {
+      opacity: 1;
+      transform: translateY(-50%) rotate(90deg);
+    }
+  }
+
+  &.primitive {
+    display: flex;
+    height: 2.25rem;
+    align-items: center;
+    padding: 1rem 3rem;
+  }
+}
+
+.header,
+.category {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 5.5em;
+}
+
+.key,
+.field {
+  justify-self: end;
+  text-align: right;
+}
+
+.key {
+  color: #737373;
+  font-size: 11px;
+  font-weight: 300;
+  grid-area: key;
+}
+
+.field {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  grid-area: field;
+}
+
+.categories {
+  overflow: hidden;
+  min-height: 1rem;
+}
+
+.input {
+  display: inline-block;
+  width: 100%;
+  padding: 0.125rem;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font-size: 1rem;
+  outline: none;
+  text-align: right;
+  transition: border-color 0.15s ease;
+
+  &:focus,
+  &:active {
+    border-color: $blue;
+  }
+}
+
+.category {
+  height: 3.25rem;
+  box-sizing: border-box;
+  align-items: center;
+  padding: 0 3rem;
+  background-color: #fff;
+  border-radius: 6px;
+  grid-gap: 1rem;
+  grid-template-areas: 'title field';
+  grid-template-rows: 1fr;
+
+  &:hover .input:not(:focus) {
+    border-color: #d8d8d8;
+  }
+
+  &.primitive {
+    display: flex;
+    min-height: 1.25rem;
+    align-items: center;
+  }
+}
