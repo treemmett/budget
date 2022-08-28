@@ -5,7 +5,6 @@ import BudgetCategory from './BudgetCategory';
 import Loader from './Loader/Loader';
 import DragHandle from './icons/DragHandle';
 import Plus from './icons/Plus';
-import type BudgetGroupType from '@entities/BudgetGroup';
 import { createCategory } from '@lib/createCategory';
 import { getGroups } from '@lib/getGroups';
 
@@ -20,14 +19,8 @@ const BudgetGroup: FC<BudgetGroupProps> = ({ id }: BudgetGroupProps) => {
   const queryClient = useQueryClient();
   const { mutate } = useMutation(createCategory, {
     onSuccess: (d) => {
-      queryClient.setQueryData<BudgetGroupType[]>(['groups'], (cached) => {
-        if (!cached) return [d];
-        const index = cached.findIndex((g) => g.id === id);
-        if (~index) {
-          cached.splice(index, 1);
-        }
-        return [...cached, d];
-      });
+      queryClient.invalidateQueries(['groups']);
+      queryClient.setQueryData(['category', { id: d.id }], d);
     },
   });
 

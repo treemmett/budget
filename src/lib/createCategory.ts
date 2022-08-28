@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type BudgetGroup from '@entities/BudgetGroup';
+import type BudgetCategory from '@entities/BudgetCategory';
 
 export async function createCategory({
   groupID,
@@ -7,7 +7,7 @@ export async function createCategory({
 }: {
   groupID: string;
   name: string;
-}): Promise<BudgetGroup> {
+}): Promise<BudgetCategory> {
   const { data } = await axios.post(`/api/groups/${encodeURIComponent(groupID)}/category`, {
     name,
   });

@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import BudgetGroup from '../components/BudgetGroup';
 import { useDispatch, useStore } from '../components/Store';
 import Chevron from '../components/icons/Chevron';
@@ -10,7 +10,17 @@ import { getGroups } from '@lib/getGroups';
 const Budget: FC = () => {
   const dispatch = useDispatch();
   const { month, year } = useStore();
-  const { data, error, isError, isLoading } = useQuery(['groups'], getGroups);
+  const queryClient = useQueryClient();
+  const { data, error, isError, isLoading } = useQuery(['groups'], getGroups, {
+    onSuccess: (newData) => {
+      newData.forEach((group) => {
+        queryClient.setQueryData(['group', { id: group.id }], group);
+        group.categories.forEach((category) => {
+          queryClient.setQueryData(['category', { id: category.id }], category);
+        });
+      });
+    },
+  });
 
   if (isLoading || !data) {
     return <Loader />;
