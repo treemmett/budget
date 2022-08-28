@@ -15,6 +15,7 @@
     "lint:style": "stylelint **/*.{scss,css}"
   },
   "dependencies": {
+    "axios": "^0.27.2",
     "bcryptjs": "^2.4.3",
     "celebrate": "^15.0.1",
     "class-validator": "^0.11.0",
@@ -26,6 +27,7 @@
     "react": "^18.2.0",
     "react-animate-height": "^2.0.21",
     "react-dom": "^18.2.0",
+    "react-query": "^3.39.2",
     "react-spring": "^8.0.27",
     "reflect-metadata": "^0.1.13",
     "uuid": "^3.3.3",

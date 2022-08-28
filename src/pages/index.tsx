@@ -1,12 +1,25 @@
 import { FC } from 'react';
+import { useQuery } from 'react-query';
 import BudgetGroup from '../components/BudgetGroup';
 import { useDispatch, useStore } from '../components/Store';
 import Chevron from '../components/icons/Chevron';
 import styles from './budget.module.scss';
+import Loader from '@components/Loader/Loader';
+import { getGroups } from '@lib/getGroups';
 
 const Budget: FC = () => {
   const dispatch = useDispatch();
   const { month, year } = useStore();
+  const { data, error, isError, isLoading } = useQuery('groups', getGroups);
+
+  if (isLoading || !data) {
+    return <Loader />;
+  }
+
+  if (isError) {
+    console.log(error);
+    return <div>Something went wrong</div>;
+  }
 
   return (
     <div className={styles.view}>
@@ -47,8 +60,9 @@ const Budget: FC = () => {
         </div>
       </div>
       <div className={styles['budget-list']}>
-        <BudgetGroup name="Housing" />
-        <BudgetGroup name="Transportation" />
+        {data.map((group) => (
+          <BudgetGroup key={group.id} name={group.name} />
+        ))}
       </div>
     </div>
   );
