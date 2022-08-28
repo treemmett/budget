@@ -5,14 +5,14 @@ import styles from '../pages/budget.module.scss';
 import { toDisplay } from '../utils/formatCurrency';
 import Loader from './Loader/Loader';
 import DragHandle from './icons/DragHandle';
-import { getCategoryByID } from '@lib/category';
+import { createCategoryKey, getCategoryByID } from '@lib/category';
 
 interface BudgetCategoryProps {
   id: string;
 }
 
 const BudgetCategory: FC<BudgetCategoryProps> = ({ id }: BudgetCategoryProps) => {
-  const { data, isError, isLoading } = useQuery(['category', { id }], () => getCategoryByID(id));
+  const { data, isError, isLoading } = useQuery(createCategoryKey(id), () => getCategoryByID(id));
 
   if (isLoading || (!isError && !data)) {
     return (

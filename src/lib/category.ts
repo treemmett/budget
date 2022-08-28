@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { QueryKey } from 'react-query';
 import type BudgetCategory from '@entities/BudgetCategory';
 
 export async function createCategory({
@@ -17,4 +18,12 @@ export async function createCategory({
 export async function getCategoryByID(id: string): Promise<BudgetCategory> {
   const { data } = await axios.get(`/api/category/${encodeURIComponent(id)}`);
   return data;
+}
+
+export function createCategoryKey(id?: string): QueryKey {
+  if (id) {
+    return ['category', { id }];
+  }
+
+  return ['category'];
 }

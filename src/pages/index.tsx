@@ -5,19 +5,19 @@ import { useDispatch, useStore } from '../components/Store';
 import Chevron from '../components/icons/Chevron';
 import styles from './budget.module.scss';
 import Loader from '@components/Loader/Loader';
-import { getGroups } from '@lib/groups';
+import { createCategoryKey } from '@lib/category';
+import { createGroupsKey, getGroups } from '@lib/groups';
 
 const Budget: FC = () => {
   const dispatch = useDispatch();
   const { month, year } = useStore();
   const queryClient = useQueryClient();
-  const { data, error, isError, isLoading } = useQuery(['groups'], getGroups, {
+  const { data, isError, isLoading } = useQuery(createGroupsKey(), getGroups, {
     onSuccess: (newData) => {
       newData.forEach((group) => {
-        queryClient.setQueryData(['group', { id: group.id }], group);
+        queryClient.setQueryData(createGroupsKey(group.id), group);
         group.categories.forEach((category) => {
-          console.log({ category });
-          queryClient.setQueryData(['category', { id: category.id }], category);
+          queryClient.setQueryData(createCategoryKey(category.id), category);
         });
       });
     },
@@ -28,7 +28,6 @@ const Budget: FC = () => {
   }
 
   if (isError) {
-    console.log(error);
     return <div>Something went wrong</div>;
   }
 
