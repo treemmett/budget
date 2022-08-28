@@ -3,11 +3,11 @@ import { NextPage } from 'next';
 import { FC, useState } from 'react';
 import AnimateHeight from 'react-animate-height';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import ChevronDown from '../../assets/icons/chevronDown.svg';
-import Plus from '../../assets/icons/plusCircle.svg';
-import Fab from '../../components/Fab/Fab';
-import { toCents, toDisplay } from '../../utils/formatCurrency';
-import styles from './Categories.module.scss';
+import ChevronDown from '../assets/icons/chevronDown.svg';
+import Plus from '../assets/icons/plusCircle.svg';
+import Fab from '../components/Fab/Fab';
+import { toCents, toDisplay } from '../utils/formatCurrency';
+import styles from './categories.module.scss';
 
 interface CategoryProps {
   id: string;
@@ -147,8 +147,12 @@ const Categories: NextPage = () => (
   <DragDropContext onDragEnd={() => null}>
     <Droppable droppableId="group" type="groups">
       {(provided) => (
-        // eslint-disable-next-line react/jsx-props-no-spreading
-        <div className={styles.groups} ref={provided.innerRef} {...provided.droppableProps}>
+        <div
+          className={cx(styles.groups, 'view')}
+          ref={provided.innerRef}
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...provided.droppableProps}
+        >
           {[
             { id: 'a', sort: 1 },
             { id: 'b', sort: 2 },
