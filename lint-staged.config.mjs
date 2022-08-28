@@ -1,5 +1,15 @@
 const config = {
-  '*': ['prettier -l', 'cspell --gitignore'],
+  /**
+   *
+   * @param {string[]} files
+   * @returns string[] | string | Promise<string> | Promise<string[]>
+   */
+  '*': (files) => [
+    `prettier -l ${files.join(' ')}`,
+    `cspell --gitignore ${files
+      .map((f) => `"${f.replace(/\[/g, '\\[').replace(/\]/g, '\\]')}"`)
+      .join(' ')}`,
+  ],
   '*.(css|scss)': 'stylelint',
   '*.(ts|tsx|js|jsx)': 'eslint',
 };
