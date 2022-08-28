@@ -2,5 +2,5 @@
   "version": "0.2",
   "language": "en",
   "dictionaries": ["typescript", "html"],
-  "words": ["commitlint", "csstree", "stylelint", "svgr"]
+  "words": ["commitlint", "csstree", "stylelint", "svgr", "typeorm"]
 }

@@ -1,14 +1,7 @@
+import BudgetGroup from '@entities/BudgetGroup';
 import { nc } from '@utils/nc';
 
-export default nc().get((req, res) => {
-  res.send([
-    {
-      id: 'a',
-      name: 'Housing',
-    },
-    {
-      id: 'b',
-      name: 'Transportation',
-    },
-  ]);
+export default nc().get(async (req, res) => {
+  const groups = await BudgetGroup.find();
+  res.send(groups);
 });
