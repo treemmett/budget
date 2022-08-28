@@ -1,10 +1,10 @@
 import { Link, RouteComponentProps } from '@reach/router';
-import TextField, { SplitInputs } from '../components/TextField';
-import Btn from '../components/Btn';
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import Btn from '../components/Btn';
+import TextField, { SplitInputs } from '../components/TextField';
 import { register } from '../redux/actions/authentication';
 import styles from './Login.module.scss';
-import { useDispatch } from 'react-redux';
 
 const Register: React.FC<RouteComponentProps> = () => {
   const dispatch = useDispatch();
@@ -14,13 +14,7 @@ const Register: React.FC<RouteComponentProps> = () => {
 
     const form = e.currentTarget as HTMLFormElement;
 
-    const {
-      email,
-      firstName,
-      lastName,
-      password,
-      confirmPassword
-    } = (form.elements as unknown) as {
+    const { email, firstName, lastName, password, confirmPassword } = form.elements as unknown as {
       [input: string]: HTMLInputElement;
     };
 
@@ -29,9 +23,7 @@ const Register: React.FC<RouteComponentProps> = () => {
       alert('Passwords do not match.');
     }
 
-    dispatch(
-      register(email.value, password.value, firstName.value, lastName.value)
-    );
+    dispatch(register(email.value, password.value, firstName.value, lastName.value));
   }
 
   return (
@@ -43,12 +35,7 @@ const Register: React.FC<RouteComponentProps> = () => {
         </SplitInputs>
         <TextField label="Email" name="email" type="email" required />
         <TextField label="Password" name="password" type="password" required />
-        <TextField
-          label="Confirm Password"
-          name="confirmPassword"
-          type="password"
-          required
-        />
+        <TextField label="Confirm Password" name="confirmPassword" type="password" required />
         <Btn label="Create Account" type="submit" />
       </form>
       <div className={styles.footer}>
