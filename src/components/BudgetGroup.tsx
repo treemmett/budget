@@ -1,32 +1,35 @@
-import React, { FC, useCallback, useState } from 'react';
-import { useMutation } from 'react-query';
+import React, { FC, useCallback, useMemo, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import styles from '../pages/budget.module.scss';
 import BudgetCategory from './BudgetCategory';
+import Loader from './Loader/Loader';
 import DragHandle from './icons/DragHandle';
 import Plus from './icons/Plus';
-import type Category from '@entities/Category';
+import type BudgetGroupType from '@entities/BudgetGroup';
 import { createCategory } from '@lib/createCategory';
+import { getGroups } from '@lib/getGroups';
 
 interface BudgetGroupProps {
   id: string;
-  name: string;
 }
 
-const BudgetGroup: FC<BudgetGroupProps> = ({ id, name }: BudgetGroupProps) => {
+const BudgetGroup: FC<BudgetGroupProps> = ({ id }: BudgetGroupProps) => {
+  const { data, isError, isLoading } = useQuery(['groups'], getGroups);
   const [inputVisible, setInput] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
-  const { mutate } = useMutation(createCategory);
-
-  const categories: Partial<Category>[] = [
-    {
-      id: 'a',
-      name: 'Rent',
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation(createCategory, {
+    onSuccess: (d) => {
+      queryClient.setQueryData<BudgetGroupType[]>(['groups'], (cached) => {
+        if (!cached) return [d];
+        const index = cached.findIndex((g) => g.id === id);
+        if (~index) {
+          cached.splice(index, 1);
+        }
+        return [...cached, d];
+      });
     },
-    {
-      id: 'b',
-      name: 'Electric',
-    },
-  ];
+  });
 
   const keyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -41,10 +44,28 @@ const BudgetGroup: FC<BudgetGroupProps> = ({ id, name }: BudgetGroupProps) => {
     [id, mutate, newCategoryName]
   );
 
+  const group = useMemo(() => data?.find((g) => g.id === id), [data, id]);
+
+  if (isLoading) {
+    return (
+      <div className={styles.group}>
+        <Loader />
+      </div>
+    );
+  }
+
+  if (isError || !group) {
+    return (
+      <div className={styles.group}>
+        <div>Error ocurred</div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.group}>
       <div className={styles.head}>
-        <div className={styles.name}>{name}</div>
+        <div className={styles.name}>{group.name}</div>
         <button className={styles.add} onClick={() => setInput(true)} type="button">
           <Plus />
         </button>
@@ -69,8 +90,8 @@ const BudgetGroup: FC<BudgetGroupProps> = ({ id, name }: BudgetGroupProps) => {
       <div className={styles.border} />
 
       <div className={styles['category-list']} suppressHydrationWarning>
-        {categories.map((c) => (
-          <BudgetCategory key={c.id} name={c.name || 'oh well'} />
+        {group.categories.map((c) => (
+          <BudgetCategory key={c.id} name={c.name} />
         ))}
       </div>
     </div>

@@ -6,16 +6,21 @@ import { validateID } from '@utils/validate';
 
 export default nc().all(async (req, res) => {
   const id = validateID(req.query.groupID);
-  const group = await BudgetGroup.findOne({ where: { id } });
+  const group = await BudgetGroup.findOne({
+    relations: {
+      categories: true,
+    },
+    where: { id },
+  });
   if (!group) {
     throw new Error('group not found');
   }
   const category = new BudgetCategory();
   category.allocations = [];
-  category.group = group;
   category.id = v4();
   category.name = req.body.name;
   category.sort = 0;
-  await category.save();
-  res.send(category);
+  group.categories.push(category);
+  await group.save();
+  res.send(group);
 });

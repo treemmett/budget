@@ -10,7 +10,7 @@ import { getGroups } from '@lib/getGroups';
 const Budget: FC = () => {
   const dispatch = useDispatch();
   const { month, year } = useStore();
-  const { data, error, isError, isLoading } = useQuery('groups', getGroups);
+  const { data, error, isError, isLoading } = useQuery(['groups'], getGroups);
 
   if (isLoading || !data) {
     return <Loader />;
@@ -61,7 +61,7 @@ const Budget: FC = () => {
       </div>
       <div className={styles['budget-list']}>
         {data.map((group) => (
-          <BudgetGroup id={group.id} key={group.id} name={group.name} />
+          <BudgetGroup id={group.id} key={group.id} />
         ))}
       </div>
     </div>

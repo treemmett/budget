@@ -7,7 +7,6 @@ export const AppDataSource = new DataSource({
   database: 'budget',
   entities: [BudgetGroup, BudgetCategory],
   host: 'localhost',
-  logging: true,
   migrations: [],
   password: process.env.DB_PASSWORD,
   port: 5432,
