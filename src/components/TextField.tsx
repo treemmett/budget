@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import PT from 'prop-types';
 import cx from 'classnames';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import randomString from '../utils/randomString';
 import styles from './TextField.module.scss';
 
@@ -19,7 +18,6 @@ type Type =
   | 'week';
 
 interface TextFieldProps {
-  autoFocus?: boolean;
   className?: string;
   defaultValue?: string;
   id?: string;
@@ -27,12 +25,12 @@ interface TextFieldProps {
   mask?: (input: string) => string | number;
   name?: string;
   required?: boolean;
+  split?: boolean;
   type?: Type;
   value?: string;
 }
 
 const TextField: React.FC<TextFieldProps> = ({
-  autoFocus,
   className,
   defaultValue,
   id,
@@ -40,8 +38,9 @@ const TextField: React.FC<TextFieldProps> = ({
   mask,
   name,
   required,
+  split,
   type = 'text',
-  value
+  value,
 }: TextFieldProps) => {
   const [focus, setFocus] = useState(
     mask ? !!mask(value || defaultValue || '') : !!(value || defaultValue)
@@ -50,9 +49,7 @@ const TextField: React.FC<TextFieldProps> = ({
   const realId = useMemo(() => id || `input-${randomString()}`, [id]);
 
   useEffect(() => {
-    const newFocus = mask
-      ? !!mask(value || defaultValue || '')
-      : !!(value || defaultValue);
+    const newFocus = mask ? !!mask(value || defaultValue || '') : !!(value || defaultValue);
 
     setFocus(newFocus);
   }, [value, defaultValue, mask]);
@@ -75,17 +72,19 @@ const TextField: React.FC<TextFieldProps> = ({
 
   return (
     <label
-      className={cx(className, styles.field, { [styles.focus]: focus })}
+      className={cx(className, styles.field, {
+        [styles.focus]: focus,
+        [styles['split-field']]: split,
+      })}
       htmlFor={realId}
     >
       <input
-        autoFocus={autoFocus}
         className={styles.input}
         defaultValue={defaultValue}
         id={realId}
         name={name}
-        onChange={changeHandler}
         onBlur={onBlur}
+        onChange={changeHandler}
         onFocus={onFocus}
         required={required}
         type={type}
@@ -99,20 +98,6 @@ const TextField: React.FC<TextFieldProps> = ({
 
 export default TextField;
 
-export const SplitInputs: React.FC = ({ children }) => (
-  // eslint-disable-next-line jsx-a11y/label-has-associated-control, jsx-a11y/label-has-for
-  <label className={styles.split}>
-    {React.Children.map(children, child => {
-      // @ts-ignore
-      return React.cloneElement(child, {
-        // @ts-ignore
-        className: cx(child.props.className, styles['split-field'])
-      });
-    })}
-  </label>
+export const SplitInputs: React.FC<PropsWithChildren> = ({ children }) => (
+  <div className={styles.split}>{children}</div>
 );
-
-SplitInputs.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  children: PT.any
-};
