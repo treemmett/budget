@@ -15,6 +15,7 @@
     "lint:style": "stylelint **/*.{scss,css}"
   },
   "dependencies": {
+    "@types/uuid": "^8.3.4",
     "axios": "^0.27.2",
     "bcryptjs": "^2.4.3",
     "celebrate": "^15.0.1",
@@ -31,7 +32,8 @@
     "react-spring": "^8.0.27",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.3.8",
-    "uuid": "^3.3.3",
+    "uuid": "^8.3.2",
+    "validator": "^13.7.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
@@ -44,7 +46,6 @@
     "@types/next": "^9.0.0",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
-    "@types/uuid": "^3.4.5",
     "@typescript-eslint/eslint-plugin": "^5.9.0",
     "@typescript-eslint/parser": "^5.9.0",
     "concurrently": "^7.2.2",

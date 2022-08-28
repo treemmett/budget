@@ -29,6 +29,7 @@
     "import/no-unresolved": ["error", { "ignore": ["budget"] }],
     "import/order": ["error", { "alphabetize": { "order": "asc" } }],
     "import/prefer-default-export": "off",
+    "jsx-a11y/no-autofocus": 0,
     "no-bitwise": ["error", { "allow": ["~"] }],
     "no-shadow": "off",
     "prettier/prettier": "error",

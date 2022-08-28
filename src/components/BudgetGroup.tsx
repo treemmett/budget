@@ -1,16 +1,21 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
+import { useMutation } from 'react-query';
 import styles from '../pages/budget.module.scss';
 import BudgetCategory from './BudgetCategory';
 import DragHandle from './icons/DragHandle';
 import Plus from './icons/Plus';
 import type Category from '@entities/Category';
+import { createCategory } from '@lib/createCategory';
 
 interface BudgetGroupProps {
+  id: string;
   name: string;
 }
 
-const BudgetGroup: FC<BudgetGroupProps> = ({ name }: BudgetGroupProps) => {
+const BudgetGroup: FC<BudgetGroupProps> = ({ id, name }: BudgetGroupProps) => {
   const [inputVisible, setInput] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const { mutate } = useMutation(createCategory);
 
   const categories: Partial<Category>[] = [
     {
@@ -23,13 +28,18 @@ const BudgetGroup: FC<BudgetGroupProps> = ({ name }: BudgetGroupProps) => {
     },
   ];
 
-  function createCategory(e: React.KeyboardEvent): void {
-    if (e.keyCode !== 13) {
-      return;
-    }
+  const keyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key !== 'Enter') {
+        return;
+      }
 
-    setInput(false);
-  }
+      setInput(false);
+      mutate({ groupID: id, name: newCategoryName });
+      setNewCategoryName('');
+    },
+    [id, mutate, newCategoryName]
+  );
 
   return (
     <div className={styles.group}>
@@ -44,8 +54,11 @@ const BudgetGroup: FC<BudgetGroupProps> = ({ name }: BudgetGroupProps) => {
           <div className={styles['category-input']}>
             <input
               onBlur={() => setInput(false)}
-              onKeyDown={createCategory}
+              onChange={(e) => setNewCategoryName(e.currentTarget.value)}
+              onKeyDown={keyDown}
               placeholder="New Category Name"
+              value={newCategoryName}
+              autoFocus
             />
           </div>
         )}

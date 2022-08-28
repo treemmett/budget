@@ -1,10 +1,11 @@
 import { DataSource } from 'typeorm';
 import type { ApiMiddleware } from './nc';
+import BudgetCategory from '@entities/BudgetCategory';
 import BudgetGroup from '@entities/BudgetGroup';
 
 export const AppDataSource = new DataSource({
   database: 'budget',
-  entities: [BudgetGroup],
+  entities: [BudgetGroup, BudgetCategory],
   host: 'localhost',
   logging: true,
   migrations: [],
@@ -15,6 +16,8 @@ export const AppDataSource = new DataSource({
   type: 'postgres',
   username: process.env.DB_USERNAME,
 });
+
+AppDataSource.initialize();
 
 export const connectToDatabase: ApiMiddleware = async (req, res, next) => {
   if (!AppDataSource.isInitialized) {

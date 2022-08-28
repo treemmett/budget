@@ -61,7 +61,7 @@ const Budget: FC = () => {
       </div>
       <div className={styles['budget-list']}>
         {data.map((group) => (
-          <BudgetGroup key={group.id} name={group.name} />
+          <BudgetGroup id={group.id} key={group.id} name={group.name} />
         ))}
       </div>
     </div>
