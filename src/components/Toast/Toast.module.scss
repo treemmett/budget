@@ -20,7 +20,7 @@
 }
 
 .title {
-  color: $blueText;
+  color: $blue-text;
   font-size: 14px;
   font-weight: 500;
 }
@@ -93,7 +93,7 @@
     left: 0;
     width: 5px;
     height: 100%;
-    background: linear-gradient($blueLight 0%, $blue 85%);
+    background: linear-gradient($blue-light 0%, $blue 85%);
     content: '';
   }
 

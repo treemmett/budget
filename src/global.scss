@@ -1,32 +1,30 @@
 $blue: #32c1ff;
-$blueLight: #32ffff;
-$blueText: #0aa5e8;
+$blue-light: #32ffff;
+$blue-text: #0aa5e8;
 $orange: #ed8555;
 $green: #14cc60;
-$greenLight: #56dd83;
+$green-light: #56dd83;
 $red: #d85b56;
-
-$shadow1: 0 2px 10px 0 rgba(68, 71, 81, 0.13);
-$shadow3: 0 8px 10px 1px rgba(68, 71, 81, 0.18);
-
+$shadow1: 0 2px 10px 0 rgba(68, 71, 81, 13%);
+$shadow3: 0 8px 10px 1px rgba(68, 71, 81, 18%);
 $curve: cubic-bezier(0.65, 0.29, 0.26, 0.48);
-$transitionBg: background-color 0.2s $curve;
+$transition-bg: background-color 0.2s $curve;
 
 @mixin card {
+  padding: 1.5rem;
+  margin-bottom: 1rem;
   background-color: #fff;
   border-radius: 6px;
   box-shadow: $shadow1;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
 }
 
 @mixin button($color: #333) {
-  appearance: none;
   border: none;
-  transition: $transitionBg;
-  outline: none;
-  cursor: pointer;
+  appearance: none;
   color: $color;
+  cursor: pointer;
+  outline: none;
+  transition: $transition-bg;
 
   &:focus {
     background-color: rgba($color, 0.05);
@@ -43,10 +41,10 @@ $transitionBg: background-color 0.2s $curve;
 
 @mixin input {
   display: inline-block;
-  font-size: 1rem;
   padding: 0.125rem;
-  border-radius: 5px;
   border: 1px solid transparent;
+  border-radius: 5px;
+  font-size: 1rem;
   outline: none;
   transition: border-color 0.15s ease;
 

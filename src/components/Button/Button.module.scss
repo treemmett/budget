@@ -11,7 +11,7 @@
   text-transform: uppercase;
 
   &.blue {
-    @include button($blueText);
+    @include button($blue-text);
   }
 
   &.green {
