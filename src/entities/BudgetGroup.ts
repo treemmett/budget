@@ -1,5 +1,6 @@
 import { IsInt, IsNotEmpty, IsUUID, MaxLength, Min } from 'class-validator';
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import BudgetCategory from './BudgetCategory';
 
 @Entity()
 export default class BudgetGroup extends BaseEntity {
@@ -16,4 +17,7 @@ export default class BudgetGroup extends BaseEntity {
   @Min(0)
   @Column()
   public sort: number;
+
+  @OneToMany('BudgetCategory', 'group')
+  categories: BudgetCategory[];
 }
