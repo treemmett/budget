@@ -5,7 +5,7 @@ import { useDispatch, useStore } from '../components/Store';
 import Chevron from '../components/icons/Chevron';
 import styles from './budget.module.scss';
 import Loader from '@components/Loader/Loader';
-import { getGroups } from '@lib/getGroups';
+import { getGroups } from '@lib/groups';
 
 const Budget: FC = () => {
   const dispatch = useDispatch();

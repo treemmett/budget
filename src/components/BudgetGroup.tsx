@@ -5,8 +5,8 @@ import BudgetCategory from './BudgetCategory';
 import Loader from './Loader/Loader';
 import DragHandle from './icons/DragHandle';
 import Plus from './icons/Plus';
-import { createCategory } from '@lib/createCategory';
-import { getGroups } from '@lib/getGroups';
+import { createCategory } from '@lib/category';
+import { getGroups } from '@lib/groups';
 
 interface BudgetGroupProps {
   id: string;
