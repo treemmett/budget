@@ -1,5 +1,6 @@
 import cx from 'classnames';
 import { NextPage } from 'next';
+import Link from 'next/link';
 import Input from '../components/Input/Input';
 import styles from './login.module.scss';
 
@@ -15,9 +16,11 @@ const Login: NextPage = () => (
         <Input className={styles.input} label="Email" name="email" type="email" required />
         <Input className={styles.input} label="Password" name="password" type="password" required />
         <div className={styles.buttons}>
-          <a className={cx(styles.button, styles.secondary)} href="/register">
-            Register
-          </a>
+          <Link href="/register">
+            <a className={cx(styles.button, styles.secondary)} href="#.">
+              Register
+            </a>
+          </Link>
           <button className={styles.button} type="submit">
             Login
           </button>
@@ -39,9 +42,11 @@ const Login: NextPage = () => (
           required
         />
         <div className={styles.buttons}>
-          <a className={cx(styles.button, styles.secondary)} href="/login">
-            Back to Login
-          </a>
+          <Link href="/login">
+            <a className={cx(styles.button, styles.secondary)} href="#.">
+              Back to Login
+            </a>
+          </Link>
           <button className={styles.button} type="submit">
             Register
           </button>
