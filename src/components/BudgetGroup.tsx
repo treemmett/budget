@@ -84,7 +84,7 @@ const BudgetGroup: FC<BudgetGroupProps> = ({ id }: BudgetGroupProps) => {
 
       <div className={styles['category-list']} suppressHydrationWarning>
         {group.categories.map((c) => (
-          <BudgetCategory key={c.id} name={c.name} />
+          <BudgetCategory id={c.id} key={c.id} />
         ))}
       </div>
     </div>

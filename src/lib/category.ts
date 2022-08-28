@@ -13,3 +13,8 @@ export async function createCategory({
   });
   return data;
 }
+
+export async function getCategoryByID(id: string): Promise<BudgetCategory> {
+  const { data } = await axios.get(`/api/category/${encodeURIComponent(id)}`);
+  return data;
+}

@@ -16,6 +16,7 @@ const Budget: FC = () => {
       newData.forEach((group) => {
         queryClient.setQueryData(['group', { id: group.id }], group);
         group.categories.forEach((category) => {
+          console.log({ category });
           queryClient.setQueryData(['category', { id: category.id }], category);
         });
       });

@@ -1,22 +1,45 @@
 import cx from 'classnames';
 import React, { FC } from 'react';
+import { useQuery } from 'react-query';
 import styles from '../pages/budget.module.scss';
 import { toDisplay } from '../utils/formatCurrency';
+import Loader from './Loader/Loader';
 import DragHandle from './icons/DragHandle';
+import { getCategoryByID } from '@lib/category';
 
 interface BudgetCategoryProps {
-  name: string;
+  id: string;
 }
 
-const BudgetCategory: FC<BudgetCategoryProps> = ({ name }: BudgetCategoryProps) => (
-  <div className={styles.category} suppressHydrationWarning>
-    <div className={styles['drag-handle']} suppressHydrationWarning>
-      <DragHandle />
+const BudgetCategory: FC<BudgetCategoryProps> = ({ id }: BudgetCategoryProps) => {
+  const { data, isError, isLoading } = useQuery(['category', { id }], () => getCategoryByID(id));
+
+  if (isLoading || (!isError && !data)) {
+    return (
+      <div className={styles.category}>
+        <Loader />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className={styles.category}>
+        <div>An error occurred</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.category}>
+      <div className={styles['drag-handle']}>
+        <DragHandle />
+      </div>
+      <div className={styles.name}>{data.name}</div>
+      <div className={cx(styles.activity)}>{toDisplay(500)}</div>
+      <input className={styles['category-allocation']} />
     </div>
-    <div className={styles.name}>{name}</div>
-    <div className={cx(styles.activity)}>{toDisplay(500)}</div>
-    <input className={styles['category-allocation']} />
-  </div>
-);
+  );
+};
 
 export default BudgetCategory;
