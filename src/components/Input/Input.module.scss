@@ -1,10 +1,10 @@
 $blue: #0082f9;
 
 @mixin input {
-  padding: 0.75rem 1rem;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+  padding: 0.75rem 1rem;
 }
 
 .input {
@@ -16,41 +16,43 @@ $blue: #0082f9;
 
   input {
     @include input;
-    font-size: 1rem;
-    margin: 0;
+
     border: none;
+    margin: 0;
     background-color: transparent;
-    outline: none;
     color: #333;
     font-feature-settings: 'frac' 1;
+    font-size: 1rem;
+    outline: none;
   }
 
   &:focus-within {
     border-color: $blue;
   }
 
-  &.hasLabel {
+  &.has-label {
     input {
-      padding-bottom: 0.45rem;
       padding-top: 1.05rem;
+      padding-bottom: 0.45rem;
     }
   }
 }
 
 .label {
   @include input;
+
   position: absolute;
   top: 0;
   left: 0;
-  pointer-events: none;
-  font-size: 12px;
   padding-top: 0.3rem;
+  color: #777;
+  font-size: 12px;
+  pointer-events: none;
   transition: 0.15s ease;
   transition-property: font-size, padding-top;
-  color: #777;
 
   &.inactive {
-    font-size: 1rem;
     padding-top: 0.75rem;
+    font-size: 1rem;
   }
 }

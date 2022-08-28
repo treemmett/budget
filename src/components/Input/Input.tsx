@@ -1,10 +1,8 @@
-import React, { FC, useEffect, useState } from 'react';
 import cx from 'classnames';
-import styles from './Input.scss';
+import React, { FC, useEffect, useState } from 'react';
+import styles from './Input.module.scss';
 
 export interface InputProps {
-  /** Automatically set focus on the input */
-  autoFocus?: boolean;
   /** Class name concatenated to input wrapper */
   className?: string;
   /** ID of the input */
@@ -30,7 +28,6 @@ export interface InputProps {
 }
 
 const Input: FC<InputProps> = ({
-  autoFocus,
   className,
   id,
   label,
@@ -73,19 +70,15 @@ const Input: FC<InputProps> = ({
 
   return (
     <label
-      className={cx(className, styles.input, { [styles.hasLabel]: label })}
+      className={cx(className, styles.input, { [styles['has-label']]: label })}
       htmlFor={realId}
     >
       {label && (
-        <label
-          className={cx(styles.label, { [styles.inactive]: !labelActive })}
-          htmlFor={realId}
-        >
+        <label className={cx(styles.label, { [styles.inactive]: !labelActive })} htmlFor={realId}>
           {label}
         </label>
       )}
       <input
-        autoFocus={autoFocus}
         id={realId}
         name={name}
         onBlur={blurHandler}

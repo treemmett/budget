@@ -12,14 +12,7 @@ const Login: NextPage = () => (
     <h1 className={styles.brand}>Budget</h1>
     {true ? (
       <form className={styles.form}>
-        <Input
-          className={styles.input}
-          label="Email"
-          name="email"
-          type="email"
-          autoFocus
-          required
-        />
+        <Input className={styles.input} label="Email" name="email" type="email" required />
         <Input className={styles.input} label="Password" name="password" type="password" required />
         <div className={styles.buttons}>
           <a className={cx(styles.button, styles.secondary)} href="/register">
@@ -32,8 +25,8 @@ const Login: NextPage = () => (
       </form>
     ) : (
       <form className={styles.form}>
-        <div className={styles.splitInput}>
-          <Input className={styles.input} label="First Name" name="firstName" autoFocus required />
+        <div className={styles['split-input']}>
+          <Input className={styles.input} label="First Name" name="firstName" required />
           <Input className={styles.input} label="Last Name" name="lastName" required />
         </div>
         <Input className={styles.input} label="Email" name="email" type="email" required />
