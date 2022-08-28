@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import BudgetGroup from '../components/BudgetGroup';
 import { useDispatch, useStore } from '../components/Store';
 import Chevron from '../components/icons/Chevron';
@@ -47,21 +46,10 @@ const Budget: FC = () => {
           </button>
         </div>
       </div>
-      <DragDropContext onDragEnd={() => null}>
-        <Droppable droppableId="budget" type="group">
-          {(provided) => (
-            <div
-              className={styles['budget-list']}
-              // eslint-disable-next-line react/jsx-props-no-spreading
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
-              <BudgetGroup id="g.id" index={0} name="Housing" />
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <div className={styles['budget-list']}>
+        <BudgetGroup name="Housing" />
+        <BudgetGroup name="Transportation" />
+      </div>
     </div>
   );
 };
