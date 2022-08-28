@@ -1,3 +1,4 @@
+@use 'sass:color';
 @import '../../global';
 
 $duration: 0.9s;
@@ -17,16 +18,16 @@ $duration: 0.9s;
 }
 
 @mixin dot($color, $size, $gap) {
-  $color: lighten($color, 10%);
-  $animation: unique-id();
+  $color: color.adjust($color, $lightness: 10%);
+
   position: absolute;
+  top: -$size;
   display: inline-block;
   width: $size;
   height: $size;
-  animation: #{$animation} $duration ease alternate infinite;
-  border-radius: 50%;
+  animation: loader $duration ease alternate infinite;
   animation-delay: ($duration / 5) * 2;
-  top: -$size;
+  border-radius: 50%;
 
   &:nth-child(1) {
     left: 0;
@@ -42,7 +43,7 @@ $duration: 0.9s;
     animation-delay: ($duration / 5) * 3;
   }
 
-  @keyframes #{$animation} {
+  @keyframes loader {
     0% {
       box-shadow: 0 $size 0 (-$size) $color;
     }
